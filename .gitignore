@@ -1,0 +1,53 @@
+node_modules/
+.env
+.DS_Store
+*.log
+npm-debug.log*
+
+# Backup and temp files
+*.backup.js
+*-original.*
+batch-*.json
+batch-*.jsonl
+
+# Development/utility scripts (not needed for deployment)
+enhance-database-batch.js
+check-batch-status.js
+retrieve-batch-results.js
+retry-failed-entries.js
+debug-failures.js
+generate-embeddings.js
+generate-embeddings-local.js
+!benchmark/generate-embeddings.js
+embeddings-local.js
+search-local-embeddings.js
+search-with-embeddings.js
+check-progress.sh
+extract-chengyu.js
+extract-chengyu-v2.js
+convert-to-database.js
+
+# Documentation (optional - keep if you want)
+DEPLOYMENT.md
+EMBEDDINGS_README.md
+
+# Legacy files (root level only, not in subdirectories)
+/app-original.js
+/index-original.html
+/app.js
+/index.html
+/server.js
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+_cleanup/
+embedding-regeneration.log
+embeddings-local-temp.json
+embeddings-local.backup.json
+embeddings/variants/
+benchmark/results/
+public-export/

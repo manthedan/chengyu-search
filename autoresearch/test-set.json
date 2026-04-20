@@ -1,0 +1,2407 @@
+[
+  {
+    "query": "feeling hopeless",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "走投无路",
+        "pinyin": "zou3 tou2 wu2 lu4",
+        "meaning": "in a tight spot",
+        "relevance": 3
+      },
+      {
+        "chengyu": "穷途末路",
+        "pinyin": "qiong2 tu2 mo4 lu4",
+        "meaning": "in a plight with no way out",
+        "relevance": 2
+      },
+      {
+        "chengyu": "束手无策",
+        "pinyin": "shu4 shou3 wu2 ce4",
+        "meaning": "helpless in the face of a crisis",
+        "relevance": 2
+      },
+      {
+        "chengyu": "万念俱灰",
+        "pinyin": "wan4 nian4 ju4 hui1",
+        "meaning": "every hope turns to dust (idiom); completely disheartened",
+        "relevance": 1
+      },
+      {
+        "chengyu": "黯然神伤",
+        "pinyin": "an4 ran2 shen2 shang1",
+        "meaning": "depressed; dispirited",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "surrounded by enemies",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "四面楚歌",
+        "pinyin": "si4 mian4 Chu3 ge1",
+        "meaning": "surrounded by enemies, isolated and without help",
+        "relevance": 3
+      },
+      {
+        "chengyu": "腹背受敌",
+        "pinyin": "fu4 bei4 shou4 di2",
+        "meaning": "to be attacked from the front and rear",
+        "relevance": 3
+      },
+      {
+        "chengyu": "草木皆兵",
+        "pinyin": "cao3 mu4 jie1 bing1",
+        "meaning": "to panic and treat everyone as an enemy to feel beleaguered",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "very happy and excited",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "欢欣鼓舞",
+        "pinyin": "huan1 xin1 gu3 wu3",
+        "meaning": "elated and excited; overjoyed",
+        "relevance": 3
+      },
+      {
+        "chengyu": "喜气洋洋",
+        "pinyin": "xi3 qi4 yang2 yang2",
+        "meaning": "full of joy (idiom); jubilation",
+        "relevance": 3
+      },
+      {
+        "chengyu": "兴高采烈",
+        "pinyin": "xing4 gao1 cai3 lie4",
+        "meaning": "in high spirits",
+        "relevance": 2
+      },
+      {
+        "chengyu": "欣喜若狂",
+        "pinyin": "xin1 xi3 ruo4 kuang2",
+        "meaning": "to be wild with joy (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "手舞足蹈",
+        "pinyin": "shou3 wu3 zu2 dao3",
+        "meaning": "to dance about to express one's feelings in body language to gesture animatedly (TCM) involuntary movements of the limbs",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "working hard without rest",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "废寝忘食",
+        "pinyin": "fei4 qin3 wang4 shi2",
+        "meaning": "to skip one's sleep and meals; to be completely wrapped up in one's work",
+        "relevance": 3
+      },
+      {
+        "chengyu": "夜以继日",
+        "pinyin": "ye4 yi3 ji4 ri4",
+        "meaning": "night and day (idiom); continuous strenuous effort",
+        "relevance": 3
+      },
+      {
+        "chengyu": "不眠不休",
+        "pinyin": "bu4 mian2 bu4 xiu1",
+        "meaning": "without stopping to sleep or have a rest (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "焚膏继晷",
+        "pinyin": "fen2 gao1 ji4 gui3",
+        "meaning": "to burn the midnight oil (idiom); to work continuously night and day",
+        "relevance": 2
+      },
+      {
+        "chengyu": "宵衣旰食",
+        "pinyin": "xiao1 yi1 gan4 shi2",
+        "meaning": "diligently attending to official matters",
+        "relevance": 2
+      },
+      {
+        "chengyu": "呕心沥血",
+        "pinyin": "ou3 xin1 li4 xue4",
+        "meaning": "to work one's heart out",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "doing something useless",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "徒劳无功",
+        "pinyin": "tu2 lao2 wu2 gong1",
+        "meaning": "to work to no avail (idiom)",
+        "relevance": 3
+      },
+      {
+        "chengyu": "无济于事",
+        "pinyin": "wu2 ji4 yu2 shi4",
+        "meaning": "to no avail; of no use",
+        "relevance": 2
+      },
+      {
+        "chengyu": "竹篮打水",
+        "pinyin": "zhu2 lan2 da3 shui3",
+        "meaning": "using a wicker basket to draw water (idiom); wasted effort",
+        "relevance": 2
+      },
+      {
+        "chengyu": "画饼充饥",
+        "pinyin": "hua4 bing3 chong1 ji1",
+        "meaning": "lit. to allay one's hunger using a picture of a cake",
+        "relevance": 1
+      },
+      {
+        "chengyu": "缘木求鱼",
+        "pinyin": "yuan2 mu4 qiu2 yu2",
+        "meaning": "to attempt the impossible",
+        "relevance": 2
+      },
+      {
+        "chengyu": "舍本逐末",
+        "pinyin": "she3 ben3 zhu2 mo4",
+        "meaning": "to neglect fundamentals and concentrate on details",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "arrogant and overconfident",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "目中无人",
+        "pinyin": "mu4 zhong1 wu2 ren2",
+        "meaning": "condescending",
+        "relevance": 3
+      },
+      {
+        "chengyu": "自高自大",
+        "pinyin": "zi4 gao1 zi4 da4",
+        "meaning": "to think of oneself as terrific (idiom); arrogant",
+        "relevance": 3
+      },
+      {
+        "chengyu": "不可一世",
+        "pinyin": "bu4 ke3 yi1 shi4",
+        "meaning": "to consider oneself unexcelled in the world; to be insufferably arrogant",
+        "relevance": 2
+      },
+      {
+        "chengyu": "颐指气使",
+        "pinyin": "yi2 zhi3 qi4 shi3",
+        "meaning": "arrogant and bossy",
+        "relevance": 2
+      },
+      {
+        "chengyu": "趾高气扬",
+        "pinyin": "zhi3 gao1 qi4 yang2",
+        "meaning": "high and mighty (idiom); arrogant",
+        "relevance": 1
+      },
+      {
+        "chengyu": "夜郎自大",
+        "pinyin": "Ye4 lang2 zi4 da4",
+        "meaning": "foolish conceit",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "feeling nostalgic",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "触景生情",
+        "pinyin": "chu4 jing3 sheng1 qing2",
+        "meaning": "evocative of the past",
+        "relevance": 3
+      },
+      {
+        "chengyu": "睹物思人",
+        "pinyin": "du3 wu4 si1 ren2",
+        "meaning": "to fondly remember a person on seeing sth one associates with them",
+        "relevance": 3
+      },
+      {
+        "chengyu": "莼鲈之思",
+        "pinyin": "chun2 lu2 zhi1 si1",
+        "meaning": "homesickness",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "pretending to be something you're not",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "沐猴而冠",
+        "pinyin": "mu4 hou2 er2 guan4",
+        "meaning": "worthless person in imposing attire",
+        "relevance": 3
+      },
+      {
+        "chengyu": "鱼目混珠",
+        "pinyin": "yu2 mu4 hun4 zhu1",
+        "meaning": "to pass off fish eyes for pearls",
+        "relevance": 2
+      },
+      {
+        "chengyu": "滥竽充数",
+        "pinyin": "lan4 yu2 chong1 shu4",
+        "meaning": "to make up the numbers with inferior products to masquerade as having an ability token member of a group",
+        "relevance": 2
+      },
+      {
+        "chengyu": "装模作样",
+        "pinyin": "zhuang1 mo2 zuo4 yang4",
+        "meaning": "to put on an act; to show affectation; to indulge in histrionics",
+        "relevance": 1
+      },
+      {
+        "chengyu": "狐假虎威",
+        "pinyin": "hu2 jia3 hu3 wei1",
+        "meaning": "to use powerful connections to intimidate people",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "making a mistake and learning from it",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "亡羊补牢",
+        "pinyin": "wang2 yang2 bu3 lao2",
+        "meaning": "to act belatedly better late than never to lock the stable door after the horse has bolted",
+        "relevance": 3
+      },
+      {
+        "chengyu": "前车之鉴",
+        "pinyin": "qian2 che1 zhi1 jian4",
+        "meaning": "lesson learned by observing others' failures",
+        "relevance": 3
+      },
+      {
+        "chengyu": "知错能改",
+        "pinyin": "zhi1 cuo4 neng2 gai3",
+        "meaning": "to recognize one's mistakes and be able to reform oneself (idiom)",
+        "relevance": 1
+      },
+      {
+        "chengyu": "吃一堑，长一智",
+        "pinyin": "chi1 yi1 qian4 , zhang3 yi1 zhi4",
+        "meaning": "Fall into the moat and you'll be wiser next time (idiom); One only learns from one's mistakes.",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "two people in love",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "情投意合",
+        "pinyin": "qing2 tou2 yi4 he2",
+        "meaning": "to have an affinity with each other; to find each other congenial",
+        "relevance": 3
+      },
+      {
+        "chengyu": "比翼双飞",
+        "pinyin": "bi3 yi4 shuang1 fei1",
+        "meaning": "two hearts beating as one name of a sweet and sour chicken wing dish",
+        "relevance": 3
+      },
+      {
+        "chengyu": "举案齐眉",
+        "pinyin": "ju3 an4 qi2 mei2",
+        "meaning": "lit. to lift the tray to eyebrow level (idiom); mutual respect in a marriage",
+        "relevance": 2
+      },
+      {
+        "chengyu": "心心相印",
+        "pinyin": "xin1 xin1 xiang1 yin4",
+        "meaning": "two hearts beat as one (idiom); a kindred spirit",
+        "relevance": 2
+      },
+      {
+        "chengyu": "有情人终成眷属",
+        "pinyin": "you3 qing2 ren2 zhong1 cheng2 juan4 shu3",
+        "meaning": "love will find a way (idiom)",
+        "relevance": 1
+      },
+      {
+        "chengyu": "才子佳人",
+        "pinyin": "cai2 zi3 jia1 ren2",
+        "meaning": "pair of ideal lovers",
+        "relevance": 1
+      },
+      {
+        "chengyu": "青梅竹马",
+        "pinyin": "qing1 mei2 zhu2 ma3",
+        "meaning": "innocent children's games childhood sweethearts a couple who grew up as childhood friends",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "a plan that backfires",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "搬起石头砸自己的脚",
+        "pinyin": "ban1 qi3 shi2 tou5 za2 zi4 ji3 de5 jiao3",
+        "meaning": "hoisted by one's own petard",
+        "relevance": 3
+      },
+      {
+        "chengyu": "自食其果",
+        "pinyin": "zi4 shi2 qi2 guo3",
+        "meaning": "suffering the consequences of one's own action to reap what one has sown",
+        "relevance": 2
+      },
+      {
+        "chengyu": "偷鸡不成蚀把米",
+        "pinyin": "tou1 ji1 bu4 cheng2 shi2 ba3 mi3",
+        "meaning": "to try to gain an advantage only to end up worse off to go for wool and come back shorn",
+        "relevance": 1
+      },
+      {
+        "chengyu": "作茧自缚",
+        "pinyin": "zuo4 jian3 zi4 fu4",
+        "meaning": "hoist by his own petard",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "extremely angry",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "怒发冲冠",
+        "pinyin": "nu4 fa4 chong1 guan1",
+        "meaning": "seething in anger raise one's hackles",
+        "relevance": 3
+      },
+      {
+        "chengyu": "勃然大怒",
+        "pinyin": "bo2 ran2 da4 nu4",
+        "meaning": "to fly into a rage; to see red",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "taking advantage of someone",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "趁火打劫",
+        "pinyin": "chen4 huo3 da3 jie2",
+        "meaning": "to take advantage of sb's misfortune",
+        "relevance": 3
+      },
+      {
+        "chengyu": "落井下石",
+        "pinyin": "luo4 jing3 xia4 shi2",
+        "meaning": "to hit a person when he's down",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "unexpected good fortune",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "喜从天降",
+        "pinyin": "xi3 cong2 tian1 jiang4",
+        "meaning": "unlooked-for happy event",
+        "relevance": 3
+      },
+      {
+        "chengyu": "逢凶化吉",
+        "pinyin": "feng2 xiong1 hua4 ji2",
+        "meaning": "misfortune turns to blessing (idiom); to turn an inauspicious start to good account",
+        "relevance": 2
+      },
+      {
+        "chengyu": "因祸得福",
+        "pinyin": "yin1 huo4 de2 fu2",
+        "meaning": "a blessing in disguise",
+        "relevance": 1
+      },
+      {
+        "chengyu": "塞翁失马",
+        "pinyin": "sai4 weng1 shi1 ma3",
+        "meaning": "a blessing in disguise it's an ill wind that blows nobody any good",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "bittersweet feelings",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "五味杂陈",
+        "pinyin": "wu3 wei4 za2 chen2",
+        "meaning": "with complex feelings (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "酸甜苦辣",
+        "pinyin": "suan1 tian2 ku3 la4",
+        "meaning": "all kinds of flavors",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "unstoppable momentum",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "势不可当",
+        "pinyin": "shi4 bu4 ke3 dang1",
+        "meaning": "impossible to resist (idiom); an irresistible force",
+        "relevance": 3
+      },
+      {
+        "chengyu": "如火如荼",
+        "pinyin": "ru2 huo3 ru2 tu2",
+        "meaning": "unstoppable",
+        "relevance": 3
+      },
+      {
+        "chengyu": "势如破竹",
+        "pinyin": "shi4 ru2 po4 zhu2",
+        "meaning": "with irresistible force",
+        "relevance": 2
+      },
+      {
+        "chengyu": "排山倒海",
+        "pinyin": "pai2 shan1 dao3 hai3",
+        "meaning": "gigantic of spectacular significance",
+        "relevance": 1
+      },
+      {
+        "chengyu": "所向披靡",
+        "pinyin": "suo3 xiang4 pi1 mi3",
+        "meaning": "to sweep everything before one; to be invincible",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "deception and trickery",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "尔虞我诈",
+        "pinyin": "er3 yu2 wo3 zha4",
+        "meaning": "each tries to outwit the other deceit and treachery",
+        "relevance": 3
+      },
+      {
+        "chengyu": "瞒天过海",
+        "pinyin": "man2 tian1 guo4 hai3",
+        "meaning": "to achieve one's aim by underhanded means",
+        "relevance": 3
+      },
+      {
+        "chengyu": "偷梁换柱",
+        "pinyin": "tou1 liang2 huan4 zhu4",
+        "meaning": "lit. to steal a rafter and replace it with a column",
+        "relevance": 2
+      },
+      {
+        "chengyu": "指鹿为马",
+        "pinyin": "zhi3 lu4 wei2 ma3",
+        "meaning": "making a deer out to be a horse (idiom); deliberate misrepresentation",
+        "relevance": 2
+      },
+      {
+        "chengyu": "诡计多端",
+        "pinyin": "gui3 ji4 duo1 duan1",
+        "meaning": "full of craft and cunning",
+        "relevance": 1
+      },
+      {
+        "chengyu": "弄虚作假",
+        "pinyin": "nong4 xu1 zuo4 jia3",
+        "meaning": "to practice fraud (idiom); by trickery",
+        "relevance": 1
+      },
+      {
+        "chengyu": "偷天换日",
+        "pinyin": "tou1 tian1 huan4 ri4",
+        "meaning": "skulduggery",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "courage in the face of danger",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "视死如归",
+        "pinyin": "shi4 si3 ru2 gui1",
+        "meaning": "to view death as a return home",
+        "relevance": 3
+      },
+      {
+        "chengyu": "奋不顾身",
+        "pinyin": "fen4 bu4 gu4 shen1",
+        "meaning": "regardless of perils",
+        "relevance": 2
+      },
+      {
+        "chengyu": "赴汤蹈火",
+        "pinyin": "fu4 tang1 dao3 huo3",
+        "meaning": "to brave any danger to go to any lengths (for a noble cause)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "大义凛然",
+        "pinyin": "da4 yi4 lin3 ran2",
+        "meaning": "devotion to righteousness that inspires reverence (idiom)",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "something extremely rare",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "凤毛麟角",
+        "pinyin": "feng4 mao2 lin2 jiao3",
+        "meaning": "few and far between",
+        "relevance": 3
+      },
+      {
+        "chengyu": "千载难逢",
+        "pinyin": "qian1 zai3 nan2 feng2",
+        "meaning": "once in a blue moon",
+        "relevance": 2
+      },
+      {
+        "chengyu": "屈指可数",
+        "pinyin": "qu1 zhi3 ke3 shu3",
+        "meaning": "very few",
+        "relevance": 2
+      },
+      {
+        "chengyu": "寥寥无几",
+        "pinyin": "liao2 liao2 wu2 ji3",
+        "meaning": "very few",
+        "relevance": 1
+      },
+      {
+        "chengyu": "铁树开花",
+        "pinyin": "tie3 shu4 kai1 hua1",
+        "meaning": "a highly improbable or extremely rare occurrence",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "wasting time",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "无所事事",
+        "pinyin": "wu2 suo3 shi4 shi4",
+        "meaning": "to have nothing to do",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "jealousy",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "嫉贤妒能",
+        "pinyin": "ji2 xian2 du4 neng2",
+        "meaning": "to envy the virtuous and talented",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "unity and cooperation",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "齐心协力",
+        "pinyin": "qi2 xin1 xie2 li4",
+        "meaning": "to pull together",
+        "relevance": 3
+      },
+      {
+        "chengyu": "同舟共济",
+        "pinyin": "tong2 zhou1 gong4 ji4",
+        "meaning": "having common interests obliged to collaborate towards common goals",
+        "relevance": 3
+      },
+      {
+        "chengyu": "众志成城",
+        "pinyin": "zhong4 zhi4 cheng2 cheng2",
+        "meaning": "unity of will is an impregnable stronghold (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "万众一心",
+        "pinyin": "wan4 zhong4 yi1 xin1",
+        "meaning": "millions of people all of one mind (idiom); the people united",
+        "relevance": 2
+      },
+      {
+        "chengyu": "同心协力",
+        "pinyin": "tong2 xin1 xie2 li4",
+        "meaning": "to pull together",
+        "relevance": 1
+      },
+      {
+        "chengyu": "齐心合力",
+        "pinyin": "qi2 xin1 he2 li4",
+        "meaning": "working hard together",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "accepting fate",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "听天由命",
+        "pinyin": "ting1 tian1 you2 ming4",
+        "meaning": "to submit to the will of heaven; to resign oneself to fate; to trust to luck",
+        "relevance": 3
+      },
+      {
+        "chengyu": "随遇而安",
+        "pinyin": "sui2 yu4 er2 an1",
+        "meaning": "flexible",
+        "relevance": 3
+      },
+      {
+        "chengyu": "逆来顺受",
+        "pinyin": "ni4 lai2 shun4 shou4",
+        "meaning": "to submit meekly to insults, maltreatment, humiliation etc",
+        "relevance": 2
+      },
+      {
+        "chengyu": "命中注定",
+        "pinyin": "ming4 zhong1 zhu4 ding4",
+        "meaning": "destined",
+        "relevance": 1
+      },
+      {
+        "chengyu": "顺其自然",
+        "pinyin": "shun4 qi2 zi4 ran2",
+        "meaning": "to let nature take its course (idiom)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "a turning point",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "峰回路转",
+        "pinyin": "feng1 hui2 lu4 zhuan3",
+        "meaning": "an opportunity has come unexpectedly things have taken a new turn",
+        "relevance": 3
+      },
+      {
+        "chengyu": "柳暗花明",
+        "pinyin": "liu3 an4 hua1 ming2",
+        "meaning": "light at the end of the tunnel",
+        "relevance": 3
+      },
+      {
+        "chengyu": "转危为安",
+        "pinyin": "zhuan3 wei1 wei2 an1",
+        "meaning": "to turn peril into safety (idiom); to avert a danger (esp. political or medical)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "否极泰来",
+        "pinyin": "pi3 ji2 tai4 lai2",
+        "meaning": "extreme sorrow turns to joy (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "绝处逢生",
+        "pinyin": "jue2 chu4 feng2 sheng1",
+        "meaning": "to find a way to survive when everything seems hopeless",
+        "relevance": 1
+      },
+      {
+        "chengyu": "豁然开朗",
+        "pinyin": "huo4 ran2 kai1 lang3",
+        "meaning": "everything becomes clear at once to achieve speedy enlightenment",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "fleeting beauty",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "昙花一现",
+        "pinyin": "tan2 hua1 yi1 xian4",
+        "meaning": "lit. the night-blooming cactus shows once",
+        "relevance": 3
+      },
+      {
+        "chengyu": "过眼云烟",
+        "pinyin": "guo4 yan3 yun2 yan1",
+        "meaning": "ephemeral (idiom)",
+        "relevance": 3
+      },
+      {
+        "chengyu": "转瞬即逝",
+        "pinyin": "zhuan3 shun4 ji2 shi4",
+        "meaning": "fleeting; transitory",
+        "relevance": 2
+      },
+      {
+        "chengyu": "电光朝露",
+        "pinyin": "dian4 guang1 zhao1 lu4",
+        "meaning": "ephemeral impermanent",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "war and battle",
+    "type": "thematic",
+    "expected": [
+      {
+        "chengyu": "兵荒马乱",
+        "pinyin": "bing1 huang1 ma3 luan4",
+        "meaning": "war-torn; ravaged by war; in a state of utter chaos",
+        "relevance": 3
+      },
+      {
+        "chengyu": "南征北战",
+        "pinyin": "nan2 zheng1 bei3 zhan4",
+        "meaning": "war on all sides (idiom); fighting from all four quarters",
+        "relevance": 2
+      },
+      {
+        "chengyu": "兵戎相见",
+        "pinyin": "bing1 rong2 xiang1 jian4",
+        "meaning": "to meet on the battlefield (idiom)",
+        "relevance": 1
+      },
+      {
+        "chengyu": "兵戈扰攘",
+        "pinyin": "bing1 ge1 rao3 rang3",
+        "meaning": "arms and confusion (idiom); turmoil of war",
+        "relevance": 1
+      },
+      {
+        "chengyu": "血流成河",
+        "pinyin": "xue4 liu2 cheng2 he2",
+        "meaning": "bloodbath",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "nature and scenery",
+    "type": "thematic",
+    "expected": [
+      {
+        "chengyu": "山清水秀",
+        "pinyin": "shan1 qing1 shui3 xiu4",
+        "meaning": "enchanting scenery",
+        "relevance": 3
+      },
+      {
+        "chengyu": "鸟语花香",
+        "pinyin": "niao3 yu3 hua1 xiang1",
+        "meaning": "the intoxication of a beautiful spring day",
+        "relevance": 3
+      },
+      {
+        "chengyu": "湖光山色",
+        "pinyin": "hu2 guang1 shan1 se4",
+        "meaning": "scenic lakes and mountain (idiom); beautiful lake and mountain landscape",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "friendship",
+    "type": "thematic",
+    "expected": [
+      {
+        "chengyu": "金兰之交",
+        "pinyin": "jin1 lan2 zhi1 jiao1",
+        "meaning": "intimate friendship (idiom)",
+        "relevance": 3
+      },
+      {
+        "chengyu": "情同手足",
+        "pinyin": "qing2 tong2 shou3 zu2",
+        "meaning": "deep friendship",
+        "relevance": 2
+      },
+      {
+        "chengyu": "肝胆相照",
+        "pinyin": "gan1 dan3 xiang1 zhao4",
+        "meaning": "to treat one another with absolute sincerity (idiom); to show total devotion",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "food and eating",
+    "type": "thematic",
+    "expected": [
+      {
+        "chengyu": "饕餮大餐",
+        "pinyin": "tao1 tie4 da4 can1",
+        "meaning": "great meal fit for dragon's son (idiom); sumptuous banquet",
+        "relevance": 3
+      },
+      {
+        "chengyu": "食指大动",
+        "pinyin": "shi2 zhi3 da4 dong4",
+        "meaning": "to be excited to dig into the delicious food",
+        "relevance": 2
+      },
+      {
+        "chengyu": "垂涎三尺",
+        "pinyin": "chui2 xian2 san1 chi3",
+        "meaning": "to yearn for",
+        "relevance": 2
+      },
+      {
+        "chengyu": "大快朵颐",
+        "pinyin": "da4 kuai4 duo3 yi2",
+        "meaning": "to eat with great relish; to feast on (sth)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "money and wealth",
+    "type": "thematic",
+    "expected": [
+      {
+        "chengyu": "金玉满堂",
+        "pinyin": "jin1 yu4 man3 tang2",
+        "meaning": "abundant wealth abundance of knowledge",
+        "relevance": 3
+      },
+      {
+        "chengyu": "富可敌国",
+        "pinyin": "fu4 ke3 di2 guo2",
+        "meaning": "extremely wealthy",
+        "relevance": 3
+      },
+      {
+        "chengyu": "腰缠万贯",
+        "pinyin": "yao1 chan2 wan4 guan4",
+        "meaning": "extremely wealthy",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一掷千金",
+        "pinyin": "yi1 zhi4 qian1 jin1",
+        "meaning": "extravagant",
+        "relevance": 2
+      },
+      {
+        "chengyu": "人财两旺",
+        "pinyin": "ren2 cai2 liang3 wang4",
+        "meaning": "thriving; (of a city) populous and wealthy; (of a family) large and prosperous",
+        "relevance": 1
+      },
+      {
+        "chengyu": "积金累玉",
+        "pinyin": "ji1 jin1 lei3 yu4",
+        "meaning": "to accumulate gold and jewels (idiom); prosperous",
+        "relevance": 1
+      },
+      {
+        "chengyu": "荣华富贵",
+        "pinyin": "rong2 hua2 fu4 gui4",
+        "meaning": "glory, splendor, wealth and rank (idiom); high position and great wealth",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "family relationships",
+    "type": "thematic",
+    "expected": [
+      {
+        "chengyu": "骨肉相连",
+        "pinyin": "gu3 rou4 xiang1 lian2",
+        "meaning": "closely intertwined",
+        "relevance": 3
+      },
+      {
+        "chengyu": "舐犊情深",
+        "pinyin": "shi4 du2 qing2 shen1",
+        "meaning": "to show deep affection towards one's children",
+        "relevance": 3
+      },
+      {
+        "chengyu": "相亲相爱",
+        "pinyin": "xiang1 qin1 xiang1 ai4",
+        "meaning": "(of siblings, spouses etc) very close to each other; inseparable; devoted to each other",
+        "relevance": 2
+      },
+      {
+        "chengyu": "上有老下有小",
+        "pinyin": "shang4 you3 lao3 xia4 you3 xiao3",
+        "meaning": "to have to take care of both one's aging parents and one's children sandwich generation",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一家人不说两家话",
+        "pinyin": "yi1 jia1 ren2 bu4 shuo1 liang3 jia1 hua4",
+        "meaning": "people don't need to be deferential when they ask a family member for help people from the same family should stick together (and good friends likewise)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "studying and learning",
+    "type": "thematic",
+    "expected": [
+      {
+        "chengyu": "学富五车",
+        "pinyin": "xue2 fu4 wu3 che1",
+        "meaning": "of great erudition and scholarship (idiom)",
+        "relevance": 3
+      },
+      {
+        "chengyu": "悬梁刺股",
+        "pinyin": "xuan2 liang2 ci4 gu3",
+        "meaning": "see also 頭懸梁，錐刺股|头悬梁，锥刺股[tou2 xuan2 liang2 , zhui1 ci4 gu3]",
+        "relevance": 3
+      },
+      {
+        "chengyu": "学而不厌",
+        "pinyin": "xue2 er2 bu4 yan4",
+        "meaning": "study tirelessly (idiom, from Analects)",
+        "relevance": 1
+      },
+      {
+        "chengyu": "好好学习，天天向上",
+        "pinyin": "hao3 hao3 xue2 xi2 , tian1 tian1 xiang4 shang4",
+        "meaning": "study hard and every day you will improve (idiom)",
+        "relevance": 1
+      },
+      {
+        "chengyu": "凿壁偷光",
+        "pinyin": "zao2 bi4 tou1 guang1",
+        "meaning": "to study diligently in the face of hardship",
+        "relevance": 2
+      },
+      {
+        "chengyu": "孜孜不倦",
+        "pinyin": "zi1 zi1 bu4 juan4",
+        "meaning": "assiduous (in study)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "government and politics",
+    "type": "thematic",
+    "expected": [
+      {
+        "chengyu": "政通人和",
+        "pinyin": "zheng4 tong1 ren2 he2",
+        "meaning": "efficient government, people at peace (idiom); all is well with the state and the people",
+        "relevance": 3
+      },
+      {
+        "chengyu": "勤政廉政",
+        "pinyin": "qin2 zheng4 lian2 zheng4",
+        "meaning": "honest and industrious government functionaries (idiom)",
+        "relevance": 3
+      },
+      {
+        "chengyu": "垂帘听政",
+        "pinyin": "chui2 lian2 ting1 zheng4",
+        "meaning": "lit. to govern from behind the curtain",
+        "relevance": 2
+      },
+      {
+        "chengyu": "朝令夕改",
+        "pinyin": "zhao1 ling4 xi1 gai3",
+        "meaning": "to make frequent or unpredictable changes in policy (idiom)",
+        "relevance": 1
+      },
+      {
+        "chengyu": "国泰民安",
+        "pinyin": "guo2 tai4 min2 an1",
+        "meaning": "the country prospers, the people at peace (idiom); peace and prosperity",
+        "relevance": 2
+      },
+      {
+        "chengyu": "励精图治",
+        "pinyin": "li4 jing1 tu2 zhi4",
+        "meaning": "(of a ruler) to strive to make one's nation strong and prosperous (idiom)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "animals",
+    "type": "thematic",
+    "expected": [
+      {
+        "chengyu": "飞禽走兽",
+        "pinyin": "fei1 qin2 zou3 shou4",
+        "meaning": "birds and animals",
+        "relevance": 3
+      },
+      {
+        "chengyu": "鸡飞狗跳",
+        "pinyin": "ji1 fei1 gou3 tiao4",
+        "meaning": "in chaos in disarray",
+        "relevance": 3
+      },
+      {
+        "chengyu": "鹤立鸡群",
+        "pinyin": "he4 li4 ji1 qun2",
+        "meaning": "manifestly superior",
+        "relevance": 2
+      },
+      {
+        "chengyu": "龙飞凤舞",
+        "pinyin": "long2 fei1 feng4 wu3",
+        "meaning": "flamboyant or bold cursive calligraphy (idiom)",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "the moon",
+    "type": "thematic",
+    "expected": [
+      {
+        "chengyu": "花好月圆",
+        "pinyin": "hua1 hao3 yue4 yuan2",
+        "meaning": "everything is wonderful perfect happiness conjugal bliss",
+        "relevance": 3
+      },
+      {
+        "chengyu": "水中捞月",
+        "pinyin": "shui3 zhong1 lao1 yue4",
+        "meaning": "a hopeless endeavor",
+        "relevance": 2
+      },
+      {
+        "chengyu": "众星捧月",
+        "pinyin": "zhong4 xing1 peng3 yue4",
+        "meaning": "to view sb as core figure to group around a revered leader to revolve around sb",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "si mian chu ge",
+    "type": "pinyin",
+    "expected": [
+      {
+        "chengyu": "四面楚歌",
+        "pinyin": "si4 mian4 Chu3 ge1",
+        "meaning": "surrounded by enemies, isolated and without help",
+        "relevance": 3
+      },
+      {
+        "chengyu": "暗渡陈仓",
+        "pinyin": "an4 du4 Chen2 cang1",
+        "meaning": "to feign one thing while doing another to cheat under cover of a diversion",
+        "relevance": 2
+      },
+      {
+        "chengyu": "粗制滥造",
+        "pinyin": "cu1 zhi4 lan4 zao4",
+        "meaning": "to churn out large quantities without regard for quality (idiom); rough and slipshod work",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一成不变",
+        "pinyin": "yi1 cheng2 bu4 bian4",
+        "meaning": "immutable; impervious to change; set in stone",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一手交钱，一手交货",
+        "pinyin": "yi1 shou3 jiao1 qian2 , yi1 shou3 jiao1 huo4",
+        "meaning": "to pay for what you want in cash simple and direct transaction",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "hua she tian zu",
+    "type": "pinyin",
+    "expected": [
+      {
+        "chengyu": "画蛇添足",
+        "pinyin": "hua4 she2 tian1 zu2",
+        "meaning": "to ruin the effect by adding sth superfluous to overdo it",
+        "relevance": 3
+      },
+      {
+        "chengyu": "欲加之罪，何患无辞",
+        "pinyin": "yu4 jia1 zhi1 zui4 , he2 huan4 wu2 ci2",
+        "meaning": "If you want to condemn sb, don't worry about the pretext (idiom, from Zuozhuan 左傳|左传); one can always trump up a charge against sb",
+        "relevance": 2
+      },
+      {
+        "chengyu": "天公作美",
+        "pinyin": "tian1 gong1 zuo4 mei3",
+        "meaning": "the weather is favorable for the planned activity (a variation of 天公不作美|天公不作美[tian1 gong1 bu4 zuo4 mei3])",
+        "relevance": 2
+      },
+      {
+        "chengyu": "鸡犬升天",
+        "pinyin": "ji1 quan3 sheng1 tian1",
+        "meaning": "(when somebody attains a position of power and influence), their relatives and friends also benefit (2nd half of the saying 一人得道，雞犬升天|一人得道，鸡犬升天[yi1 ren2 de2 dao4 , ji1 quan3 sheng1 tian1])",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一命呜呼",
+        "pinyin": "yi1 ming4 wu1 hu1",
+        "meaning": "to breathe one's last",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "yi shi er niao",
+    "type": "pinyin",
+    "expected": [
+      {
+        "chengyu": "一石二鸟",
+        "pinyin": "yi1 shi2 er4 niao3",
+        "meaning": "to kill two birds with one stone (idiom)",
+        "relevance": 3
+      },
+      {
+        "chengyu": "任人唯亲",
+        "pinyin": "ren4 ren2 wei2 qin1",
+        "meaning": "to appoint people by favoritism; to practice cronyism (or nepotism)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "千变万轸",
+        "pinyin": "qian1 bian4 wan4 zhen3",
+        "meaning": "constantly changing, ever-varying (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "贼喊捉贼",
+        "pinyin": "zei2 han3 zhuo1 zei2",
+        "meaning": "to accuse sb of a theft and try to sneak away oneself to cover up one's misdeeds by shifting the blame onto others",
+        "relevance": 2
+      },
+      {
+        "chengyu": "飞蛾投火",
+        "pinyin": "fei1 e2 tou2 huo3",
+        "meaning": "to choose a path to certain destruction",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "hu jia hu wei",
+    "type": "pinyin",
+    "expected": [
+      {
+        "chengyu": "狐假虎威",
+        "pinyin": "hu2 jia3 hu3 wei1",
+        "meaning": "to use powerful connections to intimidate people",
+        "relevance": 3
+      },
+      {
+        "chengyu": "愁肠百结",
+        "pinyin": "chou2 chang2 bai3 jie2",
+        "meaning": "hundred knots of worry in one's intestines (idiom); weighed down with anxiety",
+        "relevance": 2
+      },
+      {
+        "chengyu": "暗渡陈仓",
+        "pinyin": "an4 du4 Chen2 cang1",
+        "meaning": "to feign one thing while doing another to cheat under cover of a diversion",
+        "relevance": 2
+      },
+      {
+        "chengyu": "汉贼不两立",
+        "pinyin": "Han4 zei2 bu4 liang3 li4",
+        "meaning": "two enemies cannot live under the same sky (former KMT slogan against CCP) \"gentlemen and thieves cannot coexist\"",
+        "relevance": 2
+      },
+      {
+        "chengyu": "无颜见江东父老",
+        "pinyin": "wu2 yan2 jian4 Jiang1 dong1 fu4 lao3",
+        "meaning": "to be unable to return to one's hometown due to the shame of failure (originally referred to Xiang Yu 項羽|项羽[Xiang4 Yu3], who chose not to retreat to Jiangdong after his humiliating defeat)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "ban tu er fei",
+    "type": "pinyin",
+    "expected": [
+      {
+        "chengyu": "半途而废",
+        "pinyin": "ban4 tu2 er2 fei4",
+        "meaning": "to give up halfway (idiom); leave sth unfinished",
+        "relevance": 3
+      },
+      {
+        "chengyu": "三纲五常",
+        "pinyin": "san1 gang1 wu3 chang2",
+        "meaning": "the three rules (ruler guides subject, father guides son and husband guides wife) and five constant virtues of Confucianism (benevolence 仁, righteousness 義|义, propriety 禮|礼, wisdom 智 and fidelity 信)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "倾家荡产",
+        "pinyin": "qing1 jia1 dang4 chan3",
+        "meaning": "to lose a family fortune (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "别树一帜",
+        "pinyin": "bie2 shu4 yi1 zhi4",
+        "meaning": "to act as a loner to stand out to develop one's own school to have attitude of one's own",
+        "relevance": 2
+      },
+      {
+        "chengyu": "挂羊头卖狗肉",
+        "pinyin": "gua4 yang2 tou2 mai4 gou3 rou4",
+        "meaning": "to cheat dishonest advertising wicked deeds carried out under banner of virtue",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "shou zhu dai tu",
+    "type": "pinyin",
+    "expected": [
+      {
+        "chengyu": "守株待兔",
+        "pinyin": "shou3 zhu1 dai4 tu4",
+        "meaning": "to wait idly for opportunities",
+        "relevance": 3
+      },
+      {
+        "chengyu": "守株待兔，缘木求鱼",
+        "pinyin": "shou3 zhu1 dai4 tu4 , yuan2 mu4 qiu2 yu2",
+        "meaning": "to guard a tree-stump, waiting for rabbits, and climb a tree to catch fish (idiom); without any practical course of action",
+        "relevance": 3
+      },
+      {
+        "chengyu": "一日为师，终身为父",
+        "pinyin": "yi1 ri4 wei2 shi1 , zhong1 shen1 wei2 fu4",
+        "meaning": "teacher for one day, father forever; students should have deep respect and lifelong gratitude for their teachers",
+        "relevance": 2
+      },
+      {
+        "chengyu": "不悱不发",
+        "pinyin": "bu4 fei3 bu4 fa1",
+        "meaning": "a student should not be guided until he has made an effort to express his thoughts (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "人喊马嘶",
+        "pinyin": "ren2 han3 ma3 si1",
+        "meaning": "tumultuous hubbub",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "dui niu tan qin",
+    "type": "pinyin",
+    "expected": [
+      {
+        "chengyu": "对牛弹琴",
+        "pinyin": "dui4 niu2 tan2 qin2",
+        "meaning": "offering a treat to an unappreciative audience to cast pearls before swine caviar to the general to preach to deaf ears to talk over sb's head",
+        "relevance": 3
+      },
+      {
+        "chengyu": "一之为甚",
+        "pinyin": "yi1 zhi1 wei2 shen4",
+        "meaning": "once is more than enough (idiom)",
+        "relevance": 1
+      },
+      {
+        "chengyu": "一夫当关，万夫莫开",
+        "pinyin": "yi1 fu1 dang1 guan1 , wan4 fu1 mo4 kai1",
+        "meaning": "one man guarding the pass can prevent the passage of ten thousand",
+        "relevance": 1
+      },
+      {
+        "chengyu": "一日之雅",
+        "pinyin": "yi1 ri4 zhi1 ya3",
+        "meaning": "casual acquaintance",
+        "relevance": 1
+      },
+      {
+        "chengyu": "一枝独秀",
+        "pinyin": "yi1 zhi1 du2 xiu4",
+        "meaning": "to be in a league of one's own outstanding",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "wo xin chang dan",
+    "type": "pinyin",
+    "expected": [
+      {
+        "chengyu": "卧薪尝胆",
+        "pinyin": "wo4 xin1 chang2 dan3",
+        "meaning": "to maintain one's resolve for revenge",
+        "relevance": 3
+      },
+      {
+        "chengyu": "不打不成相识",
+        "pinyin": "bu4 da3 bu4 cheng2 xiang1 shi2",
+        "meaning": "don't fight, won't make friends (idiom); an exchange of blows may lead to friendship",
+        "relevance": 2
+      },
+      {
+        "chengyu": "世态炎凉",
+        "pinyin": "shi4 tai4 yan2 liang2",
+        "meaning": "the hypocrisy of the world (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "刻舟求剑",
+        "pinyin": "ke4 zhou1 qiu2 jian4",
+        "meaning": "an action made pointless by changed circumstances",
+        "relevance": 2
+      },
+      {
+        "chengyu": "化腐朽为神奇",
+        "pinyin": "hua4 fu3 xiu3 wei2 shen2 qi2",
+        "meaning": "lit. to change something rotten into something magical (idiom)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "jing di zhi wa",
+    "type": "pinyin",
+    "expected": [
+      {
+        "chengyu": "井底之蛙",
+        "pinyin": "jing3 di3 zhi1 wa1",
+        "meaning": "a person of limited outlook and experience",
+        "relevance": 3
+      },
+      {
+        "chengyu": "一手交钱，一手交货",
+        "pinyin": "yi1 shou3 jiao1 qian2 , yi1 shou3 jiao1 huo4",
+        "meaning": "to pay for what you want in cash simple and direct transaction",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一拥而入",
+        "pinyin": "yi1 yong1 er2 ru4",
+        "meaning": "to swarm in (of people etc) (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一雨成秋",
+        "pinyin": "yi1 yu3 cheng2 qiu1",
+        "meaning": "a sudden shower towards the end of summer brings an abrupt arrival of autumn (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一雪前耻",
+        "pinyin": "yi1 xue3 qian2 chi3",
+        "meaning": "to wipe away a humiliation (idiom)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "wang yang bu lao",
+    "type": "pinyin",
+    "expected": [
+      {
+        "chengyu": "亡羊补牢",
+        "pinyin": "wang2 yang2 bu3 lao2",
+        "meaning": "to act belatedly better late than never to lock the stable door after the horse has bolted",
+        "relevance": 3
+      },
+      {
+        "chengyu": "疏而不漏",
+        "pinyin": "shu1 er2 bu4 lou4",
+        "meaning": "loose, but allows no escape (idiom, from Laozi 老子[Lao3 zi3]); the way of Heaven is fair, but the guilty will not escape",
+        "relevance": 2
+      },
+      {
+        "chengyu": "知人者智，自知者明",
+        "pinyin": "zhi1 ren2 zhe3 zhi4 , zi4 zhi1 zhe3 ming2",
+        "meaning": "those who understand others are clever, but those who know themselves are truly wise (idiom, from Laozi's 道德經|道德经[Dao4 de2 jing1]",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一回生二回熟",
+        "pinyin": "yi1 hui2 sheng1 er4 hui2 shu2",
+        "meaning": "unfamiliar at first, but well accustomed soon enough (idiom)",
+        "relevance": 1
+      },
+      {
+        "chengyu": "一拍两散",
+        "pinyin": "yi1 pai1 liang3 san4",
+        "meaning": "(of marriage or business partners) to break up; to separate",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "adding legs to a snake",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "画蛇添足",
+        "pinyin": "hua4 she2 tian1 zu2",
+        "meaning": "to ruin the effect by adding sth superfluous to overdo it",
+        "relevance": 3
+      },
+      {
+        "chengyu": "三足鼎立",
+        "pinyin": "san1 zu2 ding3 li4",
+        "meaning": "to form a tripartite balance of power",
+        "relevance": 2
+      },
+      {
+        "chengyu": "人心不足蛇吞象",
+        "pinyin": "ren2 xin1 bu4 zu2 she2 tun1 xiang4",
+        "meaning": "a man who is never content is like a snake trying to swallow an elephant (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "佛口蛇心",
+        "pinyin": "fo2 kou3 she2 xin1",
+        "meaning": "malicious and duplicitous",
+        "relevance": 2
+      },
+      {
+        "chengyu": "引蛇出洞",
+        "pinyin": "yin3 she2 chu1 dong4",
+        "meaning": "lit. to pull a snake from its hole",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "frog in a well",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "井底之蛙",
+        "pinyin": "jing3 di3 zhi1 wa1",
+        "meaning": "a person of limited outlook and experience",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一不做，二不休",
+        "pinyin": "yi1 bu4 zuo4 , er4 bu4 xiu1",
+        "meaning": "if you do it at all, you may as well go the whole hog in for a penny, in for a pound",
+        "relevance": 2
+      },
+      {
+        "chengyu": "了然于胸",
+        "pinyin": "liao3 ran2 yu2 xiong1",
+        "meaning": "to be well aware; to understand clearly",
+        "relevance": 2
+      },
+      {
+        "chengyu": "井井有条",
+        "pinyin": "jing3 jing3 you3 tiao2",
+        "meaning": "everything clear and orderly (idiom); neat and tidy",
+        "relevance": 2
+      },
+      {
+        "chengyu": "井蛙之见",
+        "pinyin": "jing3 wa1 zhi1 jian4",
+        "meaning": "a narrow view",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "pulling up seedlings to help them grow",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "拔苗助长",
+        "pinyin": "ba2 miao2 zhu4 zhang3",
+        "meaning": "to spoil things through excessive enthusiasm (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一网打尽",
+        "pinyin": "yi1 wang3 da3 jin4",
+        "meaning": "to scoop up the whole lot to capture them all in one go",
+        "relevance": 2
+      },
+      {
+        "chengyu": "任人宰割",
+        "pinyin": "ren4 ren2 zai3 ge1",
+        "meaning": "to be taken advantage of",
+        "relevance": 2
+      },
+      {
+        "chengyu": "小别胜新婚",
+        "pinyin": "xiao3 bie2 sheng4 xin1 hun1",
+        "meaning": "absence makes the heart grow fonder",
+        "relevance": 2
+      },
+      {
+        "chengyu": "愧悔无地",
+        "pinyin": "kui4 hui3 wu2 di4",
+        "meaning": "ashamed and unable to show one's face (idiom)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "blind man touching an elephant",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "瞎子摸象",
+        "pinyin": "xia1 zi5 mo1 xiang4",
+        "meaning": "unable to see the big picture to mistake the part for the whole unable to see the wood for the trees",
+        "relevance": 3
+      },
+      {
+        "chengyu": "合眼摸象",
+        "pinyin": "he2 yan3 mo1 xiang4",
+        "meaning": "to touch an elephant with closed eyes (idiom); to proceed blindly",
+        "relevance": 2
+      },
+      {
+        "chengyu": "众盲摸象",
+        "pinyin": "zhong4 mang2 mo1 xiang4",
+        "meaning": "unable to see the big picture to mistake the part for the whole unable to see the wood for the trees",
+        "relevance": 2
+      },
+      {
+        "chengyu": "人心不足蛇吞象",
+        "pinyin": "ren2 xin1 bu4 zu2 she2 tun1 xiang4",
+        "meaning": "a man who is never content is like a snake trying to swallow an elephant (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "沾花惹草",
+        "pinyin": "zhan1 hua1 re3 cao3",
+        "meaning": "to womanize",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "old horse knows the way",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "老马识途",
+        "pinyin": "lao3 ma3 shi2 tu2",
+        "meaning": "an old hand knows the ropes",
+        "relevance": 2
+      },
+      {
+        "chengyu": "北叟失马",
+        "pinyin": "bei3 sou3 shi1 ma3",
+        "meaning": "a blessing in disguise it's an ill wind that blows nobody any good",
+        "relevance": 2
+      },
+      {
+        "chengyu": "执迷不悟",
+        "pinyin": "zhi2 mi2 bu4 wu4",
+        "meaning": "to obstinately persist in going about things the wrong way (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "愚公移山",
+        "pinyin": "yu2 gong1 yi2 shan1",
+        "meaning": "where there's a will, there's a way",
+        "relevance": 2
+      },
+      {
+        "chengyu": "春江水暖鸭先知",
+        "pinyin": "chun1 jiang1 shui3 nuan3 ya1 xian1 zhi1",
+        "meaning": "an expert in the field knows which way the wind blows",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "iron pestle ground to a needle",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "只要功夫深，铁杵磨成针",
+        "pinyin": "zhi3 yao4 gong1 fu5 shen1 , tie3 chu3 mo2 cheng2 zhen1",
+        "meaning": "to persevere in a difficult task to study diligently",
+        "relevance": 3
+      },
+      {
+        "chengyu": "磨杵成针",
+        "pinyin": "mo2 chu3 cheng2 zhen1",
+        "meaning": "to persevere in a difficult task to study diligently",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一败涂地",
+        "pinyin": "yi1 bai4 tu2 di4",
+        "meaning": "to suffer a crushing defeat",
+        "relevance": 2
+      },
+      {
+        "chengyu": "一针见血",
+        "pinyin": "yi1 zhen1 jian4 xie3",
+        "meaning": "to hit the nail on the head",
+        "relevance": 2
+      },
+      {
+        "chengyu": "五体投地",
+        "pinyin": "wu3 ti3 tou2 di4",
+        "meaning": "to prostrate oneself in admiration (idiom); to adulate sb",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "fox borrowing tiger's power",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "狐假虎威",
+        "pinyin": "hu2 jia3 hu3 wei1",
+        "meaning": "to use powerful connections to intimidate people",
+        "relevance": 2
+      },
+      {
+        "chengyu": "三足鼎立",
+        "pinyin": "san1 zu2 ding3 li4",
+        "meaning": "to form a tripartite balance of power",
+        "relevance": 1
+      },
+      {
+        "chengyu": "人走茶凉",
+        "pinyin": "ren2 zou3 cha2 liang2",
+        "meaning": "when sb is no longer in a position of power, others cease to care about him",
+        "relevance": 1
+      },
+      {
+        "chengyu": "仗势欺人",
+        "pinyin": "zhang4 shi4 qi1 ren2",
+        "meaning": "to kick people around",
+        "relevance": 1
+      },
+      {
+        "chengyu": "兵强马壮",
+        "pinyin": "bing1 qiang2 ma3 zhuang4",
+        "meaning": "a well-trained and powerful army",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "painting a tiger like a dog",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "画虎类犬",
+        "pinyin": "hua4 hu3 lei4 quan3",
+        "meaning": "to try to do sth overambitious and end up botching it",
+        "relevance": 3
+      },
+      {
+        "chengyu": "画虎不成反类犬",
+        "pinyin": "hua4 hu3 bu4 cheng2 fan3 lei4 quan3",
+        "meaning": "to try to do sth overambitious and end up botching it",
+        "relevance": 3
+      },
+      {
+        "chengyu": "照猫画虎",
+        "pinyin": "zhao4 mao1 hua4 hu3",
+        "meaning": "to follow a model and get things more or less right but without capturing the spirit of the subject uninspired imitation",
+        "relevance": 2
+      },
+      {
+        "chengyu": "东施效颦",
+        "pinyin": "Dong1 Shi1 xiao4 pin2",
+        "meaning": "to mimick sb's idiosyncrasies but make a fool of oneself",
+        "relevance": 2
+      },
+      {
+        "chengyu": "邯郸学步",
+        "pinyin": "Han2 dan1 xue2 bu4",
+        "meaning": "slavishly copying others, one risks becoming a caricature",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "waiting by a tree stump for a rabbit",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "守株待兔，缘木求鱼",
+        "pinyin": "shou3 zhu1 dai4 tu4 , yuan2 mu4 qiu2 yu2",
+        "meaning": "to guard a tree-stump, waiting for rabbits, and climb a tree to catch fish (idiom); without any practical course of action",
+        "relevance": 3
+      },
+      {
+        "chengyu": "守株待兔",
+        "pinyin": "shou3 zhu1 dai4 tu4",
+        "meaning": "to wait idly for opportunities",
+        "relevance": 3
+      },
+      {
+        "chengyu": "众盲摸象",
+        "pinyin": "zhong4 mang2 mo1 xiang4",
+        "meaning": "unable to see the big picture to mistake the part for the whole unable to see the wood for the trees",
+        "relevance": 3
+      },
+      {
+        "chengyu": "一叶障目",
+        "pinyin": "yi1 ye4 zhang4 mu4",
+        "meaning": "not seeing the wider picture can't see the wood for the trees",
+        "relevance": 2
+      },
+      {
+        "chengyu": "不以规矩，不能成方圆",
+        "pinyin": "bu4 yi3 gui1 ju5 , bu4 neng2 cheng2 fang1 yuan2",
+        "meaning": "without rules, nothing can be done (idiom, from Mencius); one must follow some rules",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "playing the lute to a cow",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "对牛弹琴",
+        "pinyin": "dui4 niu2 tan2 qin2",
+        "meaning": "offering a treat to an unappreciative audience to cast pearls before swine caviar to the general to preach to deaf ears to talk over sb's head",
+        "relevance": 3
+      },
+      {
+        "chengyu": "话不投机",
+        "pinyin": "hua4 bu4 tou2 ji1",
+        "meaning": "not on the same wavelength; unable to have a congenial conversation; to not see eye to eye",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "tiger",
+    "type": "partial",
+    "expected": [
+      {
+        "chengyu": "三人成虎",
+        "pinyin": "san1 ren2 cheng2 hu3",
+        "meaning": "three men talking makes a tiger (idiom); repeated rumor becomes a fact",
+        "relevance": 2
+      },
+      {
+        "chengyu": "不入虎穴，焉得虎子",
+        "pinyin": "bu4 ru4 hu3 xue2 , yan1 de2 hu3 zi3",
+        "meaning": "How do you catch the tiger cub without entering the tiger's lair? (idiom); Nothing ventured, nothing gained.",
+        "relevance": 2
+      },
+      {
+        "chengyu": "伴君如伴虎",
+        "pinyin": "ban4 jun1 ru2 ban4 hu3",
+        "meaning": "being close to the sovereign can be as perilous as lying with a tiger (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "如虎添翼",
+        "pinyin": "ru2 hu3 tian1 yi4",
+        "meaning": "lit. like a tiger that has grown wings",
+        "relevance": 2
+      },
+      {
+        "chengyu": "为虎作伥",
+        "pinyin": "wei4 hu3 zuo4 chang1",
+        "meaning": "to act as accomplice to the tiger; to help a villain do evil",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "dragon",
+    "type": "partial",
+    "expected": [
+      {
+        "chengyu": "蜻蜓点水",
+        "pinyin": "qing1 ting2 dian3 shui3",
+        "meaning": "lit. the dragonfly touches the water lightly",
+        "relevance": 2
+      },
+      {
+        "chengyu": "降龙伏虎",
+        "pinyin": "xiang2 long2 fu2 hu3",
+        "meaning": "to vanquish dragons and tigers (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "龙争虎斗",
+        "pinyin": "long2 zheng1 hu3 dou4",
+        "meaning": "lit. the dragon wars, the tiger battles (idiom); fierce battle between giants",
+        "relevance": 2
+      },
+      {
+        "chengyu": "东鳞西爪",
+        "pinyin": "dong1 lin2 xi1 zhao3",
+        "meaning": "lit. a dragon's scale from the east and a dragon's claw from the west",
+        "relevance": 2
+      },
+      {
+        "chengyu": "虾兵蟹将",
+        "pinyin": "xia1 bing1 xie4 jiang4",
+        "meaning": "shrimp soldiers and crab generals (in mythology or popular fiction, the army of the Dragon King of the Eastern Sea)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "heart",
+    "type": "partial",
+    "expected": [
+      {
+        "chengyu": "心如刀绞",
+        "pinyin": "xin1 ru2 dao1 jiao3",
+        "meaning": "to feel a pain like a knife being twisted in one's heart (idiom)",
+        "relevance": 3
+      },
+      {
+        "chengyu": "一心一德",
+        "pinyin": "yi1 xin1 yi1 de2",
+        "meaning": "of one heart and one mind (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "三心二意",
+        "pinyin": "san1 xin1 er4 yi4",
+        "meaning": "half-hearted",
+        "relevance": 2
+      },
+      {
+        "chengyu": "人心隔肚皮",
+        "pinyin": "ren2 xin1 ge2 du4 pi2",
+        "meaning": "there is no knowing what is in a man's heart (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "仁心仁术",
+        "pinyin": "ren2 xin1 ren2 shu4",
+        "meaning": "benevolent heart and skillful execution (idiom, from Mencius); charitable in thought and deed",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "mountain",
+    "type": "partial",
+    "expected": [
+      {
+        "chengyu": "地动山摇",
+        "pinyin": "di4 dong4 shan1 yao2",
+        "meaning": "the earth quaked, the mountains shook (idiom); a tremendous battle",
+        "relevance": 2
+      },
+      {
+        "chengyu": "执法如山",
+        "pinyin": "zhi2 fa3 ru2 shan1",
+        "meaning": "to maintain the law as firm as a mountain (idiom); to enforce the law strictly",
+        "relevance": 2
+      },
+      {
+        "chengyu": "堆积如山",
+        "pinyin": "dui1 ji1 ru2 shan1",
+        "meaning": "a mountain of (paperwork etc)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "层峦叠嶂",
+        "pinyin": "ceng2 luan2 die2 zhang4",
+        "meaning": "range upon range of mountains (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "山峦重叠",
+        "pinyin": "shan1 luan2 chong2 die2",
+        "meaning": "overlapping ranges of high mountains (idiom)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "water",
+    "type": "partial",
+    "expected": [
+      {
+        "chengyu": "三个和尚没水喝",
+        "pinyin": "san1 ge4 he2 shang5 mei2 shui3 he1",
+        "meaning": "everybody's business is nobody's business (If there is one monk, he will fetch water for himself. If there are two, they will fetch water together. But if there are three or more, none will take it upon himself to fetch water.)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "付之东流",
+        "pinyin": "fu4 zhi1 dong1 liu2",
+        "meaning": "to commit to the waters (idiom); to lose sth irrevocably",
+        "relevance": 2
+      },
+      {
+        "chengyu": "吃水不忘掘井人",
+        "pinyin": "chi1 shui3 bu4 wang4 jue2 jing3 ren2",
+        "meaning": "Drinking the water of a well, one should never forget who dug it. (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "君子之交淡如水",
+        "pinyin": "jun1 zi3 zhi1 jiao1 dan4 ru2 shui3",
+        "meaning": "a gentleman's friendship, insipid as water (idiom, from Zhuangzi 莊子|庄子[Zhuang1 zi3])",
+        "relevance": 2
+      },
+      {
+        "chengyu": "如鱼得水",
+        "pinyin": "ru2 yu2 de2 shui3",
+        "meaning": "like a fish back in water (idiom); glad to be back in one's proper surroundings",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "四面楚歌",
+    "type": "chinese_exact",
+    "expected": [
+      {
+        "chengyu": "四面楚歌",
+        "pinyin": "si4 mian4 Chu3 ge1",
+        "meaning": "surrounded by enemies, isolated and without help",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "画蛇添足",
+    "type": "chinese_exact",
+    "expected": [
+      {
+        "chengyu": "画蛇添足",
+        "pinyin": "hua4 she2 tian1 zu2",
+        "meaning": "to ruin the effect by adding sth superfluous to overdo it",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "一石二鸟",
+    "type": "chinese_exact",
+    "expected": [
+      {
+        "chengyu": "一石二鸟",
+        "pinyin": "yi1 shi2 er4 niao3",
+        "meaning": "to kill two birds with one stone (idiom)",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "对牛弹琴",
+    "type": "chinese_exact",
+    "expected": [
+      {
+        "chengyu": "对牛弹琴",
+        "pinyin": "dui4 niu2 tan2 qin2",
+        "meaning": "offering a treat to an unappreciative audience to cast pearls before swine caviar to the general to preach to deaf ears to talk over sb's head",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "守株待兔",
+    "type": "chinese_exact",
+    "expected": [
+      {
+        "chengyu": "守株待兔",
+        "pinyin": "shou3 zhu1 dai4 tu4",
+        "meaning": "to wait idly for opportunities",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "sour grapes mentality",
+    "type": "english_meaning",
+    "expected": []
+  },
+  {
+    "query": "see the big picture",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "高瞻远瞩",
+        "pinyin": "gao1 zhan1 yuan3 zhu3",
+        "meaning": "acute foresight",
+        "relevance": 3
+      },
+      {
+        "chengyu": "顾全大局",
+        "pinyin": "gu4 quan2 da4 ju2",
+        "meaning": "to work for the benefits of all",
+        "relevance": 3
+      },
+      {
+        "chengyu": "大处着眼，小处着手",
+        "pinyin": "da4 chu4 zhuo2 yan3 , xiao3 chu4 zhuo2 shou3",
+        "meaning": "think of the big picture, start with the little things (idiom)",
+        "relevance": 3
+      },
+      {
+        "chengyu": "见微知著",
+        "pinyin": "jian4 wei1 zhi1 zhu4",
+        "meaning": "to examine tiny clues to know general trends; to deduce the whole story from small traces",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "too many cooks",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "人浮于事",
+        "pinyin": "ren2 fu2 yu2 shi4",
+        "meaning": "more hands than needed (idiom); too many cooks spoil the broth",
+        "relevance": 3
+      },
+      {
+        "chengyu": "众口难调",
+        "pinyin": "zhong4 kou3 nan2 tiao2",
+        "meaning": "it's difficult to please everyone (idiom)",
+        "relevance": 3
+      },
+      {
+        "chengyu": "七手八脚",
+        "pinyin": "qi1 shou3 ba1 jiao3",
+        "meaning": "with everyone lending a hand (eagerly but somewhat chaotically)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "don't judge a book by its cover",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "人不可貌相",
+        "pinyin": "ren2 bu4 ke3 mao4 xiang4",
+        "meaning": "you can't judge a book by its cover",
+        "relevance": 3
+      },
+      {
+        "chengyu": "人不可貌相，海水不可斗量",
+        "pinyin": "ren2 bu4 ke3 mao4 xiang4 , hai3 shui3 bu4 ke3 dou3 liang2",
+        "meaning": "you can't judge a person by appearance, just as you can't measure the sea with a pint pot (idiom)",
+        "relevance": 3
+      },
+      {
+        "chengyu": "金玉其外，败絮其中",
+        "pinyin": "jin1 yu4 qi2 wai4 , bai4 xu4 qi2 zhong1",
+        "meaning": "gilded exterior, shabby and ruined on the inside (idiom)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "咬人狗儿不露齿",
+        "pinyin": "yao3 ren2 gou3 r5 bu4 lu4 chi3",
+        "meaning": "You can't tell the really dangerous enemy from his external appearance.",
+        "relevance": 2
+      },
+      {
+        "chengyu": "真人不露相",
+        "pinyin": "zhen1 ren2 bu4 lou4 xiang4",
+        "meaning": "the sage presents as an ordinary person (idiom)",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "practice makes perfect",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "熟能生巧",
+        "pinyin": "shu2 neng2 sheng1 qiao3",
+        "meaning": "with familiarity you learn the trick (idiom); practice makes perfect",
+        "relevance": 3
+      },
+      {
+        "chengyu": "只要功夫深，铁杵磨成针",
+        "pinyin": "zhi3 yao4 gong1 fu5 shen1 , tie3 chu3 mo2 cheng2 zhen1",
+        "meaning": "to persevere in a difficult task to study diligently",
+        "relevance": 3
+      },
+      {
+        "chengyu": "驾轻就熟",
+        "pinyin": "jia4 qing1 jiu4 shu2",
+        "meaning": "experience makes progress easy a task that is so familiar one can do it with one's hand tied behind one's back",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "reaping what you sow",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "自食其果",
+        "pinyin": "zi4 shi2 qi2 guo3",
+        "meaning": "suffering the consequences of one's own action to reap what one has sown",
+        "relevance": 3
+      },
+      {
+        "chengyu": "搬起石头砸自己的脚",
+        "pinyin": "ban1 qi3 shi2 tou5 za2 zi4 ji3 de5 jiao3",
+        "meaning": "hoisted by one's own petard",
+        "relevance": 2
+      },
+      {
+        "chengyu": "作茧自缚",
+        "pinyin": "zuo4 jian3 zi4 fu4",
+        "meaning": "hoist by his own petard",
+        "relevance": 2
+      },
+      {
+        "chengyu": "偷鸡不成蚀把米",
+        "pinyin": "tou1 ji1 bu4 cheng2 shi2 ba3 mi3",
+        "meaning": "to try to gain an advantage only to end up worse off to go for wool and come back shorn",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "mixed feelings all at once",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "五味杂陈",
+        "pinyin": "wu3 wei4 za2 chen2",
+        "meaning": "with complex feelings (idiom)",
+        "relevance": 3
+      },
+      {
+        "chengyu": "酸甜苦辣",
+        "pinyin": "suan1 tian2 ku3 la4",
+        "meaning": "all kinds of flavors",
+        "relevance": 2
+      }
+    ]
+  },
+  {
+    "query": "brave enough to face death",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "视死如归",
+        "pinyin": "shi4 si3 ru2 gui1",
+        "meaning": "to view death as a return home",
+        "relevance": 3
+      },
+      {
+        "chengyu": "奋不顾身",
+        "pinyin": "fen4 bu4 gu4 shen1",
+        "meaning": "regardless of perils",
+        "relevance": 2
+      },
+      {
+        "chengyu": "赴汤蹈火",
+        "pinyin": "fu4 tang1 dao3 huo3",
+        "meaning": "to brave any danger to go to any lengths (for a noble cause)",
+        "relevance": 2
+      },
+      {
+        "chengyu": "大义凛然",
+        "pinyin": "da4 yi4 lin3 ran2",
+        "meaning": "devotion to righteousness that inspires reverence (idiom)",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "pretending to be clueless to dodge the question",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "装傻充愣",
+        "pinyin": "zhuang1 sha3 chong1 leng4",
+        "meaning": "to feign ignorance or stupidity; to pretend to be clueless",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "ruining it by overdoing it",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "画蛇添足",
+        "pinyin": "hua4 she2 tian1 zu2",
+        "meaning": "to ruin the effect by adding sth superfluous to overdo it",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "too scared to move forward",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "趑趄不前",
+        "pinyin": "zi1 ju1 bu4 qian2",
+        "meaning": "hesitant and not daring to move forward (idiom)",
+        "relevance": 3
+      },
+      {
+        "chengyu": "裹足不前",
+        "pinyin": "guo3 zu2 bu4 qian2",
+        "meaning": "to stand still without advancing (idiom); to hesitate and hold back",
+        "relevance": 2
+      },
+      {
+        "chengyu": "畏首畏尾",
+        "pinyin": "wei4 shou3 wei4 wei3",
+        "meaning": "afraid of the slightest thing",
+        "relevance": 1
+      }
+    ]
+  },
+  {
+    "query": "fixing a mistake before it's too late",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "亡羊补牢",
+        "pinyin": "wang2 yang2 bu3 lao2",
+        "meaning": "to act belatedly better late than never to lock the stable door after the horse has bolted",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "explaining something to someone who will not understand",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "对牛弹琴",
+        "pinyin": "dui4 niu2 tan2 qin2",
+        "meaning": "offering a treat to an unappreciative audience to cast pearls before swine caviar to the general to preach to deaf ears to talk over sb's head",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "having a very narrow point of view",
+    "type": "english_meaning",
+    "expected": [
+      {
+        "chengyu": "井底之蛙",
+        "pinyin": "jing3 di3 zhi1 wa1",
+        "meaning": "a person of limited outlook and experience",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "covering your ears while stealing a bell",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "掩耳盗铃",
+        "pinyin": "yan3 er3 dao4 ling2",
+        "meaning": "lit. to cover one's ears whilst stealing a bell",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "repairing the pen after losing sheep",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "亡羊补牢",
+        "pinyin": "wang2 yang2 bu3 lao2",
+        "meaning": "to act belatedly better late than never to lock the stable door after the horse has bolted",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "drawing a cake to satisfy hunger",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "画饼充饥",
+        "pinyin": "hua4 bing3 chong1 ji1",
+        "meaning": "lit. to allay one's hunger using a picture of a cake",
+        "relevance": 3
+      }
+    ]
+  },
+  {
+    "query": "mistaking a bow reflection for a snake",
+    "type": "literal",
+    "expected": [
+      {
+        "chengyu": "杯弓蛇影",
+        "pinyin": "bei1 gong1 she2 ying3",
+        "meaning": "unnecessary suspicions overly fearful",
+        "relevance": 3
+      }
+    ]
+  }
+]
