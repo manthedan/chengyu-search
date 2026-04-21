@@ -143,13 +143,15 @@ GET /api/health
 
 ### Example response
 
+Development and explicitly verbose environments may return:
+
 ```json
 {
   "status": "ok",
   "database": true,
   "embeddings": true,
   "embeddingModel": true,
-  "embeddingFile": "/Users/minime/projects/chengyu-search/embeddings-local.json",
+  "embeddingFile": "embeddings-local.json",
   "embeddingDimensions": 384,
   "embeddingTemplate": "meaning-literal-tags",
   "configuredEmbeddingModel": "Xenova/all-MiniLM-L6-v2",
@@ -161,17 +163,19 @@ GET /api/health
 }
 ```
 
+Production defaults to a trimmed payload intended to avoid exposing unnecessary runtime details.
+
 ### Field notes
 
 - `database`: idiom database loaded
 - `embeddings`: embedding artifact loaded
 - `embeddingModel`: runtime query embedding model initialized
-- `embeddingFile`: current embedding file path
-- `embeddingDimensions`: stored embedding vector size
-- `embeddingTemplate`: embedding document template when available in metadata
-- `configuredEmbeddingModel`: model requested by environment config
-- `loadedEmbeddingModel`: model recorded in embedding artifact metadata
-- `searchConfigOverride`: whether runtime search config overrides are active
+- `embeddingFile`: embedding artifact label when verbose health output is enabled
+- `embeddingDimensions`: stored embedding vector size when verbose health output is enabled
+- `embeddingTemplate`: embedding document template when verbose health output is enabled
+- `configuredEmbeddingModel`: model requested by environment config when verbose health output is enabled
+- `loadedEmbeddingModel`: model recorded in embedding artifact metadata when verbose health output is enabled
+- `searchConfigOverride`: whether runtime search config overrides are active when verbose health output is enabled
 - `autoRouting`: auto-routed endpoint is enabled
 - `defaultRoute`: current default UI route
 - `chengyuCount`: number of idioms loaded
@@ -183,6 +187,7 @@ GET /api/health
 Lightweight runtime metrics endpoint.
 
 This is primarily intended for local operations and benchmarking visibility.
+By default, it is available in development and hidden in production unless explicitly enabled.
 
 ### Example request
 

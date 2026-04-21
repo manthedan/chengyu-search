@@ -41,6 +41,30 @@ async function fetchMetrics() {
     return response.json();
 }
 
+function withTemporaryEnv(overrides, fn) {
+    const previous = {};
+    for (const [key, value] of Object.entries(overrides)) {
+        previous[key] = process.env[key];
+        if (value == null) {
+            delete process.env[key];
+        } else {
+            process.env[key] = value;
+        }
+    }
+
+    return Promise.resolve()
+        .then(fn)
+        .finally(() => {
+            for (const [key, value] of Object.entries(previous)) {
+                if (value == null) {
+                    delete process.env[key];
+                } else {
+                    process.env[key] = value;
+                }
+            }
+        });
+}
+
 before(async () => {
     server = await startServer({ port: 0 });
     const { port } = server.address();
@@ -399,4 +423,69 @@ describe('Edge Cases', () => {
         // Should not crash and should return something or empty array
         assert.ok(Array.isArray(data.results), 'Should return results array');
     });
+});
+
+describe('Security Hardening', () => {
+    it('should set baseline security headers and not expose Express fingerprinting', async () => {
+        const response = await fetch(`${BASE_URL}/api/health`);
+        assert.strictEqual(response.headers.get('x-powered-by'), null, 'Express fingerprint header should be disabled');
+        assert.strictEqual(response.headers.get('x-content-type-options'), 'nosniff');
+        assert.strictEqual(response.headers.get('x-frame-options'), 'DENY');
+        assert.strictEqual(response.headers.get('referrer-policy'), 'strict-origin-when-cross-origin');
+        assert.strictEqual(response.headers.get('cross-origin-opener-policy'), 'same-origin');
+    });
+
+    it('should trim health details and hide metrics by default in production mode', async () => withTemporaryEnv({
+        NODE_ENV: 'production',
+        EXPOSE_VERBOSE_HEALTH: null,
+        EXPOSE_RUNTIME_METRICS: null
+    }, async () => {
+        const healthResponse = await fetch(`${BASE_URL}/api/health`);
+        const health = await healthResponse.json();
+
+        assert.strictEqual(health.status, 'ok');
+        assert.strictEqual(health.database, true);
+        assert.strictEqual(health.embeddingFile, undefined, 'Production health should omit embedding file details by default');
+        assert.strictEqual(health.loadedEmbeddingModel, undefined, 'Production health should omit model detail by default');
+        assert.strictEqual(health.searchConfigOverride, undefined, 'Production health should omit override detail by default');
+        assert.strictEqual(healthResponse.headers.get('strict-transport-security'), 'max-age=31536000; includeSubDomains');
+
+        const metricsResponse = await fetch(`${BASE_URL}/api/metrics`);
+        const metrics = await metricsResponse.json();
+        assert.strictEqual(metricsResponse.status, 404, 'Metrics should be hidden by default in production mode');
+        assert.strictEqual(metrics.error, 'Not found');
+    }));
+
+    it('should apply lightweight rate limiting to search endpoints in production mode', async () => withTemporaryEnv({
+        NODE_ENV: 'production',
+        RATE_LIMIT_MAX_REQUESTS: '2',
+        RATE_LIMIT_WINDOW_MS: '150'
+    }, async () => {
+        const first = await fetch(`${BASE_URL}/api/search/keyword`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: '画蛇添足' })
+        });
+        const second = await fetch(`${BASE_URL}/api/search/keyword`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: '画蛇添足' })
+        });
+        const third = await fetch(`${BASE_URL}/api/search/keyword`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: '画蛇添足' })
+        });
+        const thirdBody = await third.json();
+
+        assert.strictEqual(first.status, 200, 'First request should pass under the rate limit');
+        assert.strictEqual(second.status, 200, 'Second request should pass under the rate limit');
+        assert.strictEqual(third.status, 429, 'Third request should be rate limited');
+        assert.strictEqual(thirdBody.error, 'Too many requests. Please try again later.');
+        assert.strictEqual(third.headers.get('ratelimit-limit'), '2');
+        assert.strictEqual(third.headers.get('ratelimit-remaining'), '0');
+        assert.ok(Number(third.headers.get('retry-after')) >= 1, 'Rate-limited responses should include Retry-After');
+
+        await new Promise(resolve => setTimeout(resolve, 180));
+    }));
 });

@@ -16,6 +16,12 @@ const DEFAULT_PORT = process.env.PORT || 3000;
 const QUIET_LOGS = process.env.QUIET_LOGS === '1';
 const DEFAULT_EMBEDDINGS_FILE = 'embeddings-local.json';
 const DEFAULT_EMBEDDING_MODEL_ID = 'Xenova/all-MiniLM-L6-v2';
+const SEARCH_RATE_LIMIT_PATHS = new Set([
+    '/api/search',
+    '/api/search/keyword',
+    '/api/search/semantic',
+    '/api/search/hybrid'
+]);
 
 function logInfo(...args) {
     if (!QUIET_LOGS) {
@@ -23,9 +29,84 @@ function logInfo(...args) {
     }
 }
 
+function isProduction() {
+    return process.env.NODE_ENV === 'production';
+}
+
+function isRuntimeMetricsExposed() {
+    return !isProduction() || process.env.EXPOSE_RUNTIME_METRICS === '1';
+}
+
+function isVerboseHealthExposed() {
+    return !isProduction() || process.env.EXPOSE_VERBOSE_HEALTH === '1';
+}
+
+function getConfiguredCorsAllowlist() {
+    return new Set(
+        String(process.env.CORS_ALLOWLIST || '')
+            .split(',')
+            .map(value => value.trim())
+            .filter(Boolean)
+    );
+}
+
+function isAllowedCorsOrigin(origin) {
+    if (!origin) return true;
+    if (!isProduction()) return true;
+
+    const allowlist = getConfiguredCorsAllowlist();
+    return allowlist.size > 0 && allowlist.has(origin);
+}
+
+function getJsonBodyLimit() {
+    return process.env.JSON_BODY_LIMIT || '16kb';
+}
+
+function getRateLimitWindowMs() {
+    const configured = Number(process.env.RATE_LIMIT_WINDOW_MS);
+    return Number.isFinite(configured) && configured > 0 ? configured : 60000;
+}
+
+function getRateLimitMaxRequests() {
+    const configured = Number(process.env.RATE_LIMIT_MAX_REQUESTS);
+    return Number.isFinite(configured) && configured > 0 ? configured : 120;
+}
+
+function isRateLimitingEnabled() {
+    return isProduction() || process.env.ENABLE_RATE_LIMIT === '1';
+}
+
+function sanitizeEmbeddingFileLabel(filePath) {
+    if (!filePath) return null;
+    return path.basename(filePath);
+}
+
+app.disable('x-powered-by');
+app.set('trust proxy', true);
+
+function securityHeadersMiddleware(req, res, next) {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+
+    if (isProduction()) {
+        res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    }
+
+    next();
+}
+
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(securityHeadersMiddleware);
+app.use(cors({
+    origin(origin, callback) {
+        callback(null, isAllowedCorsOrigin(origin));
+    },
+    methods: ['GET', 'HEAD', 'POST'],
+    optionsSuccessStatus: 204
+}));
+app.use(express.json({ limit: getJsonBodyLimit() }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // In-memory data storage
@@ -161,6 +242,71 @@ function createRuntimeMetrics() {
 }
 
 const runtimeMetrics = createRuntimeMetrics();
+const searchRateLimitState = new Map();
+
+function getEndpointMetricKeyForPath(requestPath) {
+    if (requestPath === '/api/search') return 'search_auto';
+    if (requestPath === '/api/search/keyword') return 'search_keyword';
+    if (requestPath === '/api/search/semantic') return 'search_semantic';
+    if (requestPath === '/api/search/hybrid') return 'search_hybrid';
+    if (requestPath === '/api/health') return 'health';
+    if (requestPath === '/api/metrics') return 'metrics';
+    return 'unknown';
+}
+
+function pruneRateLimitState(now = Date.now()) {
+    for (const [key, value] of searchRateLimitState.entries()) {
+        if (!value || value.resetAt <= now) {
+            searchRateLimitState.delete(key);
+        }
+    }
+}
+
+function applySearchRateLimit(req, res, next) {
+    if (!isRateLimitingEnabled() || !SEARCH_RATE_LIMIT_PATHS.has(req.path)) {
+        return next();
+    }
+
+    const windowMs = getRateLimitWindowMs();
+    const maxRequests = getRateLimitMaxRequests();
+    const now = Date.now();
+    const clientId = req.ip || req.socket?.remoteAddress || 'unknown';
+    const key = `${req.path}::${clientId}`;
+    const endpoint = getEndpointMetricKeyForPath(req.path);
+
+    pruneRateLimitState(now);
+
+    let entry = searchRateLimitState.get(key);
+    if (!entry || entry.resetAt <= now) {
+        entry = {
+            count: 0,
+            resetAt: now + windowMs
+        };
+    }
+
+    if (entry.count >= maxRequests) {
+        const retryAfterSeconds = Math.max(1, Math.ceil((entry.resetAt - now) / 1000));
+        res.setHeader('Retry-After', String(retryAfterSeconds));
+        res.setHeader('RateLimit-Limit', String(maxRequests));
+        res.setHeader('RateLimit-Remaining', '0');
+        res.setHeader('RateLimit-Reset', String(Math.ceil(entry.resetAt / 1000)));
+
+        const error = createHttpError(429, { error: 'Too many requests. Please try again later.' });
+        recordFailedRequest(endpoint, now, error);
+        return res.status(429).json({ error: error.error });
+    }
+
+    entry.count += 1;
+    searchRateLimitState.set(key, entry);
+
+    res.setHeader('RateLimit-Limit', String(maxRequests));
+    res.setHeader('RateLimit-Remaining', String(Math.max(0, maxRequests - entry.count)));
+    res.setHeader('RateLimit-Reset', String(Math.ceil(entry.resetAt / 1000)));
+
+    next();
+}
+
+app.use(applySearchRateLimit);
 
 function incrementCounter(bucket, key, amount = 1) {
     bucket[key] = (bucket[key] || 0) + amount;
@@ -984,6 +1130,7 @@ async function executeAutoSearch(query, {
 function resetCaches() {
     embeddingCache.cache.clear();
     searchResultCache.cache.clear();
+    searchRateLimitState.clear();
 }
 
 async function initializeSearchState() {
@@ -1022,24 +1169,36 @@ async function initializeSearchState() {
     }
 }
 
-// API Routes
-app.get('/api/health', (req, res) => {
-    const startTimeMs = Date.now();
-    const payload = {
+function buildHealthPayload() {
+    const basePayload = {
         status: 'ok',
         database: CHENGYU_DATABASE.length > 0,
         embeddings: CHENGYU_EMBEDDINGS !== null,
         embeddingModel: embeddingModelReady,
-        embeddingFile: embeddingMetadata.file,
-        embeddingDimensions: embeddingMetadata.dimensions,
-        embeddingTemplate: embeddingMetadata.template,
-        configuredEmbeddingModel: getEmbeddingModelId(),
-        loadedEmbeddingModel: embeddingMetadata.model,
-        searchConfigOverride: Boolean(loadSearchConfigOverride()),
         autoRouting: true,
         defaultRoute: 'auto',
         chengyuCount: CHENGYU_DATABASE.length
     };
+
+    if (!isVerboseHealthExposed()) {
+        return basePayload;
+    }
+
+    return {
+        ...basePayload,
+        embeddingFile: sanitizeEmbeddingFileLabel(embeddingMetadata.file),
+        embeddingDimensions: embeddingMetadata.dimensions,
+        embeddingTemplate: embeddingMetadata.template,
+        configuredEmbeddingModel: getEmbeddingModelId(),
+        loadedEmbeddingModel: embeddingMetadata.model,
+        searchConfigOverride: Boolean(loadSearchConfigOverride())
+    };
+}
+
+// API Routes
+app.get('/api/health', (req, res) => {
+    const startTimeMs = Date.now();
+    const payload = buildHealthPayload();
     res.json(payload);
     recordRequestMetrics({
         endpoint: 'health',
@@ -1049,9 +1208,22 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/metrics', (req, res) => {
+    const startTimeMs = Date.now();
+
+    if (!isRuntimeMetricsExposed()) {
+        const error = createHttpError(404, { error: 'Not found' });
+        recordFailedRequest('metrics', startTimeMs, error);
+        return res.status(404).json({ error: error.error });
+    }
+
     res.json({
         status: 'ok',
         metrics: getRuntimeMetricsSnapshot()
+    });
+    recordRequestMetrics({
+        endpoint: 'metrics',
+        statusCode: 200,
+        durationMs: Date.now() - startTimeMs
     });
 });
 
@@ -1212,7 +1384,7 @@ async function startServer({ port = DEFAULT_PORT } = {}) {
             logInfo(`📍 http://localhost:${actualPort}`);
             logInfo('\n📊 Available endpoints:');
             logInfo('   GET  /api/health - Health check');
-            logInfo('   GET  /api/metrics - Runtime metrics');
+            logInfo('   GET  /api/metrics - Runtime metrics (dev / opt-in in production)');
             logInfo('   POST /api/search - Auto-routed search (recommended)');
             logInfo('   POST /api/search/hybrid - Hybrid search');
             logInfo('   POST /api/search/keyword - Keyword search');
