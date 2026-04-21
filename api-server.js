@@ -32,6 +32,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 let CHENGYU_DATABASE = [];
 let CHENGYU_BY_ID = new Map();
 let CHENGYU_EMBEDDINGS = null;
+let CEDICT_VARIANT_BY_SIMPLIFIED_AND_PINYIN = null;
+let CEDICT_VARIANT_BY_SIMPLIFIED = null;
 let embeddingMetadata = {
     file: null,
     model: null,
@@ -278,11 +280,63 @@ function getEmbeddingModelId() {
     return process.env.EMBEDDING_MODEL_ID || DEFAULT_EMBEDDING_MODEL_ID;
 }
 
+function normalizeCedictPinyinKey(value) {
+    return String(value || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9üv:\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function getCedictVariantIndices() {
+    if (CEDICT_VARIANT_BY_SIMPLIFIED_AND_PINYIN && CEDICT_VARIANT_BY_SIMPLIFIED) {
+        return {
+            bySimplifiedAndPinyin: CEDICT_VARIANT_BY_SIMPLIFIED_AND_PINYIN,
+            bySimplified: CEDICT_VARIANT_BY_SIMPLIFIED
+        };
+    }
+
+    const cedictIdioms = require('./cedict-all-idioms.json');
+    const bySimplifiedAndPinyin = new Map();
+    const bySimplified = new Map();
+
+    cedictIdioms.forEach(entry => {
+        const simplified = entry.simplified;
+        const pinyinKey = normalizeCedictPinyinKey(entry.pinyin);
+        const combinedKey = `${simplified}::${pinyinKey}`;
+
+        if (!bySimplifiedAndPinyin.has(combinedKey)) {
+            bySimplifiedAndPinyin.set(combinedKey, entry);
+        }
+        if (!bySimplified.has(simplified)) {
+            bySimplified.set(simplified, entry);
+        }
+    });
+
+    CEDICT_VARIANT_BY_SIMPLIFIED_AND_PINYIN = bySimplifiedAndPinyin;
+    CEDICT_VARIANT_BY_SIMPLIFIED = bySimplified;
+
+    return { bySimplifiedAndPinyin, bySimplified };
+}
+
+function enrichChengyuEntryWithVariants(entry) {
+    const { bySimplifiedAndPinyin, bySimplified } = getCedictVariantIndices();
+    const simplified = entry.chengyu;
+    const pinyinKey = normalizeCedictPinyinKey(entry.pinyin);
+    const cedictEntry = bySimplifiedAndPinyin.get(`${simplified}::${pinyinKey}`) || bySimplified.get(simplified);
+
+    return {
+        ...entry,
+        simplified,
+        traditional: cedictEntry?.traditional || simplified
+    };
+}
+
 async function loadChengyuDatabase() {
     logInfo('📚 Loading chengyu database...');
     try {
         const chengyuModule = require('./chengyuData.js');
-        CHENGYU_DATABASE = chengyuModule;
+        CHENGYU_DATABASE = chengyuModule.map(enrichChengyuEntryWithVariants);
         CHENGYU_BY_ID = new Map(CHENGYU_DATABASE.map(entry => [entry.chengyu, entry]));
         logInfo(`✓ Loaded ${CHENGYU_DATABASE.length} chengyu entries`);
         return true;
@@ -463,6 +517,8 @@ function buildResultPayload(rankedResults) {
             if (!entry) return null;
             return {
                 chengyu: entry.chengyu,
+                simplified: entry.simplified || entry.chengyu,
+                traditional: entry.traditional || entry.chengyu,
                 pinyin: entry.pinyin,
                 literal: entry.literal,
                 meaning: entry.meaning,

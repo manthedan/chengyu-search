@@ -2,6 +2,8 @@
 
 Thanks for your interest in improving Chengyu Search.
 
+For public-facing branding: **Chengyu Search** is the product name, and **findchengyu.com** is the main live home of the app.
+
 ## What kinds of contributions are useful
 
 Good contributions include:

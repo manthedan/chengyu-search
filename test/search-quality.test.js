@@ -93,6 +93,21 @@ describe('Chinese Character Search', () => {
         assert.strictEqual(data.results[0].chengyu, '狗屁不通', 'Exact match should be first');
     });
 
+    it('should expose both simplified and traditional headword variants in results', async () => {
+        const data = await searchKeyword('一丁不识');
+        assert.ok(data.results.length > 0, 'Should return results');
+        assert.strictEqual(data.results[0].chengyu, '一丁不识', 'Exact match should be first');
+        assert.strictEqual(data.results[0].simplified, '一丁不识', 'Should expose simplified form');
+        assert.strictEqual(data.results[0].traditional, '一丁不識', 'Should expose traditional form');
+    });
+
+    it('should find exact matches when searching with traditional characters', async () => {
+        const data = await searchKeyword('畫蛇添足');
+        assert.ok(data.results.length > 0, 'Should return results');
+        assert.strictEqual(data.results[0].chengyu, '画蛇添足', 'Traditional lookup should resolve to the canonical simplified entry');
+        assert.strictEqual(data.results[0].traditional, '畫蛇添足', 'Should still expose the traditional form in the payload');
+    });
+
     it('should find partial Chinese character matches', async () => {
         const data = await searchKeyword('狗屁');
         assert.ok(data.results.length > 0, 'Should return results');
@@ -195,6 +210,15 @@ describe('Smart Routing', () => {
         assert.strictEqual(data.mode, 'hybrid', 'Chinese queries should auto-route to hybrid search');
         assert.strictEqual(data.queryType, 'chinese_exact', 'Should classify the query as chinese_exact');
         assert.ok(data.results.length > 0, 'Auto-routed hybrid search should return results');
+    });
+
+    it('should auto-route traditional Chinese queries and still return the simplified-backed entry', async () => {
+        const data = await searchAuto('畫蛇添足');
+        assert.strictEqual(data.mode, 'hybrid', 'Traditional Chinese queries should auto-route to hybrid search');
+        assert.strictEqual(data.queryType, 'chinese_exact', 'Traditional Chinese should still classify as chinese_exact');
+        assert.ok(data.results.length > 0, 'Auto-routed hybrid search should return results');
+        assert.strictEqual(data.results[0].chengyu, '画蛇添足', 'Traditional lookup should resolve to the canonical simplified entry');
+        assert.strictEqual(data.results[0].traditional, '畫蛇添足', 'Response should preserve the traditional headword variant');
     });
 
     it('should auto-route pinyin queries to hybrid search', async () => {

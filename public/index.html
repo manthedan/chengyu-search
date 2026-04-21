@@ -1,56 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>成语搜索 Chengyu Search Engine</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Chengyu Search — 成语搜索</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="container">
-        <header class="header">
-            <h1>成语搜索引擎</h1>
-            <h2>Chengyu Search Engine</h2>
-            <p class="tagline">Describe a situation, find a Chinese idiom</p>
-        </header>
-
-        <div class="search-section">
-            <div class="search-box">
-                <textarea
-                    id="search-input"
-                    placeholder="Describe a situation or feeling... (e.g., 'someone who is very stubborn and won't listen to advice')"
-                    rows="3"
-                ></textarea>
-                <button id="search-btn" class="search-btn">
-                    <span class="btn-text">Search 搜索</span>
-                    <span class="btn-loading" style="display: none;">Searching...</span>
-                </button>
-            </div>
-
-            <div class="examples">
-                <p class="examples-label">Try these examples:</p>
-                <div class="example-chips">
-                    <button class="example-chip" data-example="adding something unnecessary and ruining it">Unnecessary addition</button>
-                    <button class="example-chip" data-example="pretending to be dumb to avoid answering">Playing dumb</button>
-                    <button class="example-chip" data-example="quick-witted and clever">Quick-witted</button>
-                    <button class="example-chip" data-example="frozen and unable to move forward">Frozen in place</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="results-section" id="results-section" style="display: none;">
-            <h3 class="results-title">Results:</h3>
-            <div id="results-summary" class="results-count" style="display: none;"></div>
-            <div id="results-container"></div>
-            <div class="results-actions" id="results-actions" style="display: none;">
-                <button id="load-more-btn" class="load-more-btn">Load more results</button>
-            </div>
-        </div>
-
-        <div class="error-message" id="error-message" style="display: none;"></div>
-    </div>
-
-    <!-- Scripts -->
+<body data-theme="light">
+    <div class="noise" aria-hidden="true"></div>
+    <div class="app" id="app"></div>
     <script src="app.js"></script>
 </body>
 </html>

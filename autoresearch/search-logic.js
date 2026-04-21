@@ -44,6 +44,70 @@ function containsChinese(text) {
   return /[\u4e00-\u9fff]/.test(text);
 }
 
+let traditionalVariantMapsCache = null;
+
+function getTraditionalVariantMaps() {
+  if (traditionalVariantMapsCache) return traditionalVariantMapsCache;
+
+  const cedictIdioms = require('../cedict-all-idioms.json');
+  const idiomMap = new Map();
+  const charCounts = new Map();
+
+  cedictIdioms.forEach(entry => {
+    const traditional = String(entry.traditional || '');
+    const simplified = String(entry.simplified || '');
+    if (!traditional || !simplified) return;
+
+    idiomMap.set(traditional, simplified);
+
+    const traditionalChars = Array.from(traditional);
+    const simplifiedChars = Array.from(simplified);
+    if (traditionalChars.length !== simplifiedChars.length) return;
+
+    traditionalChars.forEach((traditionalChar, index) => {
+      const simplifiedChar = simplifiedChars[index];
+      if (!containsChinese(traditionalChar) || !containsChinese(simplifiedChar) || traditionalChar === simplifiedChar) {
+        return;
+      }
+
+      if (!charCounts.has(traditionalChar)) {
+        charCounts.set(traditionalChar, new Map());
+      }
+
+      const simplifiedCounts = charCounts.get(traditionalChar);
+      simplifiedCounts.set(simplifiedChar, (simplifiedCounts.get(simplifiedChar) || 0) + 1);
+    });
+  });
+
+  const charMap = new Map();
+  charCounts.forEach((simplifiedCounts, traditionalChar) => {
+    const bestMatch = Array.from(simplifiedCounts.entries())
+      .sort((a, b) => b[1] - a[1])[0]?.[0];
+
+    if (bestMatch) {
+      charMap.set(traditionalChar, bestMatch);
+    }
+  });
+
+  traditionalVariantMapsCache = { idiomMap, charMap };
+  return traditionalVariantMapsCache;
+}
+
+function normalizeTraditionalChineseQuery(text) {
+  const raw = String(text || '');
+  if (!containsChinese(raw)) return raw;
+
+  const { idiomMap, charMap } = getTraditionalVariantMaps();
+  const trimmed = raw.trim();
+
+  if (trimmed && idiomMap.has(trimmed)) {
+    const exactNormalized = idiomMap.get(trimmed);
+    return raw.replace(trimmed, exactNormalized);
+  }
+
+  return Array.from(raw).map(char => charMap.get(char) || char).join('');
+}
+
 const STOPWORDS = new Set([
   'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from', 'in', 'into',
   'is', 'it', 'its', 'of', 'on', 'or', 'that', 'the', 'their', 'this', 'to',
@@ -278,7 +342,8 @@ function pinyinFuzzySearch(query, CHENGYU, config) {
 
 function preprocessQuery(query) {
   const trimmed = query.trim();
-  if (!trimmed || containsChinese(trimmed)) return trimmed;
+  if (!trimmed) return trimmed;
+  if (containsChinese(trimmed)) return normalizeTraditionalChineseQuery(trimmed);
 
   const synonymMap = {
     hopeless: ['despair', 'helpless', 'desperate'],
@@ -820,9 +885,14 @@ function keywordSearchOnly(query, CHENGYU, config = {}, options = {}) {
     ...(processedQuery !== directQuery ? getPinyinExactMatches(processedQuery, CHENGYU) : [])
   ];
 
-  let keywordResults = keywordSearch(directQuery, CHENGYU, keywordConfig);
-  if (keywordResults.length === 0 && processedQuery !== directQuery) {
+  let keywordResults;
+  if (containsChinese(directQuery) && processedQuery !== directQuery) {
     keywordResults = keywordSearch(processedQuery, CHENGYU, keywordConfig);
+  } else {
+    keywordResults = keywordSearch(directQuery, CHENGYU, keywordConfig);
+    if (keywordResults.length === 0 && processedQuery !== directQuery) {
+      keywordResults = keywordSearch(processedQuery, CHENGYU, keywordConfig);
+    }
   }
 
   return rankKeywordOnly(keywordResults, exactPinyinResults, keywordConfig, { resultLimit });
