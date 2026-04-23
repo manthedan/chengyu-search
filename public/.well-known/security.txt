@@ -1,0 +1,5 @@
+Contact: https://github.com/manthedan/chengyu-search/security/advisories/new
+Canonical: https://findchengyu.com/.well-known/security.txt
+Expires: 2027-04-30T00:00:00.000Z
+Preferred-Languages: en, zh
+Policy: https://github.com/manthedan/chengyu-search

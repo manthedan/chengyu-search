@@ -799,7 +799,7 @@ function renderSavedSection() {
                 <div class="section-rule">Saved idioms · 已存成语</div>
                 <div class="saved-toolbar">
                     <span class="saved-meta">${saved.length} ${saved.length === 1 ? 'card' : 'cards'} ready · 11-column TSV</span>
-                    <button class="saved-export-btn" id="export-anki-btn" title="Download saved idioms as an Anki TSV with separate columns for headword, simplified, traditional, pinyin, meaning, literal, usage, example, tags, and formality">
+                    <button class="saved-export-btn" id="export-anki-btn" title="Download saved idioms as an Anki TSV with separate columns for headword, simplified, traditional, numbered pinyin, tone-marked pinyin, meaning, literal, usage, example, tags, and formality">
                         ${renderIcon('download')}
                         <span>Export for Anki</span>
                     </button>
@@ -821,7 +821,7 @@ function renderSavedSection() {
                             <button class="icon-btn card-action active" data-action="bookmark" data-chengyu="${escapeHtml(result.chengyu)}" title="Remove from saved">
                                 ${renderIcon('bookmarkFilled')}
                             </button>
-                            <button class="icon-btn card-action" data-action="copy" data-chengyu="${escapeHtml(result.chengyu)}" title="Copy idiom and gloss">
+                            <button class="icon-btn card-action" data-action="copy" data-chengyu="${escapeHtml(result.chengyu)}" title="Copy idiom">
                                 ${renderIcon('copy')}
                             </button>
                         </div>
@@ -882,7 +882,7 @@ function renderResultCard(result, index) {
                     <button class="icon-btn card-action ${isBookmarked(result) ? 'active' : ''}" data-action="bookmark" data-chengyu="${escapeHtml(result.chengyu)}" title="Save locally">
                         ${renderIcon(bookmarkIcon)}
                     </button>
-                    <button class="icon-btn card-action" data-action="copy" data-chengyu="${escapeHtml(result.chengyu)}" title="Copy idiom and gloss">
+                    <button class="icon-btn card-action" data-action="copy" data-chengyu="${escapeHtml(result.chengyu)}" title="Copy idiom">
                         ${renderIcon('copy')}
                     </button>
                 </div>

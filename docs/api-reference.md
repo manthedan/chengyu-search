@@ -43,6 +43,10 @@ All search endpoints use the same body shape:
   - must be a non-negative integer
 - `offset + limit`
   - must not exceed `50`
+- `query`
+  - must be a non-empty string
+  - maximum length defaults to `500` characters
+  - override with `MAX_QUERY_LENGTH`
 
 The UI uses the default hot path of `10` results and requests later pages only when the user clicks **Load more results**.
 
@@ -51,6 +55,16 @@ If `query` is missing, empty, or not a string, the server returns:
 ```json
 {
   "error": "Query is required"
+}
+```
+
+with HTTP `400`.
+
+If `query` exceeds the configured maximum length, the server returns:
+
+```json
+{
+  "error": "query cannot exceed 500 characters"
 }
 ```
 
@@ -78,6 +92,8 @@ All search endpoints return this top-level structure:
   "results": [
     {
       "chengyu": "千载难逢",
+      "simplified": "千载难逢",
+      "traditional": "千載難逢",
       "pinyin": "qian1 zai3 nan2 feng2",
       "literal": "a thousand years hard to encounter",
       "meaning": "a once-in-a-lifetime opportunity",
@@ -117,7 +133,9 @@ All search endpoints return this top-level structure:
 
 ### Result fields
 
-- `chengyu`
+- `chengyu`: canonical idiom identifier used by the current corpus, usually simplified
+- `simplified`: simplified headword for display/export
+- `traditional`: traditional headword for display/export
 - `pinyin`
 - `literal`
 - `meaning`
@@ -580,6 +598,8 @@ Effect:
 
 These headers make it possible to measure cold vs warm latency meaningfully.
 
+In production, benchmark bypass headers are ignored by default. Set `ENABLE_BENCHMARK_BYPASS=1` only for controlled benchmark runs where public callers cannot abuse cold-cache paths.
+
 ---
 
 ## Pagination notes
@@ -595,8 +615,9 @@ These headers make it possible to measure cold vs warm latency meaningfully.
 
 The server currently:
 
-- enables `cors()` globally
-- parses JSON bodies with `express.json()`
+- allows all origins in development
+- requires `CORS_ALLOWLIST` matches in production when browser requests send an `Origin`
+- parses JSON bodies with `express.json()` using `JSON_BODY_LIMIT` or a `16kb` default
 - serves the static frontend from `public/`
 
 That means the same server handles both:
@@ -614,8 +635,21 @@ That means the same server handles both:
 - `SEARCH_CONFIG_OVERRIDE_JSON`
 - `SEARCH_CONFIG_OVERRIDE_FILE`
 - `QUIET_LOGS`
+- `JSON_BODY_LIMIT`
+- `MAX_QUERY_LENGTH`
+- `CORS_ALLOWLIST`
+- `ENABLE_RATE_LIMIT`
+- `RATE_LIMIT_WINDOW_MS`
+- `RATE_LIMIT_MAX_REQUESTS`
+- `EXPOSE_RUNTIME_METRICS`
+- `EXPOSE_VERBOSE_HEALTH`
+- `ENABLE_BENCHMARK_BYPASS`
+- `ENABLE_HSTS`
+- `HSTS_MAX_AGE_SECONDS`
+- `HSTS_INCLUDE_SUBDOMAINS`
+- `HSTS_PRELOAD`
 
-These are especially useful for benchmarking and controlled bakeoff runs.
+These are especially useful for benchmarking, deployment hardening, and controlled bakeoff runs.
 
 ---
 
@@ -623,11 +657,12 @@ These are especially useful for benchmarking and controlled bakeoff runs.
 
 Current API behavior is optimized for the local app and benchmarking workflows.
 
+The API currently includes pagination, JSON body limits, query length limits, lightweight per-IP search rate limiting, production-trimmed health output, and production-hidden metrics by default.
+
 The API does **not** currently include:
 
-- authentication
-- rate limiting
-- pagination
+- authentication / API keys
+- per-key quotas
 - formal versioning
 - externally published schema definitions
 

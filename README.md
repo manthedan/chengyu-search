@@ -11,6 +11,13 @@ Describe a situation in English, Chinese, or pinyin and find a fitting idiom fas
 
 Search over 5,900+ chengyu with examples!
 
+Highlights:
+
+- Automatic search routing for English descriptions, Chinese characters, and pinyin
+- Simplified/traditional headword display toggle
+- Local saved idioms shelf
+- Anki-friendly TSV export with separate columns for headword, simplified, traditional, pinyin, tone pinyin, meaning, literal, usage, example, tags, and formality
+
 ## Documentation
 
 - Search internals: `docs/search-architecture.md`
@@ -65,7 +72,7 @@ You do **not** need to start a separate server first.
 ## Data Sources
 
 - **Chengyu database**: CC-CEDICT
-- **Examples / literal translations / enrichment**: claude api
+- **Examples / literal translations / enrichment**: LLM-assisted curation with maintainer review
 - **Embeddings**: local checked-in embeddings used by the backend
 
 ## License

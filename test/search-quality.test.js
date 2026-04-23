@@ -448,12 +448,69 @@ describe('Security Hardening', () => {
         assert.strictEqual(health.embeddingFile, undefined, 'Production health should omit embedding file details by default');
         assert.strictEqual(health.loadedEmbeddingModel, undefined, 'Production health should omit model detail by default');
         assert.strictEqual(health.searchConfigOverride, undefined, 'Production health should omit override detail by default');
-        assert.strictEqual(healthResponse.headers.get('strict-transport-security'), 'max-age=31536000; includeSubDomains');
+        assert.strictEqual(healthResponse.headers.get('strict-transport-security'), 'max-age=86400');
 
         const metricsResponse = await fetch(`${BASE_URL}/api/metrics`);
         const metrics = await metricsResponse.json();
         assert.strictEqual(metricsResponse.status, 404, 'Metrics should be hidden by default in production mode');
         assert.strictEqual(metrics.error, 'Not found');
+    }));
+
+    it('should allow explicit opt-in for stricter HSTS directives', async () => withTemporaryEnv({
+        NODE_ENV: 'production',
+        HSTS_MAX_AGE_SECONDS: '31536000',
+        HSTS_INCLUDE_SUBDOMAINS: '1',
+        HSTS_PRELOAD: '1'
+    }, async () => {
+        const response = await fetch(`${BASE_URL}/api/health`);
+        assert.strictEqual(response.headers.get('strict-transport-security'), 'max-age=31536000; includeSubDomains; preload');
+    }));
+
+    it('should reject queries above the configured maximum length', async () => withTemporaryEnv({
+        MAX_QUERY_LENGTH: '8'
+    }, async () => {
+        const response = await fetch(`${BASE_URL}/api/search`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: 'this query is too long' })
+        });
+        const body = await response.json();
+
+        assert.strictEqual(response.status, 400);
+        assert.strictEqual(body.error, 'query cannot exceed 8 characters');
+    }));
+
+    it('should ignore benchmark cache-bypass headers in production unless explicitly enabled', async () => withTemporaryEnv({
+        NODE_ENV: 'production',
+        EXPOSE_RUNTIME_METRICS: '1',
+        ENABLE_BENCHMARK_BYPASS: null
+    }, async () => {
+        const query = `benchmark bypass ${Date.now()} ${Math.random()}`;
+        const before = await fetchMetrics();
+        const beforeHybridMetrics = before.metrics.caches.ranked_results.by_mode.hybrid || {};
+        const beforeHits = beforeHybridMetrics.hits || 0;
+        const beforeBypasses = beforeHybridMetrics.bypasses || 0;
+
+        const first = await fetch(`${BASE_URL}/api/search/hybrid`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query })
+        });
+        const second = await fetch(`${BASE_URL}/api/search/hybrid`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-benchmark-bypass-cache': '1'
+            },
+            body: JSON.stringify({ query })
+        });
+        const after = await fetchMetrics();
+        const afterHybridMetrics = after.metrics.caches.ranked_results.by_mode.hybrid || {};
+
+        assert.strictEqual(first.status, 200);
+        assert.strictEqual(second.status, 200);
+        assert.strictEqual(afterHybridMetrics.bypasses || 0, beforeBypasses, 'Production should ignore benchmark bypass headers by default');
+        assert.ok((afterHybridMetrics.hits || 0) >= beforeHits + 1, 'Second request should use the ranked-result cache');
     }));
 
     it('should apply lightweight rate limiting to search endpoints in production mode', async () => withTemporaryEnv({

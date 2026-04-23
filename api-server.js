@@ -16,6 +16,8 @@ const DEFAULT_PORT = process.env.PORT || 3000;
 const QUIET_LOGS = process.env.QUIET_LOGS === '1';
 const DEFAULT_EMBEDDINGS_FILE = 'embeddings-local.json';
 const DEFAULT_EMBEDDING_MODEL_ID = 'Xenova/all-MiniLM-L6-v2';
+const DEFAULT_MAX_QUERY_LENGTH = 500;
+const DEFAULT_HSTS_MAX_AGE_SECONDS = 86400;
 const SEARCH_RATE_LIMIT_PATHS = new Set([
     '/api/search',
     '/api/search/keyword',
@@ -76,6 +78,37 @@ function isRateLimitingEnabled() {
     return isProduction() || process.env.ENABLE_RATE_LIMIT === '1';
 }
 
+function isBenchmarkBypassAllowed() {
+    return !isProduction() || process.env.ENABLE_BENCHMARK_BYPASS === '1';
+}
+
+function shouldBypassBenchmarkCache(req, headerName) {
+    return isBenchmarkBypassAllowed() && req.get(headerName) === '1';
+}
+
+function getMaxQueryLength() {
+    const configured = Number(process.env.MAX_QUERY_LENGTH);
+    return Number.isInteger(configured) && configured > 0 ? configured : DEFAULT_MAX_QUERY_LENGTH;
+}
+
+function getHstsMaxAgeSeconds() {
+    const configured = Number(process.env.HSTS_MAX_AGE_SECONDS);
+    return Number.isInteger(configured) && configured >= 0 ? configured : DEFAULT_HSTS_MAX_AGE_SECONDS;
+}
+
+function buildHstsHeader() {
+    if (!isProduction() || process.env.ENABLE_HSTS === '0') return null;
+
+    const parts = [`max-age=${getHstsMaxAgeSeconds()}`];
+    if (process.env.HSTS_INCLUDE_SUBDOMAINS === '1') {
+        parts.push('includeSubDomains');
+    }
+    if (process.env.HSTS_PRELOAD === '1') {
+        parts.push('preload');
+    }
+    return parts.join('; ');
+}
+
 function sanitizeEmbeddingFileLabel(filePath) {
     if (!filePath) return null;
     return path.basename(filePath);
@@ -90,8 +123,9 @@ function securityHeadersMiddleware(req, res, next) {
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
 
-    if (isProduction()) {
-        res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    const hstsHeader = buildHstsHeader();
+    if (hstsHeader) {
+        res.setHeader('Strict-Transport-Security', hstsHeader);
     }
 
     next();
@@ -693,6 +727,19 @@ function shouldLogServerError(error) {
     return (error.statusCode || 500) >= 500;
 }
 
+function getSearchQueryValidationError(query) {
+    if (!query || typeof query !== 'string') {
+        return createHttpError(400, { error: 'Query is required' });
+    }
+
+    const maxQueryLength = getMaxQueryLength();
+    if (query.length > maxQueryLength) {
+        return createHttpError(400, { error: `query cannot exceed ${maxQueryLength} characters` });
+    }
+
+    return null;
+}
+
 function recordSuccessfulRequest(endpoint, startTimeMs, response) {
     recordRequestMetrics({
         endpoint,
@@ -1230,12 +1277,13 @@ app.get('/api/metrics', (req, res) => {
 app.post('/api/search', async (req, res) => {
     const startTimeMs = Date.now();
     const { query, limit, offset } = req.body;
-    const bypassResultCache = req.get('x-benchmark-bypass-cache') === '1';
-    const bypassEmbeddingCache = req.get('x-benchmark-bypass-embedding-cache') === '1';
+    const bypassResultCache = shouldBypassBenchmarkCache(req, 'x-benchmark-bypass-cache');
+    const bypassEmbeddingCache = shouldBypassBenchmarkCache(req, 'x-benchmark-bypass-embedding-cache');
 
-    if (!query || typeof query !== 'string') {
-        recordFailedRequest('search_auto', startTimeMs, createHttpError(400, { error: 'Query is required' }));
-        return res.status(400).json({ error: 'Query is required' });
+    const validationError = getSearchQueryValidationError(query);
+    if (validationError) {
+        recordFailedRequest('search_auto', startTimeMs, validationError);
+        return res.status(validationError.statusCode).json({ error: validationError.error });
     }
 
     if (!CHENGYU_DATABASE || CHENGYU_DATABASE.length === 0) {
@@ -1268,11 +1316,12 @@ app.post('/api/search', async (req, res) => {
 app.post('/api/search/keyword', async (req, res) => {
     const startTimeMs = Date.now();
     const { query, limit, offset } = req.body;
-    const bypassResultCache = req.get('x-benchmark-bypass-cache') === '1';
+    const bypassResultCache = shouldBypassBenchmarkCache(req, 'x-benchmark-bypass-cache');
 
-    if (!query || typeof query !== 'string') {
-        recordFailedRequest('search_keyword', startTimeMs, createHttpError(400, { error: 'Query is required' }));
-        return res.status(400).json({ error: 'Query is required' });
+    const validationError = getSearchQueryValidationError(query);
+    if (validationError) {
+        recordFailedRequest('search_keyword', startTimeMs, validationError);
+        return res.status(validationError.statusCode).json({ error: validationError.error });
     }
 
     if (!CHENGYU_DATABASE || CHENGYU_DATABASE.length === 0) {
@@ -1305,12 +1354,13 @@ app.post('/api/search/keyword', async (req, res) => {
 app.post('/api/search/semantic', async (req, res) => {
     const startTimeMs = Date.now();
     const { query, limit, offset } = req.body;
-    const bypassResultCache = req.get('x-benchmark-bypass-cache') === '1';
-    const bypassEmbeddingCache = req.get('x-benchmark-bypass-embedding-cache') === '1';
+    const bypassResultCache = shouldBypassBenchmarkCache(req, 'x-benchmark-bypass-cache');
+    const bypassEmbeddingCache = shouldBypassBenchmarkCache(req, 'x-benchmark-bypass-embedding-cache');
 
-    if (!query || typeof query !== 'string') {
-        recordFailedRequest('search_semantic', startTimeMs, createHttpError(400, { error: 'Query is required' }));
-        return res.status(400).json({ error: 'Query is required' });
+    const validationError = getSearchQueryValidationError(query);
+    if (validationError) {
+        recordFailedRequest('search_semantic', startTimeMs, validationError);
+        return res.status(validationError.statusCode).json({ error: validationError.error });
     }
 
     logInfo(`🧠 Semantic search: "${query}"`);
@@ -1340,12 +1390,13 @@ app.post('/api/search/semantic', async (req, res) => {
 app.post('/api/search/hybrid', async (req, res) => {
     const startTimeMs = Date.now();
     const { query, limit, offset } = req.body;
-    const bypassResultCache = req.get('x-benchmark-bypass-cache') === '1';
-    const bypassEmbeddingCache = req.get('x-benchmark-bypass-embedding-cache') === '1';
+    const bypassResultCache = shouldBypassBenchmarkCache(req, 'x-benchmark-bypass-cache');
+    const bypassEmbeddingCache = shouldBypassBenchmarkCache(req, 'x-benchmark-bypass-embedding-cache');
 
-    if (!query || typeof query !== 'string') {
-        recordFailedRequest('search_hybrid', startTimeMs, createHttpError(400, { error: 'Query is required' }));
-        return res.status(400).json({ error: 'Query is required' });
+    const validationError = getSearchQueryValidationError(query);
+    if (validationError) {
+        recordFailedRequest('search_hybrid', startTimeMs, validationError);
+        return res.status(validationError.statusCode).json({ error: validationError.error });
     }
 
     try {

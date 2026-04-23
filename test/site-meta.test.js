@@ -32,6 +32,14 @@ describe('site metadata and SEO assets', () => {
     assert.match(sitemap, /<loc>https:\/\/findchengyu\.com\/<\/loc>/);
   });
 
+  it('ships security.txt with private vulnerability reporting guidance', () => {
+    const securityTxt = readRepoFile('public/.well-known/security.txt');
+
+    assert.match(securityTxt, /^Contact: https:\/\/github\.com\/manthedan\/chengyu-search\/security\/advisories\/new$/m);
+    assert.match(securityTxt, /^Canonical: https:\/\/findchengyu\.com\/\.well-known\/security\.txt$/m);
+    assert.match(securityTxt, /^Expires: /m);
+  });
+
   it('includes the social preview and icon assets', () => {
     const socialCardPath = path.join(REPO_ROOT, 'public', 'social-card.png');
     const appleTouchIconPath = path.join(REPO_ROOT, 'public', 'apple-touch-icon.png');
