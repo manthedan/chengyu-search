@@ -82,6 +82,31 @@ function isBenchmarkBypassAllowed() {
     return !isProduction() || process.env.ENABLE_BENCHMARK_BYPASS === '1';
 }
 
+function getTrustProxySetting() {
+    const configured = String(process.env.TRUST_PROXY || '').trim();
+    if (!configured || configured === '0' || configured.toLowerCase() === 'false') return false;
+    if (configured === '1' || configured.toLowerCase() === 'true') return 1;
+
+    const hopCount = Number(configured);
+    if (Number.isInteger(hopCount) && hopCount > 0) return hopCount;
+
+    return configured;
+}
+
+const TRUST_PROXY_SETTING = getTrustProxySetting();
+
+function isTrustedProxyEnabled() {
+    return Boolean(TRUST_PROXY_SETTING);
+}
+
+function getRateLimitClientId(req) {
+    if (isTrustedProxyEnabled()) {
+        return req.ip || req.socket?.remoteAddress || 'unknown';
+    }
+
+    return req.socket?.remoteAddress || 'unknown';
+}
+
 function shouldBypassBenchmarkCache(req, headerName) {
     return isBenchmarkBypassAllowed() && req.get(headerName) === '1';
 }
@@ -115,7 +140,7 @@ function sanitizeEmbeddingFileLabel(filePath) {
 }
 
 app.disable('x-powered-by');
-app.set('trust proxy', true);
+app.set('trust proxy', TRUST_PROXY_SETTING);
 
 function securityHeadersMiddleware(req, res, next) {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -304,7 +329,7 @@ function applySearchRateLimit(req, res, next) {
     const windowMs = getRateLimitWindowMs();
     const maxRequests = getRateLimitMaxRequests();
     const now = Date.now();
-    const clientId = req.ip || req.socket?.remoteAddress || 'unknown';
+    const clientId = getRateLimitClientId(req);
     const key = `${req.path}::${clientId}`;
     const endpoint = getEndpointMetricKeyForPath(req.path);
 

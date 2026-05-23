@@ -513,6 +513,34 @@ describe('Security Hardening', () => {
         assert.ok((afterHybridMetrics.hits || 0) >= beforeHits + 1, 'Second request should use the ranked-result cache');
     }));
 
+    it('should not let rotated X-Forwarded-For values bypass rate limiting by default', async () => withTemporaryEnv({
+        NODE_ENV: 'production',
+        RATE_LIMIT_MAX_REQUESTS: '2',
+        RATE_LIMIT_WINDOW_MS: '150',
+        TRUST_PROXY: null
+    }, async () => {
+        const makeRequest = index => fetch(`${BASE_URL}/api/search/keyword`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Forwarded-For': `203.0.113.${index}`
+            },
+            body: JSON.stringify({ query: '画蛇添足' })
+        });
+
+        const first = await makeRequest(1);
+        const second = await makeRequest(2);
+        const third = await makeRequest(3);
+        const thirdBody = await third.json();
+
+        assert.strictEqual(first.status, 200, 'First request should pass under the rate limit');
+        assert.strictEqual(second.status, 200, 'Second request should pass under the rate limit');
+        assert.strictEqual(third.status, 429, 'Third request should be rate limited even with a rotated X-Forwarded-For header');
+        assert.strictEqual(thirdBody.error, 'Too many requests. Please try again later.');
+
+        await new Promise(resolve => setTimeout(resolve, 180));
+    }));
+
     it('should apply lightweight rate limiting to search endpoints in production mode', async () => withTemporaryEnv({
         NODE_ENV: 'production',
         RATE_LIMIT_MAX_REQUESTS: '2',

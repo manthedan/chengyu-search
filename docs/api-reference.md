@@ -617,6 +617,7 @@ The server currently:
 
 - allows all origins in development
 - requires `CORS_ALLOWLIST` matches in production when browser requests send an `Origin`
+- does not trust `X-Forwarded-For` by default; rate limiting uses the socket peer address unless `TRUST_PROXY` is explicitly configured
 - parses JSON bodies with `express.json()` using `JSON_BODY_LIMIT` or a `16kb` default
 - serves the static frontend from `public/`
 
@@ -641,6 +642,11 @@ That means the same server handles both:
 - `ENABLE_RATE_LIMIT`
 - `RATE_LIMIT_WINDOW_MS`
 - `RATE_LIMIT_MAX_REQUESTS`
+- `TRUST_PROXY`
+  - unset / `0` / `false`: do not trust forwarded IP headers
+  - `1` / `true`: trust one proxy hop
+  - positive integer: trust that many proxy hops
+  - other Express-compatible values such as named subnets or CIDR lists are passed through
 - `EXPOSE_RUNTIME_METRICS`
 - `EXPOSE_VERBOSE_HEALTH`
 - `ENABLE_BENCHMARK_BYPASS`
