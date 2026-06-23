@@ -1,3 +1,5 @@
+/** @ts-check */
+
 const DEFAULT_PORT = process.env.PORT || 3000;
 const QUIET_LOGS = process.env.QUIET_LOGS === '1';
 const DEFAULT_EMBEDDINGS_FILE = 'embeddings-local.bin';
@@ -18,24 +20,32 @@ const EMBEDDING_MODEL_DIMENSIONS = {
 const DEFAULT_MAX_QUERY_LENGTH = 500;
 const DEFAULT_HSTS_MAX_AGE_SECONDS = 86400;
 
+/**
+ * @param {...unknown} args
+ * @returns {void}
+ */
 function logInfo(...args) {
     if (!QUIET_LOGS) {
         console.log(...args);
     }
 }
 
+/** @returns {boolean} */
 function isProduction() {
     return process.env.NODE_ENV === 'production';
 }
 
+/** @returns {boolean} */
 function isRuntimeMetricsExposed() {
     return !isProduction() || process.env.EXPOSE_RUNTIME_METRICS === '1';
 }
 
+/** @returns {boolean} */
 function isVerboseHealthExposed() {
     return !isProduction() || process.env.EXPOSE_VERBOSE_HEALTH === '1';
 }
 
+/** @returns {Set<string>} */
 function getConfiguredCorsAllowlist() {
     return new Set(
         String(process.env.CORS_ALLOWLIST || '')
@@ -45,6 +55,10 @@ function getConfiguredCorsAllowlist() {
     );
 }
 
+/**
+ * @param {string | undefined} origin
+ * @returns {boolean}
+ */
 function isAllowedCorsOrigin(origin) {
     if (!origin) return true;
     if (!isProduction()) return true;
@@ -53,28 +67,34 @@ function isAllowedCorsOrigin(origin) {
     return allowlist.size > 0 && allowlist.has(origin);
 }
 
+/** @returns {string} */
 function getJsonBodyLimit() {
     return process.env.JSON_BODY_LIMIT || '16kb';
 }
 
+/** @returns {number} */
 function getRateLimitWindowMs() {
     const configured = Number(process.env.RATE_LIMIT_WINDOW_MS);
     return Number.isFinite(configured) && configured > 0 ? configured : 60000;
 }
 
+/** @returns {number} */
 function getRateLimitMaxRequests() {
     const configured = Number(process.env.RATE_LIMIT_MAX_REQUESTS);
     return Number.isFinite(configured) && configured > 0 ? configured : 120;
 }
 
+/** @returns {boolean} */
 function isRateLimitingEnabled() {
     return isProduction() || process.env.ENABLE_RATE_LIMIT === '1';
 }
 
+/** @returns {boolean} */
 function isBenchmarkBypassAllowed() {
     return !isProduction() || process.env.ENABLE_BENCHMARK_BYPASS === '1';
 }
 
+/** @returns {boolean | number | string} */
 function getTrustProxySetting() {
     const configured = String(process.env.TRUST_PROXY || '').trim();
     if (!configured || configured === '0' || configured.toLowerCase() === 'false') return false;
@@ -86,16 +106,19 @@ function getTrustProxySetting() {
     return configured;
 }
 
+/** @returns {number} */
 function getMaxQueryLength() {
     const configured = Number(process.env.MAX_QUERY_LENGTH);
     return Number.isInteger(configured) && configured > 0 ? configured : DEFAULT_MAX_QUERY_LENGTH;
 }
 
+/** @returns {number} */
 function getHstsMaxAgeSeconds() {
     const configured = Number(process.env.HSTS_MAX_AGE_SECONDS);
     return Number.isInteger(configured) && configured >= 0 ? configured : DEFAULT_HSTS_MAX_AGE_SECONDS;
 }
 
+/** @returns {string | null} */
 function buildHstsHeader() {
     if (!isProduction() || process.env.ENABLE_HSTS === '0') return null;
 
@@ -109,6 +132,11 @@ function buildHstsHeader() {
     return parts.join('; ');
 }
 
+/**
+ * @param {string} name
+ * @param {number} defaultValue
+ * @returns {number}
+ */
 function getPositiveIntegerEnv(name, defaultValue) {
     const value = Number.parseInt(process.env[name] || '', 10);
     return Number.isInteger(value) && value > 0 ? value : defaultValue;

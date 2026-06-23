@@ -29,13 +29,17 @@ function loadFrontendApp(options = {}) {
     const storageSourcePath = path.join(__dirname, '..', 'public', 'frontend-storage.js');
     const apiSourcePath = path.join(__dirname, '..', 'public', 'frontend-api.js');
     const ankiSourcePath = path.join(__dirname, '..', 'public', 'frontend-anki.js');
+    const bookmarksSourcePath = path.join(__dirname, '..', 'public', 'frontend-bookmarks.js');
+    const speechSourcePath = path.join(__dirname, '..', 'public', 'frontend-speech.js');
     const sourcePath = path.join(__dirname, '..', 'public', 'app.js');
     const utilsSource = fs.readFileSync(utilsSourcePath, 'utf8');
     const storageSource = fs.readFileSync(storageSourcePath, 'utf8');
     const apiSource = fs.readFileSync(apiSourcePath, 'utf8');
     const ankiSource = fs.readFileSync(ankiSourcePath, 'utf8');
+    const bookmarksSource = fs.readFileSync(bookmarksSourcePath, 'utf8');
+    const speechSource = fs.readFileSync(speechSourcePath, 'utf8');
     const source = fs.readFileSync(sourcePath, 'utf8');
-    const augmentedSource = `${utilsSource}\n${storageSource}\n${apiSource}\n${ankiSource}\n${source}
+    const augmentedSource = `${utilsSource}\n${storageSource}\n${apiSource}\n${ankiSource}\n${bookmarksSource}\n${speechSource}\n${source}
 ;globalThis.__APP_TEST_HOOKS__ = {
     bind,
     render,

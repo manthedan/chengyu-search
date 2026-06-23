@@ -77,6 +77,17 @@ const ANKI = FRONTEND_ANKI_FACTORY.createAnkiExporter({
 const buildAnkiFieldColumns = ANKI.buildAnkiFieldColumns;
 const buildAnkiExportContent = ANKI.buildAnkiExportContent;
 
+const FRONTEND_BOOKMARKS_FACTORY = window.ChengyuFrontendBookmarks;
+if (!FRONTEND_BOOKMARKS_FACTORY) {
+    throw new Error('frontend-bookmarks.js must load before app.js');
+}
+const BOOKMARKS = FRONTEND_BOOKMARKS_FACTORY.createBookmarkHelpers({
+    normalizeBookmarkRecord,
+    getResultPublicId,
+    storage: STORAGE,
+    apiClient: API_CLIENT
+});
+
 const INITIAL_BOOKMARKS = STORAGE.loadBookmarks();
 
 const STATE = {
@@ -95,8 +106,15 @@ const STATE = {
     search: createEmptySearchState()
 };
 
-let activeUtterance = null;
-let voicesReadyPromise = null;
+const FRONTEND_SPEECH_FACTORY = window.ChengyuFrontendSpeech;
+if (!FRONTEND_SPEECH_FACTORY) {
+    throw new Error('frontend-speech.js must load before app.js');
+}
+const SPEECH = FRONTEND_SPEECH_FACTORY.createSpeechController({
+    state: STATE,
+    getResultPublicId,
+    render
+});
 
 // ---------------------------------------------------------------------------
 // Dictionary tooltip system
@@ -284,7 +302,7 @@ function handleDictionaryKeydown(event) {
 // ---------------------------------------------------------------------------
 
 function persistBookmarks() {
-    STORAGE.persistBookmarks(STATE.bookmarks);
+    BOOKMARKS.persistBookmarks(STATE.bookmarks);
 }
 
 function getExampleDisplayText(text, result) {
@@ -394,179 +412,24 @@ function getVisibleTags(result) {
 }
 
 function isBookmarked(result) {
-    return Boolean(STATE.bookmarks[getResultPublicId(result)] || STATE.bookmarks[result.chengyu]);
+    return BOOKMARKS.isBookmarked(STATE.bookmarks, result);
 }
 
 function saveBookmark(result) {
-    STATE.bookmarks[getResultPublicId(result)] = normalizeBookmarkRecord(result, result.chengyu);
-    STATE.savedOpen = true;
-    persistBookmarks();
+    BOOKMARKS.saveBookmark(STATE, result);
 }
 
 function removeBookmark(result) {
-    delete STATE.bookmarks[getResultPublicId(result)];
-    if (result.id && result.chengyu) {
-        delete STATE.bookmarks[result.chengyu];
-    }
-    if (Object.keys(STATE.bookmarks).length === 0) {
-        STATE.savedOpen = false;
-    }
-    persistBookmarks();
+    BOOKMARKS.removeBookmark(STATE, result);
 }
 
 function toggleBookmark(result) {
-    if (isBookmarked(result)) {
-        removeBookmark(result);
-    } else {
-        saveBookmark(result);
-    }
+    BOOKMARKS.toggleBookmark(STATE, result);
     render();
 }
 
-function normalizeSpeechLang(lang) {
-    return String(lang || '').toLowerCase().replace(/_/g, '-');
-}
-
-function scoreChineseVoice(voice) {
-    const lang = normalizeSpeechLang(voice.lang);
-    const name = String(voice.name || '').toLowerCase();
-
-    let score = 0;
-    if (lang === 'zh-cn' || lang.startsWith('cmn-cn') || lang.startsWith('zh-hans')) {
-        score += 100;
-    } else if (lang.startsWith('zh') || lang.startsWith('cmn')) {
-        score += 70;
-    } else {
-        return -Infinity;
-    }
-
-    if (name.includes('mandarin') || name.includes('普通话')) score += 20;
-    if (name.includes('ting-ting') || name.includes('tingting')) score += 10;
-    if (name.includes('mei-jia') || name.includes('meijia')) score += 8;
-    if (name.includes('sin-ji') || name.includes('sinji')) score += 5;
-    if (name.includes('google')) score += 4;
-    if (voice.localService) score += 3;
-    if (voice.default) score += 2;
-    if (lang.startsWith('zh-hk') || lang.startsWith('zh-tw')) score -= 5;
-
-    return score;
-}
-
-function getSpeechVoices() {
-    if (!('speechSynthesis' in window)) {
-        return Promise.resolve([]);
-    }
-
-    const current = window.speechSynthesis.getVoices();
-    if (current.length > 0) {
-        return Promise.resolve(current);
-    }
-
-    if (!voicesReadyPromise) {
-        voicesReadyPromise = new Promise(resolve => {
-            let settled = false;
-
-            const finish = () => {
-                if (settled) return;
-                settled = true;
-                resolve(window.speechSynthesis.getVoices());
-            };
-
-            const onVoicesChanged = () => {
-                window.speechSynthesis.removeEventListener?.('voiceschanged', onVoicesChanged);
-                finish();
-            };
-
-            window.speechSynthesis.addEventListener?.('voiceschanged', onVoicesChanged);
-            setTimeout(() => {
-                window.speechSynthesis.removeEventListener?.('voiceschanged', onVoicesChanged);
-                finish();
-            }, 1000);
-        });
-    }
-
-    return voicesReadyPromise;
-}
-
-async function pickBestChineseVoice() {
-    const voices = await getSpeechVoices();
-    return voices
-        .map(voice => ({ voice, score: scoreChineseVoice(voice) }))
-        .filter(entry => entry.score > -Infinity)
-        .sort((a, b) => b.score - a.score)[0]?.voice || null;
-}
-
-function clearSpeakingState({ rerender = true } = {}) {
-    if (!STATE.speakingChengyu) return;
-    STATE.speakingChengyu = null;
-    if (rerender) render();
-}
-
 async function pronounceResult(result) {
-    if (!('speechSynthesis' in window)) {
-        STATE.error = 'Browser speech synthesis is not available on this device.';
-        render();
-        return;
-    }
-
-    const resultId = getResultPublicId(result);
-    if (STATE.speakingChengyu === resultId) {
-        window.speechSynthesis.cancel();
-        activeUtterance = null;
-        clearSpeakingState();
-        return;
-    }
-
-    try {
-        const voice = await pickBestChineseVoice();
-        if (!voice) {
-            STATE.error = 'No suitable Chinese voice is available in this browser. Try a browser or system voice set with Mandarin support.';
-            render();
-            return;
-        }
-
-        STATE.error = null;
-        window.speechSynthesis.cancel();
-
-        const utterance = new SpeechSynthesisUtterance(result.chengyu);
-        activeUtterance = utterance;
-        utterance.voice = voice;
-        utterance.lang = voice.lang || 'zh-CN';
-        utterance.rate = 0.72;
-        utterance.pitch = 1;
-
-        utterance.onstart = () => {
-            STATE.speakingChengyu = resultId;
-            render();
-        };
-
-        utterance.onend = () => {
-            if (activeUtterance !== utterance) {
-                return;
-            }
-            activeUtterance = null;
-            clearSpeakingState();
-        };
-
-        utterance.onerror = error => {
-            console.error('Pronunciation failed:', error);
-            if (activeUtterance !== utterance) {
-                return;
-            }
-            activeUtterance = null;
-            clearSpeakingState({ rerender: false });
-            STATE.error = 'Unable to pronounce this idiom in the browser right now.';
-            render();
-        };
-
-        window.speechSynthesis.speak(utterance);
-    } catch (error) {
-        console.error('Pronunciation failed:', error);
-        activeUtterance = null;
-        clearSpeakingState({ rerender: false });
-        STATE.error = 'Unable to pronounce this idiom in the browser right now.';
-        render();
-    }
+    return SPEECH.pronounceResult(result);
 }
 
 function getDisplayHeadword(result) {
@@ -628,44 +491,11 @@ async function checkBackendHealth() {
 }
 
 function bookmarkNeedsRefresh(record) {
-    return !record?.id || !record?.simplified || !record?.traditional || !record?.example || !record?.formality || !Array.isArray(record?.tags) || record.tags.length === 0;
+    return BOOKMARKS.bookmarkNeedsRefresh(record);
 }
 
 async function refreshBookmarksIfNeeded() {
-    const staleEntries = Object.entries(STATE.bookmarks).filter(([, record]) => bookmarkNeedsRefresh(record));
-    if (!staleEntries.length) {
-        return false;
-    }
-
-    let changed = false;
-
-    await Promise.all(staleEntries.map(async ([key, record]) => {
-        try {
-            const refreshed = await API_CLIENT.fetchBookmarkSearchResult(record);
-            if (!refreshed) {
-                return;
-            }
-
-            const normalized = normalizeBookmarkRecord(refreshed, record.chengyu);
-            const newKey = normalized.id || key;
-            if (newKey !== key) {
-                delete STATE.bookmarks[key];
-            }
-            STATE.bookmarks[newKey] = {
-                ...record,
-                ...normalized
-            };
-            changed = true;
-        } catch (error) {
-            console.warn('Unable to refresh saved idiom metadata:', record.chengyu, error);
-        }
-    }));
-
-    if (changed) {
-        persistBookmarks();
-    }
-
-    return changed;
+    return BOOKMARKS.refreshBookmarksIfNeeded(STATE);
 }
 
 function updateSearchStateFromResponse(data, append = false) {
@@ -825,7 +655,7 @@ function renderSearchSection() {
 }
 
 function getBookmarkedResults() {
-    return Object.values(STATE.bookmarks).sort((a, b) => a.chengyu.localeCompare(b.chengyu, 'zh-Hans-CN'));
+    return BOOKMARKS.getBookmarkedResults(STATE.bookmarks);
 }
 
 function exportSavedAsAnki(button) {
@@ -1241,7 +1071,7 @@ function findResultByPublicId(resultId, chengyu) {
 
 function init() {
     render();
-    getSpeechVoices().catch(() => {});
+    SPEECH.getSpeechVoices().catch(() => {});
     checkBackendHealth();
     loadDictionaryData().then(() => {
         if (DICTIONARY.loaded) render();

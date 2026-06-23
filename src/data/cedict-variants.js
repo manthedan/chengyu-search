@@ -1,12 +1,38 @@
-const cedictIdioms = require('../../cedict-all-idioms.json');
+/** @ts-check */
 
+const cedictIdioms = /** @type {CedictEntry[]} */ (require('../../cedict-all-idioms.json'));
+
+/**
+ * @typedef {object} CedictEntry
+ * @property {string} traditional
+ * @property {string} simplified
+ * @property {string} pinyin
+ * @property {readonly string[]} [definitions]
+ * @typedef {object} CedictVariantIndices
+ * @property {Map<string, CedictEntry>} bySimplifiedAndPinyin
+ * @property {Map<string, CedictEntry>} bySimplified
+ * @typedef {object} TraditionalVariantMaps
+ * @property {Map<string, string>} idiomMap
+ * @property {Map<string, string>} charMap
+ */
+
+/** @type {CedictVariantIndices | null} */
 let variantIndicesCache = null;
+/** @type {TraditionalVariantMaps | null} */
 let traditionalVariantMapsCache = null;
 
+/**
+ * @param {string} text
+ * @returns {boolean}
+ */
 function containsChinese(text) {
   return /[\u4e00-\u9fff]/.test(text);
 }
 
+/**
+ * @param {unknown} value
+ * @returns {string}
+ */
 function normalizeCedictPinyinKey(value) {
   return String(value || '')
     .toLowerCase()
@@ -15,10 +41,16 @@ function normalizeCedictPinyinKey(value) {
     .trim();
 }
 
+/**
+ * @returns {CedictEntry[]}
+ */
 function getCedictIdioms() {
   return cedictIdioms;
 }
 
+/**
+ * @returns {CedictVariantIndices}
+ */
 function getCedictVariantIndices() {
   if (variantIndicesCache) return variantIndicesCache;
 
@@ -42,6 +74,9 @@ function getCedictVariantIndices() {
   return variantIndicesCache;
 }
 
+/**
+ * @returns {TraditionalVariantMaps}
+ */
 function getTraditionalVariantMaps() {
   if (traditionalVariantMapsCache) return traditionalVariantMapsCache;
 
@@ -61,7 +96,7 @@ function getTraditionalVariantMaps() {
 
     traditionalChars.forEach((traditionalChar, index) => {
       const simplifiedChar = simplifiedChars[index];
-      if (!containsChinese(traditionalChar) || !containsChinese(simplifiedChar) || traditionalChar === simplifiedChar) {
+      if (!simplifiedChar || !containsChinese(traditionalChar) || !containsChinese(simplifiedChar) || traditionalChar === simplifiedChar) {
         return;
       }
 
@@ -70,6 +105,7 @@ function getTraditionalVariantMaps() {
       }
 
       const simplifiedCounts = charCounts.get(traditionalChar);
+      if (!simplifiedCounts) return;
       simplifiedCounts.set(simplifiedChar, (simplifiedCounts.get(simplifiedChar) || 0) + 1);
     });
   });

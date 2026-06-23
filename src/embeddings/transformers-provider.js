@@ -1,8 +1,24 @@
+/** @ts-check */
+
+/**
+ * @typedef {(message: string, ...args: unknown[]) => void} LogFn
+ * @typedef {(text: string, options: { pooling: string, normalize: boolean }) => Promise<{ data: ArrayLike<number> | Iterable<number> }>} EmbeddingPipeline
+ * @typedef {{ get(key: string): number[] | undefined, set(key: string, value: number[]): unknown }} EmbeddingCache
+ * @typedef {(cacheType: 'embedding', outcome: 'hit' | 'miss' | 'bypass') => void} RecordCacheOutcome
+ */
+
+/**
+ * @param {object} options
+ * @param {string} options.modelId
+ * @param {LogFn} [options.logInfo]
+ * @param {LogFn} [options.logError]
+ * @returns {Promise<{ ok: true, pipeline: EmbeddingPipeline } | { ok: false, pipeline: null }>}
+ */
 async function initializeEmbeddingPipeline({ modelId, logInfo = () => {}, logError = console.error }) {
     logInfo(`🤖 Loading embedding model (${modelId})...`);
     try {
         const { pipeline } = await import('@xenova/transformers');
-        const embeddingPipeline = await pipeline('feature-extraction', modelId);
+        const embeddingPipeline = /** @type {EmbeddingPipeline} */ (await pipeline('feature-extraction', modelId));
         logInfo('✓ Embedding model ready');
         return {
             ok: true,
@@ -18,6 +34,19 @@ async function initializeEmbeddingPipeline({ modelId, logInfo = () => {}, logErr
     }
 }
 
+/**
+ * @param {object} options
+ * @param {string} options.query
+ * @param {EmbeddingPipeline | null} options.embeddingPipeline
+ * @param {string} options.pooling
+ * @param {boolean} options.normalize
+ * @param {EmbeddingCache} options.cache
+ * @param {(normalizedQuery: string) => string} options.createCacheKey
+ * @param {(query: string) => string} options.normalizeCacheKey
+ * @param {RecordCacheOutcome} options.recordCacheOutcome
+ * @param {boolean} [options.bypassCache]
+ * @returns {Promise<number[]>}
+ */
 async function generateQueryEmbedding({
     query,
     embeddingPipeline,

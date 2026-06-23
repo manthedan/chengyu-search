@@ -12,15 +12,22 @@
     "allowJs": true,
     "checkJs": true,
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*.ts",
     "src/shared/cache.js",
+    "src/data/cedict-variants.js",
     "src/data/chengyu-identity.js",
+    "src/data/corpus-loader.js",
     "src/embeddings/artifact-loader.js",
     "src/embeddings/embedding-binary.js",
     "src/embeddings/embedding-cache.js",
-    "src/embeddings/embedding-validation.js"
+    "src/embeddings/embedding-validation.js",
+    "src/embeddings/transformers-provider.js",
+    "src/search/config-loader.js",
+    "src/server/config.js",
+    "src/server/search-response.js"
   ]
 }
