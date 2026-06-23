@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node api-server.js",
     "dev": "nodemon api-server.js",
+    "check": "npm test && npm run benchmark:relevance -- --fail-on-errors --min-overall 0.45 --min-primary 0.30",
+    "smoke:prod": "node scripts/smoke-production.js",
     "test": "node --test test/*.test.js",
     "benchmark": "npm run benchmark:modes && npm run benchmark:latency",
     "benchmark:relevance": "node benchmark/relevance.js",
@@ -41,5 +43,18 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
+  },
+  "private": true,
+  "homepage": "https://findchengyu.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manthedan/chengyu-search.git"
+  },
+  "bugs": {
+    "url": "https://github.com/manthedan/chengyu-search/issues"
+  },
+  "engines": {
+    "node": ">=18",
+    "npm": ">=9"
   }
 }

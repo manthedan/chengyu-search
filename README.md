@@ -22,6 +22,7 @@ Highlights:
 
 - Search internals: `docs/search-architecture.md`
 - HTTP API reference: `docs/api-reference.md`
+- Engineering roadmap: `docs/engineering-roadmap.md`
 - Benchmark toolkit: `benchmark/README.md`
 - Contributor guide: `CONTRIBUTING.md`
 

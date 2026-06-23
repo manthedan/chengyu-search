@@ -20,10 +20,16 @@ npm install
 npm start
 ```
 
-Run tests with:
+Run the fast test suite with:
 
 ```bash
 npm test
+```
+
+Run the full local check gate with tests plus relevance benchmark thresholds:
+
+```bash
+npm run check
 ```
 
 ## If you change search behavior
@@ -44,9 +50,15 @@ If you change embeddings, search weights, or routing policy, include benchmark e
 ## Before opening a PR
 
 At minimum:
-- run `npm test`
+- run `npm run check`
 - update docs if API behavior or routing behavior changed
 - avoid committing large generated benchmark artifacts unless they are intentionally part of the change
+
+After a production deploy, run the smoke check:
+
+```bash
+npm run smoke:prod
+```
 
 ## Repo structure
 

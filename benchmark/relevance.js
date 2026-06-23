@@ -19,6 +19,9 @@ async function main() {
     const port = Number(args.port || (useExisting ? 3000 : 0));
     const primaryTypes = parseList(args.primary, DEFAULT_PRIMARY_TYPES);
     const includePerQuery = Boolean(args['include-per-query']);
+    const failOnErrors = Boolean(args['fail-on-errors']);
+    const minOverall = args['min-overall'] === undefined ? null : Number(args['min-overall']);
+    const minPrimary = args['min-primary'] === undefined ? null : Number(args['min-primary']);
 
     const { result, baseUrl } = await suppressConsoleLog(async () => {
         const serverHandle = await startBenchmarkServer({ useExisting, port });
@@ -48,6 +51,16 @@ async function main() {
     }
     if (outputPath) {
         console.error(`Saved artifact: ${outputPath}`);
+    }
+
+    if (failOnErrors && result.errors.length > 0) {
+        throw new Error(`Relevance benchmark reported ${result.errors.length} request errors`);
+    }
+    if (minOverall !== null && result.overall_avg_ndcg < minOverall) {
+        throw new Error(`Overall avg_ndcg ${result.overall_avg_ndcg.toFixed(6)} is below required ${minOverall}`);
+    }
+    if (minPrimary !== null && result.primary_avg_ndcg < minPrimary) {
+        throw new Error(`Primary avg_ndcg ${result.primary_avg_ndcg.toFixed(6)} is below required ${minPrimary}`);
     }
 }
 
