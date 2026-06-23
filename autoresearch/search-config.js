@@ -24,15 +24,11 @@ module.exports = {
   "englishKeys": [
     {
       "name": "meaning",
-      "weight": 0.38
+      "weight": 0.42
     },
     {
       "name": "literal",
-      "weight": 0.28
-    },
-    {
-      "name": "usage",
-      "weight": 0.14
+      "weight": 0.3
     },
     {
       "name": "example",
@@ -53,7 +49,6 @@ module.exports = {
   ],
   "semanticMeaningWeight": 0.33,
   "semanticLiteralWeight": 0.2,
-  "semanticUsageWeight": 0.12,
   "semanticExampleWeight": 0.08,
   "semanticTagWeight": 0.18,
   "literalOverlapWeight": 0.6,
@@ -70,9 +65,10 @@ module.exports = {
   "semanticTopK": 20,
   "embeddingWeight": 0.5,
   "tokenWeight": 0.5,
+  "tokenScoreScale": 3,
   "semanticWeight": 0.72,
   "keywordWeight": 0.28,
-  "bothBoost": 1.7,
+  "overlapBonus": 0.12,
   "pinyinFuzzyBoost": 1.15,
   "typeOverrides": {
     "thematic": {
@@ -80,9 +76,10 @@ module.exports = {
       "tokenWeight": 0.35,
       "semanticWeight": 0.85,
       "keywordWeight": 0.15,
+      "tokenScoreScale": 3,
       "semanticTagWeight": 0.45,
       "semanticConceptOverlapWeight": 0.5,
-      "bothBoost": 2
+      "overlapBonus": 0.16
     },
     "literal": {
       "embeddingWeight": 0.35,
@@ -91,8 +88,8 @@ module.exports = {
       "literalPhraseMatchBoost": 1
     },
     "english_meaning": {
-      "embeddingWeight": 0.8,
-      "tokenWeight": 0.2,
+      "embeddingWeight": 0.6,
+      "tokenWeight": 0.4,
       "semanticWeight": 0.72,
       "keywordWeight": 0.28
     }

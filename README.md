@@ -34,7 +34,7 @@ Highlights:
 ### Search stack
 - **Keyword retrieval**: Fuse.js
 - **Semantic reranking / query embeddings**: `@xenova/transformers`
-- **Local checked-in idiom embeddings**: `embeddings-local.json`
+- **Local checked-in idiom embeddings**: compact `embeddings-local.bin` artifact (`embeddings-local.json` remains as a readable source/fallback)
 
 ## Local Development
 
@@ -82,7 +82,7 @@ This repository has a split license / attribution model:
 - **Code and project-authored docs**: MIT — see `LICENSE`
 - **Chengyu data and derived corpus artifacts**: CC BY-SA 4.0 / CC-CEDICT attribution — see `DATA_LICENSE.md` and `NOTICE.md`
 
-In practice, files like `chengyuData.js` and `embeddings-local.json` should be treated as data-derived artifacts, not MIT-only source code.
+In practice, files like `chengyuData.js`, `embeddings-local.bin`, and `embeddings-local.json` should be treated as data-derived artifacts, not MIT-only source code.
 
 ---
 

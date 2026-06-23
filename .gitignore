@@ -17,7 +17,6 @@ retrieve-batch-results.js
 retry-failed-entries.js
 debug-failures.js
 generate-embeddings.js
-generate-embeddings-local.js
 !benchmark/generate-embeddings.js
 embeddings-local.js
 search-local-embeddings.js

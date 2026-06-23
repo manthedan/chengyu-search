@@ -1,5 +1,5 @@
 {
   "semanticWeight": 0.85,
   "keywordWeight": 0.15,
-  "bothBoost": 3
+  "overlapBonus": 0.16
 }

@@ -37,6 +37,7 @@ function loadFrontendApp(options = {}) {
     renderFooter,
     renderResultCard,
     getDisplayHeadword,
+    findResultByPublicId,
     buildCopyPayload,
     copyResult,
     buildAnkiFieldColumns,
@@ -178,13 +179,13 @@ describe('frontend script toggle', () => {
 
         hooks.setScriptMode('simplified');
         const simplifiedMarkup = hooks.renderSearchSection();
-        assert.match(simplifiedMarkup, /多此一举/);
-        assert.doesNotMatch(simplifiedMarkup, /多此一舉/);
+        assert.match(simplifiedMarkup, /画蛇添足/);
+        assert.doesNotMatch(simplifiedMarkup, /畫蛇添足/);
 
         hooks.setScriptMode('traditional');
         const traditionalMarkup = hooks.renderSearchSection();
-        assert.match(traditionalMarkup, /多此一舉/);
-        assert.doesNotMatch(traditionalMarkup, /多此一举/);
+        assert.match(traditionalMarkup, /畫蛇添足/);
+        assert.doesNotMatch(traditionalMarkup, /画蛇添足/);
     });
 
     it('renders result headwords and visible idiom highlights in the selected script', () => {
@@ -196,7 +197,6 @@ describe('frontend script toggle', () => {
             pinyin: 'hua4 she2 tian1 zu2',
             literal: 'Draw a snake, add legs.',
             meaning: 'To ruin the effect by adding something superfluous.',
-            usage: 'Usually critical of unnecessary additions.',
             example: '这已经够好了，别再画蛇添足了。（This is already good enough—do not overdo it.）',
             tags: ['warning'],
             formality: 'formal'
@@ -238,6 +238,45 @@ describe('frontend script toggle', () => {
         assert.strictEqual(clipboardWrites.at(-1), '畫蛇添足');
     });
 
+    it('renders and resolves saved-result actions by stable public id', () => {
+        const { hooks } = loadFrontendApp();
+        const first = {
+            id: 'chengyu_first',
+            chengyu: '难兄难弟',
+            simplified: '难兄难弟',
+            traditional: '難兄難弟',
+            pinyin: 'nan2 xiong1 nan2 di4',
+            literal: 'difficult brother difficult brother',
+            meaning: 'one is just as bad as the other',
+            tags: [],
+            formality: 'formal'
+        };
+        const second = {
+            id: 'chengyu_second',
+            chengyu: '难兄难弟',
+            simplified: '难兄难弟',
+            traditional: '難兄難弟',
+            pinyin: 'nan4 xiong1 nan4 di4',
+            literal: 'difficult brother difficult younger brother',
+            meaning: 'fellow sufferers',
+            tags: [],
+            formality: 'formal'
+        };
+
+        hooks.setResults([first]);
+        hooks.setBookmarks({ [second.id]: second });
+        hooks.setSavedOpen(true);
+
+        const savedMarkup = hooks.renderSavedSection();
+        assert.match(savedMarkup, /data-result-id="chengyu_second"/);
+
+        const resultMarkup = hooks.renderResultCard(first, 0);
+        assert.match(resultMarkup, /data-result-id="chengyu_first"/);
+
+        assert.strictEqual(hooks.findResultByPublicId('chengyu_second', '难兄难弟').pinyin, 'nan4 xiong1 nan4 di4');
+        assert.strictEqual(hooks.findResultByPublicId('', '难兄难弟').pinyin, 'nan2 xiong1 nan2 di4');
+    });
+
     it('refreshes older saved bookmarks so script toggling works for existing local saves', async () => {
         const oldBookmark = {
             '画蛇添足': {
@@ -255,7 +294,6 @@ describe('frontend script toggle', () => {
             pinyin: 'hua4 she2 tian1 zu2',
             literal: 'Draw a snake, add legs.',
             meaning: 'To ruin the effect by adding something superfluous.',
-            usage: 'Usually critical of unnecessary additions.',
             example: '这已经够好了，别再画蛇添足了。（This is already good enough—do not overdo it.）',
             tags: ['warning'],
             formality: 'formal'
@@ -297,7 +335,7 @@ describe('frontend script toggle', () => {
         assert.match(savedMarkup, /畫蛇添足/);
     });
 
-    it('keeps Anki export split into 11 separate columns', () => {
+    it('keeps Anki export split into 10 separate columns', () => {
         const { hooks } = loadFrontendApp();
         const result = {
             chengyu: '一丁不识',
@@ -306,7 +344,6 @@ describe('frontend script toggle', () => {
             pinyin: 'yi1 ding1 bu4 shi2',
             literal: 'Not know a single character.',
             meaning: 'Illiterate; unable to read.',
-            usage: 'Used to describe complete illiteracy.',
             example: '他小时候家里穷，一丁不识。（His family was poor when he was young, so he was illiterate.）',
             tags: ['education', 'ability'],
             formality: 'formal'
@@ -314,7 +351,7 @@ describe('frontend script toggle', () => {
 
         hooks.setScriptMode('traditional');
         const columns = hooks.buildAnkiFieldColumns(result);
-        assert.strictEqual(columns.length, 11);
+        assert.strictEqual(columns.length, 10);
         assert.strictEqual(columns[0], '一丁不識');
         assert.strictEqual(columns[1], '一丁不识');
         assert.strictEqual(columns[2], '一丁不識');
@@ -322,7 +359,7 @@ describe('frontend script toggle', () => {
         const lines = hooks.buildAnkiExportContent([result]).split('\n');
         assert.strictEqual(lines[0], '#separator:tab');
         assert.strictEqual(lines[1], '#html:true');
-        assert.strictEqual(lines[2].split('\t').length, 11);
+        assert.strictEqual(lines[2].split('\t').length, 10);
     });
 
     it('does not render an idiom-of-the-day section on the landing page', () => {

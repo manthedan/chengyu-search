@@ -31,7 +31,7 @@ npm run benchmark:embeddings -- --variants current,minilm:english-dense,bge-smal
 
 The bakeoff is intentionally non-destructive:
 - generated files go under `embeddings/variants/`
-- the current `embeddings-local.json` baseline is left untouched
+- the current compact `embeddings-local.bin` baseline is left untouched
 - the server is configured per run with `EMBEDDINGS_FILE` and `EMBEDDING_MODEL_ID`
 - search-weight sweeps can also inject `SEARCH_CONFIG_OVERRIDE_JSON` without editing checked-in config
 - results are ranked primarily by **holdout auto semantic-routed NDCG**

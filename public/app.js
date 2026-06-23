@@ -11,32 +11,32 @@ const EXAMPLE_QUERIES = [
     {
         query: 'adding something unnecessary and ruining it',
         label: 'unnecessary addition',
-        simplified: '多此一举',
-        traditional: '多此一舉'
+        simplified: '画蛇添足',
+        traditional: '畫蛇添足'
     },
     {
         query: 'pretending to be dumb to avoid answering',
         label: 'playing dumb',
-        simplified: '装疯卖傻',
-        traditional: '裝瘋賣傻'
+        simplified: '装傻充愣',
+        traditional: '裝傻充愣'
     },
     {
         query: 'quick-witted and clever',
         label: 'quick-witted',
-        simplified: '心领神会',
-        traditional: '心領神會'
+        simplified: '聪明伶俐',
+        traditional: '聰明伶俐'
     },
     {
-        query: 'frozen and unable to move forward',
-        label: 'frozen in place',
-        simplified: '呆若木鸡',
-        traditional: '呆若木雞'
+        query: 'hesitant and unable to move forward',
+        label: 'hesitant',
+        simplified: '趑趄不前',
+        traditional: '趑趄不前'
     },
     {
-        query: 'against all odds and with great effort',
-        label: 'against all odds',
-        simplified: '逆水行舟',
-        traditional: '逆水行舟'
+        query: 'easier said than done',
+        label: 'easier said',
+        simplified: '谈何容易',
+        traditional: '談何容易'
     }
 ];
 
@@ -80,13 +80,13 @@ function normalizeBookmarkRecord(record, fallbackChengyu = '') {
     }
 
     return {
+        id: typeof record.id === 'string' && record.id.length > 0 ? record.id : '',
         chengyu,
         simplified: typeof record.simplified === 'string' ? record.simplified : chengyu,
         traditional: typeof record.traditional === 'string' ? record.traditional : '',
         pinyin: typeof record.pinyin === 'string' ? record.pinyin : '',
         literal: typeof record.literal === 'string' ? record.literal : '',
         meaning: typeof record.meaning === 'string' ? record.meaning : '',
-        usage: typeof record.usage === 'string' ? record.usage : '',
         example: typeof record.example === 'string' ? record.example : '',
         tags: Array.isArray(record.tags) ? [...record.tags] : [],
         formality: typeof record.formality === 'string' ? record.formality : ''
@@ -102,7 +102,10 @@ function loadBookmarks() {
 
         return Object.fromEntries(
             Object.entries(parsed)
-                .map(([chengyu, record]) => [chengyu, normalizeBookmarkRecord(record, chengyu)])
+                .map(([key, record]) => {
+                    const normalized = normalizeBookmarkRecord(record, key);
+                    return [normalized?.id || key, normalized];
+                })
                 .filter(([, record]) => Boolean(record))
         );
     } catch {
@@ -267,17 +270,20 @@ function getVisibleTags(result) {
 }
 
 function isBookmarked(result) {
-    return Boolean(STATE.bookmarks[result.chengyu]);
+    return Boolean(STATE.bookmarks[getResultPublicId(result)] || STATE.bookmarks[result.chengyu]);
 }
 
 function saveBookmark(result) {
-    STATE.bookmarks[result.chengyu] = normalizeBookmarkRecord(result, result.chengyu);
+    STATE.bookmarks[getResultPublicId(result)] = normalizeBookmarkRecord(result, result.chengyu);
     STATE.savedOpen = true;
     persistBookmarks();
 }
 
 function removeBookmark(result) {
-    delete STATE.bookmarks[result.chengyu];
+    delete STATE.bookmarks[getResultPublicId(result)];
+    if (result.id && result.chengyu) {
+        delete STATE.bookmarks[result.chengyu];
+    }
     if (Object.keys(STATE.bookmarks).length === 0) {
         STATE.savedOpen = false;
     }
@@ -379,7 +385,8 @@ async function pronounceResult(result) {
         return;
     }
 
-    if (STATE.speakingChengyu === result.chengyu) {
+    const resultId = getResultPublicId(result);
+    if (STATE.speakingChengyu === resultId) {
         window.speechSynthesis.cancel();
         activeUtterance = null;
         clearSpeakingState();
@@ -405,7 +412,7 @@ async function pronounceResult(result) {
         utterance.pitch = 1;
 
         utterance.onstart = () => {
-            STATE.speakingChengyu = result.chengyu;
+            STATE.speakingChengyu = resultId;
             render();
         };
 
@@ -443,6 +450,10 @@ function getDisplayHeadword(result) {
         return result.traditional || result.chengyu;
     }
     return result.simplified || result.chengyu;
+}
+
+function getResultPublicId(result) {
+    return result?.id || result?.chengyu || '';
 }
 
 function getNextScriptMode() {
@@ -513,14 +524,15 @@ async function performSearchRequest(query, offset = 0) {
 }
 
 function bookmarkNeedsRefresh(record) {
-    return !record?.simplified || !record?.traditional || !record?.usage || !record?.example || !record?.formality || !Array.isArray(record?.tags) || record.tags.length === 0;
+    return !record?.id || !record?.simplified || !record?.traditional || !record?.example || !record?.formality || !Array.isArray(record?.tags) || record.tags.length === 0;
 }
 
-async function fetchBookmarkSearchResult(chengyu) {
+async function fetchBookmarkSearchResult(record) {
+    const chengyu = record.chengyu;
     const response = await fetch(`${API_BASE_URL}/api/search/keyword`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: chengyu, limit: 1, offset: 0 })
+        body: JSON.stringify({ query: chengyu, limit: 10, offset: 0 })
     });
 
     if (!response.ok) {
@@ -528,7 +540,10 @@ async function fetchBookmarkSearchResult(chengyu) {
     }
 
     const data = await response.json();
-    return data.results?.find(result => result.chengyu === chengyu) || data.results?.[0] || null;
+    return data.results?.find(result => record.id && result.id === record.id)
+        || data.results?.find(result => result.chengyu === chengyu)
+        || data.results?.[0]
+        || null;
 }
 
 async function refreshBookmarksIfNeeded() {
@@ -539,20 +554,25 @@ async function refreshBookmarksIfNeeded() {
 
     let changed = false;
 
-    await Promise.all(staleEntries.map(async ([chengyu, record]) => {
+    await Promise.all(staleEntries.map(async ([key, record]) => {
         try {
-            const refreshed = await fetchBookmarkSearchResult(chengyu);
+            const refreshed = await fetchBookmarkSearchResult(record);
             if (!refreshed) {
                 return;
             }
 
-            STATE.bookmarks[chengyu] = {
+            const normalized = normalizeBookmarkRecord(refreshed, record.chengyu);
+            const newKey = normalized.id || key;
+            if (newKey !== key) {
+                delete STATE.bookmarks[key];
+            }
+            STATE.bookmarks[newKey] = {
                 ...record,
-                ...normalizeBookmarkRecord(refreshed, chengyu)
+                ...normalized
             };
             changed = true;
         } catch (error) {
-            console.warn('Unable to refresh saved idiom metadata:', chengyu, error);
+            console.warn('Unable to refresh saved idiom metadata:', record.chengyu, error);
         }
     }));
 
@@ -738,7 +758,6 @@ function buildAnkiFieldColumns(result) {
         sanitizeAnkiField(toneMarkPinyinString(result.pinyin)),
         sanitizeAnkiField(result.meaning || ''),
         sanitizeAnkiField(result.literal || ''),
-        sanitizeAnkiField(result.usage || ''),
         sanitizeAnkiField(result.example || ''),
         sanitizeAnkiField(Array.isArray(result.tags) ? result.tags.join(', ') : ''),
         sanitizeAnkiField(result.formality || '')
@@ -798,16 +817,18 @@ function renderSavedSection() {
             <div class="saved-head">
                 <div class="section-rule">Saved idioms · 已存成语</div>
                 <div class="saved-toolbar">
-                    <span class="saved-meta">${saved.length} ${saved.length === 1 ? 'card' : 'cards'} ready · 11-column TSV</span>
-                    <button class="saved-export-btn" id="export-anki-btn" title="Download saved idioms as an Anki TSV with separate columns for headword, simplified, traditional, numbered pinyin, tone-marked pinyin, meaning, literal, usage, example, tags, and formality">
+                    <span class="saved-meta">${saved.length} ${saved.length === 1 ? 'card' : 'cards'} ready · 10-column TSV</span>
+                    <button class="saved-export-btn" id="export-anki-btn" title="Download saved idioms as an Anki TSV with separate columns for headword, simplified, traditional, numbered pinyin, tone-marked pinyin, meaning, literal, example, tags, and formality">
                         ${renderIcon('download')}
                         <span>Export for Anki</span>
                     </button>
                 </div>
             </div>
             <div class="saved-grid">
-                ${saved.map(result => `
-                    <article class="saved-card" data-chengyu="${escapeHtml(result.chengyu)}">
+                ${saved.map(result => {
+                    const resultId = getResultPublicId(result);
+                    return `
+                    <article class="saved-card" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}">
                         <button class="saved-card-main" data-saved-query="${escapeHtml(result.chengyu)}" title="Search this idiom">
                             <div class="saved-card-chars">${escapeHtml(getDisplayHeadword(result))}</div>
                             <div class="saved-card-pinyin">${escapeHtml(toneMarkPinyinString(result.pinyin))}</div>
@@ -815,18 +836,19 @@ function renderSavedSection() {
                             <div class="saved-card-meaning">${escapeHtml(result.meaning)}</div>
                         </button>
                         <div class="saved-card-actions">
-                            <button class="icon-btn card-action" data-action="pronounce" data-chengyu="${escapeHtml(result.chengyu)}" title="Pronounce">
+                            <button class="icon-btn card-action" data-action="pronounce" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}" title="Pronounce">
                                 ${renderIcon('volume')}
                             </button>
-                            <button class="icon-btn card-action active" data-action="bookmark" data-chengyu="${escapeHtml(result.chengyu)}" title="Remove from saved">
+                            <button class="icon-btn card-action active" data-action="bookmark" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}" title="Remove from saved">
                                 ${renderIcon('bookmarkFilled')}
                             </button>
-                            <button class="icon-btn card-action" data-action="copy" data-chengyu="${escapeHtml(result.chengyu)}" title="Copy idiom">
+                            <button class="icon-btn card-action" data-action="copy" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}" title="Copy idiom">
                                 ${renderIcon('copy')}
                             </button>
                         </div>
                     </article>
-                `).join('')}
+                `;
+                }).join('')}
             </div>
         </section>
     `;
@@ -861,10 +883,11 @@ function renderTagChips(result) {
 function renderResultCard(result, index) {
     const { zh, en } = splitExampleText(result.example);
     const bookmarkIcon = isBookmarked(result) ? 'bookmarkFilled' : 'bookmark';
-    const isSpeaking = STATE.speakingChengyu === result.chengyu;
+    const resultId = getResultPublicId(result);
+    const isSpeaking = STATE.speakingChengyu === resultId;
 
     return `
-        <article class="result-card ${index === 0 ? 'rank-1' : ''}" data-chengyu="${escapeHtml(result.chengyu)}">
+        <article class="result-card ${index === 0 ? 'rank-1' : ''}" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}">
             <div class="hero-row">
                 <div class="rank-badge">
                     <span>NO.</span>
@@ -876,13 +899,13 @@ function renderResultCard(result, index) {
                     <div class="literal-line"><span class="arrow">—</span>&ldquo;${escapeHtml(result.literal)}&rdquo;</div>
                 </div>
                 <div class="card-actions">
-                    <button class="icon-btn card-action ${isSpeaking ? 'active' : ''}" data-action="pronounce" data-chengyu="${escapeHtml(result.chengyu)}" title="${isSpeaking ? 'Stop pronunciation' : 'Pronounce'}">
+                    <button class="icon-btn card-action ${isSpeaking ? 'active' : ''}" data-action="pronounce" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}" title="${isSpeaking ? 'Stop pronunciation' : 'Pronounce'}">
                         ${renderIcon('volume')}
                     </button>
-                    <button class="icon-btn card-action ${isBookmarked(result) ? 'active' : ''}" data-action="bookmark" data-chengyu="${escapeHtml(result.chengyu)}" title="Save locally">
+                    <button class="icon-btn card-action ${isBookmarked(result) ? 'active' : ''}" data-action="bookmark" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}" title="Save locally">
                         ${renderIcon(bookmarkIcon)}
                     </button>
-                    <button class="icon-btn card-action" data-action="copy" data-chengyu="${escapeHtml(result.chengyu)}" title="Copy idiom">
+                    <button class="icon-btn card-action" data-action="copy" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}" title="Copy idiom">
                         ${renderIcon('copy')}
                     </button>
                 </div>
@@ -1053,21 +1076,21 @@ function bind() {
 
     document.querySelectorAll('[data-action="bookmark"]').forEach(button => {
         button.addEventListener('click', () => {
-            const result = findResultByChengyu(button.dataset.chengyu);
+            const result = findResultByPublicId(button.dataset.resultId, button.dataset.chengyu);
             if (result) toggleBookmark(result);
         });
     });
 
     document.querySelectorAll('[data-action="copy"]').forEach(button => {
         button.addEventListener('click', () => {
-            const result = findResultByChengyu(button.dataset.chengyu);
+            const result = findResultByPublicId(button.dataset.resultId, button.dataset.chengyu);
             if (result) copyResult(result, button);
         });
     });
 
     document.querySelectorAll('[data-action="pronounce"]').forEach(button => {
         button.addEventListener('click', () => {
-            const result = findResultByChengyu(button.dataset.chengyu);
+            const result = findResultByPublicId(button.dataset.resultId, button.dataset.chengyu);
             if (result) pronounceResult(result);
         });
     });
@@ -1080,7 +1103,12 @@ function syncQueryFromInput() {
     }
 }
 
-function findResultByChengyu(chengyu) {
+function findResultByPublicId(resultId, chengyu) {
+    if (resultId) {
+        const currentResult = STATE.results.find(result => getResultPublicId(result) === resultId);
+        if (currentResult) return currentResult;
+        if (STATE.bookmarks[resultId]) return STATE.bookmarks[resultId];
+    }
     return STATE.results.find(result => result.chengyu === chengyu) || STATE.bookmarks[chengyu] || null;
 }
 

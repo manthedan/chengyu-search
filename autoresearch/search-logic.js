@@ -12,6 +12,7 @@
  */
 
 const Fuse = require('fuse.js');
+const { getTraditionalVariantMaps } = require('./cedict-variants.js');
 
 // ---- Utilities ----
 
@@ -29,6 +30,30 @@ function cosineSimilarity(vecA, vecB) {
   return dot / (magA * magB);
 }
 
+function getEntryId(entry) {
+  return entry && (entry.id || entry.embeddingId || entry.publicId);
+}
+
+function getResultId(result) {
+  return result && (result.id || getEntryId(result.item));
+}
+
+function getMergeKey(result) {
+  return getResultId(result) || result.chengyu;
+}
+
+function getEmbeddingVector(embeddings, result) {
+  const id = getResultId(result);
+  if (!id || !embeddings) return null;
+  if (embeddings instanceof Map) {
+    return embeddings.get(id) || null;
+  }
+  if (typeof embeddings.get === 'function') {
+    return embeddings.get(id) || null;
+  }
+  return null;
+}
+
 function normalizePinyin(text) {
   return (text || '')
     .toLowerCase()
@@ -42,55 +67,6 @@ function normalizePinyin(text) {
 
 function containsChinese(text) {
   return /[\u4e00-\u9fff]/.test(text);
-}
-
-let traditionalVariantMapsCache = null;
-
-function getTraditionalVariantMaps() {
-  if (traditionalVariantMapsCache) return traditionalVariantMapsCache;
-
-  const cedictIdioms = require('../cedict-all-idioms.json');
-  const idiomMap = new Map();
-  const charCounts = new Map();
-
-  cedictIdioms.forEach(entry => {
-    const traditional = String(entry.traditional || '');
-    const simplified = String(entry.simplified || '');
-    if (!traditional || !simplified) return;
-
-    idiomMap.set(traditional, simplified);
-
-    const traditionalChars = Array.from(traditional);
-    const simplifiedChars = Array.from(simplified);
-    if (traditionalChars.length !== simplifiedChars.length) return;
-
-    traditionalChars.forEach((traditionalChar, index) => {
-      const simplifiedChar = simplifiedChars[index];
-      if (!containsChinese(traditionalChar) || !containsChinese(simplifiedChar) || traditionalChar === simplifiedChar) {
-        return;
-      }
-
-      if (!charCounts.has(traditionalChar)) {
-        charCounts.set(traditionalChar, new Map());
-      }
-
-      const simplifiedCounts = charCounts.get(traditionalChar);
-      simplifiedCounts.set(simplifiedChar, (simplifiedCounts.get(simplifiedChar) || 0) + 1);
-    });
-  });
-
-  const charMap = new Map();
-  charCounts.forEach((simplifiedCounts, traditionalChar) => {
-    const bestMatch = Array.from(simplifiedCounts.entries())
-      .sort((a, b) => b[1] - a[1])[0]?.[0];
-
-    if (bestMatch) {
-      charMap.set(traditionalChar, bestMatch);
-    }
-  });
-
-  traditionalVariantMapsCache = { idiomMap, charMap };
-  return traditionalVariantMapsCache;
 }
 
 function normalizeTraditionalChineseQuery(text) {
@@ -176,6 +152,12 @@ function computeWeightedJaccard(queryFreq, docFreq, idfMap) {
   return num / den;
 }
 
+function squashPositiveScore(score, scale = 2) {
+  if (!Number.isFinite(score) || score <= 0) return 0;
+  const safeScale = Number.isFinite(scale) && scale > 0 ? scale : 2;
+  return Math.min(score / safeScale, 1);
+}
+
 function decomposeQueryTokens(queryTokens) {
   if (queryTokens.length <= 2) return queryTokens;
   const generic = new Set(['feel', 'think', 'thing', 'make', 'becom', 'be', 'state', 'kind']);
@@ -185,15 +167,17 @@ function decomposeQueryTokens(queryTokens) {
 }
 
 let semanticStatsCache = null;
+let documentFeatureCache = null;
+let fuseIndexCache = null;
+
 function getSemanticStats(CHENGYU) {
   if (semanticStatsCache && semanticStatsCache.ref === CHENGYU) return semanticStatsCache;
 
   const docFreq = new Map();
   const docCount = CHENGYU.length || 1;
-  CHENGYU.forEach(c => {
-    const conceptText = [c.meaning, c.literal, c.usage, c.example, ...(c.tags || [])].join(' ');
-    const uniq = new Set(tokenizeContent(conceptText));
-    uniq.forEach(token => {
+  const documentFeatures = getDocumentFeatures(CHENGYU);
+  documentFeatures.features.forEach(feature => {
+    feature.uniqueConceptTokens.forEach(token => {
       docFreq.set(token, (docFreq.get(token) || 0) + 1);
     });
   });
@@ -207,12 +191,84 @@ function getSemanticStats(CHENGYU) {
   return semanticStatsCache;
 }
 
+function getDocumentFeatures(CHENGYU) {
+  if (documentFeatureCache && documentFeatureCache.ref === CHENGYU) return documentFeatureCache;
+
+  const features = CHENGYU.map(c => {
+    const conceptText = [c.meaning, c.literal, c.example, ...(c.tags || [])].join(' ').toLowerCase();
+    const fieldTokens = tokenizeContent([c.meaning, c.literal, c.example].join(' '));
+    const conceptTokenFreq = tokenFrequencyMap(conceptText);
+    const conceptTokenSet = new Set(conceptTokenFreq.keys());
+
+    return {
+      id: getEntryId(c),
+      meaning: (c.meaning || '').toLowerCase(),
+      literal: (c.literal || '').toLowerCase(),
+      example: (c.example || '').toLowerCase(),
+      meaningTokens: new Set(tokenizeContent(c.meaning)),
+      literalTokens: new Set(tokenizeContent(c.literal)),
+      exampleTokens: new Set(tokenizeContent(c.example)),
+      tagTokenSet: new Set(tokenizeContent((c.tags || []).join(' '))),
+      conceptTokenSet,
+      uniqueConceptTokens: new Set(conceptTokenSet),
+      conceptTokenFreq,
+      literalBigrams: new Set(buildBigrams(tokenizeContent(c.literal))),
+      fieldBigrams: new Set(buildNgrams(fieldTokens, 2)),
+      fieldTrigrams: new Set(buildNgrams(fieldTokens, 3))
+    };
+  });
+
+  const byId = new Map();
+  const byItem = new Map();
+  const byChengyu = new Map();
+  features.forEach((feature, index) => {
+    if (feature.id) byId.set(feature.id, feature);
+    const entry = CHENGYU[index];
+    if (entry) byItem.set(entry, feature);
+    const chengyu = entry?.chengyu;
+    if (chengyu && !byChengyu.has(chengyu)) byChengyu.set(chengyu, feature);
+  });
+
+  documentFeatureCache = { ref: CHENGYU, features, byId, byItem, byChengyu };
+  return documentFeatureCache;
+}
+
+function stableStringify(value) {
+  if (Array.isArray(value)) return `[${value.map(stableStringify).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stableStringify(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function getFuseIndexCache(CHENGYU) {
+  if (fuseIndexCache && fuseIndexCache.ref === CHENGYU) return fuseIndexCache;
+
+  fuseIndexCache = {
+    ref: CHENGYU,
+    pinyinData: CHENGYU.map(c => ({ ...c, pinyin_norm: normalizePinyin(c.pinyin) })),
+    pinyin: new Map(),
+    keyword: new Map()
+  };
+  return fuseIndexCache;
+}
+
+function getCachedFuse(CHENGYU, bucket, signature, build) {
+  const indexes = getFuseIndexCache(CHENGYU);
+  const cache = indexes[bucket];
+  if (!cache.has(signature)) {
+    cache.set(signature, build(indexes));
+  }
+  return cache.get(signature);
+}
+
 function getPinyinExactMatches(query, CHENGYU) {
   if (containsChinese(query)) return [];
   const normalizedQuery = normalizePinyin(query);
   if (!normalizedQuery) return [];
 
   return CHENGYU.filter(c => normalizePinyin(c.pinyin) === normalizedQuery).map(c => ({
+    id: getEntryId(c),
     chengyu: c.chengyu,
     pinyin_exact_score: 1,
     item: c
@@ -321,16 +377,17 @@ function pinyinFuzzySearch(query, CHENGYU, config) {
   if (!isLikelyPinyinQuery(query)) return [];
 
   const normalizedQuery = normalizePinyin(query);
-  const data = CHENGYU.map(c => ({ ...c, pinyin_norm: normalizePinyin(c.pinyin) }));
-  const fuse = new Fuse(data, {
+  const fuseSignature = stableStringify({ threshold: config.pinyinFuseThreshold || 0.2 });
+  const fuse = getCachedFuse(CHENGYU, 'pinyin', fuseSignature, indexes => new Fuse(indexes.pinyinData, {
     threshold: config.pinyinFuseThreshold || 0.2,
     includeScore: true,
     ignoreLocation: true,
     minMatchCharLength: 2,
     keys: [{ name: 'pinyin_norm', weight: 1 }]
-  });
+  }));
 
   return fuse.search(normalizedQuery).slice(0, config.pinyinTopK || 15).map(r => ({
+    id: getEntryId(r.item),
     chengyu: r.item.chengyu,
     keyword_score: (1 - r.score) * (config.pinyinFuzzyBoost || 1.15),
     item: r.item
@@ -339,6 +396,13 @@ function pinyinFuzzySearch(query, CHENGYU, config) {
 
 // ---- Query Preprocessing ----
 // Agent can add: stopword removal, synonym expansion, pinyin tone stripping, etc.
+
+function preprocessSemanticQuery(query) {
+  const trimmed = query.trim();
+  if (!trimmed) return trimmed;
+  if (containsChinese(trimmed)) return normalizeTraditionalChineseQuery(trimmed);
+  return trimmed;
+}
 
 function preprocessQuery(query) {
   const trimmed = query.trim();
@@ -384,6 +448,14 @@ function preprocessQuery(query) {
   return `${trimmed} ${expanded.join(' ')}`;
 }
 
+function getQueryVariants(query) {
+  return {
+    directQuery: query.trim(),
+    semanticQuery: preprocessSemanticQuery(query),
+    lexicalQuery: preprocessQuery(query)
+  };
+}
+
 // ---- Keyword Search ----
 
 function keywordSearch(query, CHENGYU, config) {
@@ -396,12 +468,14 @@ function keywordSearch(query, CHENGYU, config) {
     ignoreLocation: config.ignoreLocation !== false,
     keys: isChinese ? config.chineseKeys : config.englishKeys
   };
+  const fuseSignature = stableStringify({ language: isChinese ? 'zh' : 'en', ...fuseOptions });
   
-  const fuse = new Fuse(CHENGYU, fuseOptions);
+  const fuse = getCachedFuse(CHENGYU, 'keyword', fuseSignature, () => new Fuse(CHENGYU, fuseOptions));
   const normalizedQuery = isChinese ? query : normalizePinyin(query);
   const fuseResults = fuse.search(normalizedQuery);
 
   const keywordResults = fuseResults.slice(0, config.keywordTopK || 20).map(r => ({
+    id: getEntryId(r.item),
     chengyu: r.item.chengyu,
     keyword_score: 1 - r.score,
     item: r.item
@@ -410,9 +484,10 @@ function keywordSearch(query, CHENGYU, config) {
   const pinyinResults = pinyinFuzzySearch(query, CHENGYU, config);
   const merged = new Map();
   [...keywordResults, ...pinyinResults].forEach(r => {
-    const existing = merged.get(r.chengyu);
+    const key = getMergeKey(r);
+    const existing = merged.get(key);
     if (!existing || r.keyword_score > existing.keyword_score) {
-      merged.set(r.chengyu, r);
+      merged.set(key, r);
     }
   });
 
@@ -425,6 +500,7 @@ function keywordSearch(query, CHENGYU, config) {
 // Agent can replace this with embedding-based search, BM25, TF-IDF, etc.
 
 async function semanticSearch(query, CHENGYU, CHENGYU_EMBEDDINGS, config, options = {}) {
+  const embeddingQuery = options.semanticQuery || query;
   if (containsChinese(query)) return [];
   
   const qLower = query.toLowerCase();
@@ -435,29 +511,26 @@ async function semanticSearch(query, CHENGYU, CHENGYU_EMBEDDINGS, config, option
   const queryTokenSet = new Set(queryTokens);
   const queryFreq = tokenFrequencyMap(query);
   const semanticStats = getSemanticStats(CHENGYU);
+  const documentFeatures = getDocumentFeatures(CHENGYU);
   
   if (queryTokens.length === 0) return [];
 
   const tokenScoredResults = CHENGYU.map((c, index) => {
     let score = 0;
-    const meaning = (c.meaning || '').toLowerCase();
-    const literal = (c.literal || '').toLowerCase();
-    const usage = (c.usage || '').toLowerCase();
-    const example = (c.example || '').toLowerCase();
-    const conceptText = [c.meaning, c.literal, c.usage, c.example, ...(c.tags || [])].join(' ').toLowerCase();
-    const tagTokens = tokenizeContent((c.tags || []).join(' '));
-    const meaningTokens = new Set(tokenizeContent(c.meaning));
-    const literalTokens = new Set(tokenizeContent(c.literal));
-    const usageTokens = new Set(tokenizeContent(c.usage));
-    const exampleTokens = new Set(tokenizeContent(c.example));
-    const tagTokenSet = new Set(tagTokens);
-    const conceptTokenSet = new Set(tokenizeContent(conceptText));
-    const conceptTokenFreq = tokenFrequencyMap(conceptText);
+    const feature = documentFeatures.features[index];
+    const {
+      literal,
+      meaningTokens,
+      literalTokens,
+      exampleTokens,
+      tagTokenSet,
+      conceptTokenSet,
+      conceptTokenFreq
+    } = feature;
     
     queryTokens.forEach(token => {
       if (meaningTokens.has(token)) score += config.semanticMeaningWeight || 0.35;
       if (literalTokens.has(token)) score += config.semanticLiteralWeight || 0.2;
-      if (usageTokens.has(token)) score += config.semanticUsageWeight || 0.12;
       if (exampleTokens.has(token)) score += config.semanticExampleWeight || 0.08;
       if (tagTokenSet.has(token)) score += config.semanticTagWeight || 0.05;
     });
@@ -472,10 +545,9 @@ async function semanticSearch(query, CHENGYU, CHENGYU_EMBEDDINGS, config, option
     }
 
     if (queryBigrams.length > 0) {
-      const literalBigrams = new Set(buildBigrams(tokenizeContent(c.literal)));
       let bigramHits = 0;
       queryBigrams.forEach(bg => {
-        if (literalBigrams.has(bg)) bigramHits += 1;
+        if (feature.literalBigrams.has(bg)) bigramHits += 1;
       });
       if (bigramHits > 0) {
         score += (bigramHits / queryBigrams.length) * (config.literalBigramWeight || 0.45);
@@ -483,18 +555,15 @@ async function semanticSearch(query, CHENGYU, CHENGYU_EMBEDDINGS, config, option
     }
 
     if (queryBigrams.length > 0 || queryTrigrams.length > 0) {
-      const fieldTokens = tokenizeContent([c.meaning, c.literal, c.usage, c.example].join(' '));
-      const fieldBigrams = new Set(buildNgrams(fieldTokens, 2));
-      const fieldTrigrams = new Set(buildNgrams(fieldTokens, 3));
       let multiGramHits = 0;
       let multiGramTotal = 0;
       queryBigrams.forEach(bg => {
         multiGramTotal += 1;
-        if (fieldBigrams.has(bg)) multiGramHits += 1;
+        if (feature.fieldBigrams.has(bg)) multiGramHits += 1;
       });
       queryTrigrams.forEach(tg => {
         multiGramTotal += 1;
-        if (fieldTrigrams.has(tg)) multiGramHits += 1;
+        if (feature.fieldTrigrams.has(tg)) multiGramHits += 1;
       });
       if (multiGramHits > 0 && multiGramTotal > 0) {
         score += (multiGramHits / multiGramTotal) * (config.semanticMultiGramWeight || 0);
@@ -558,41 +627,48 @@ async function semanticSearch(query, CHENGYU, CHENGYU_EMBEDDINGS, config, option
       }
     }
     
-    return { chengyu: c.chengyu, token_score: score, item: c, index };
+    return { id: getEntryId(c), chengyu: c.chengyu, token_score: score, item: c, index };
   });
 
   const topK = config.semanticTopK || 20;
   const embeddingWeight = config.embeddingWeight ?? 0.5;
   const tokenWeight = config.tokenWeight ?? 0.5;
-  const canUseEmbeddings = Array.isArray(CHENGYU_EMBEDDINGS) && typeof options.generateQueryEmbedding === 'function';
+  const canUseEmbeddings = CHENGYU_EMBEDDINGS instanceof Map && typeof options.generateQueryEmbedding === 'function';
 
   if (!canUseEmbeddings) {
     const initialSemanticResults = tokenScoredResults
-      .map(r => ({ chengyu: r.chengyu, semantic_score: r.token_score, item: r.item }))
+      .map(r => ({ id: r.id, chengyu: r.chengyu, semantic_score: r.token_score, item: r.item }))
       .sort((a, b) => b.semantic_score - a.semantic_score)
       .slice(0, topK);
-    return maybeRerankSemanticResults(query, initialSemanticResults, CHENGYU, config);
+    return maybeCrossEncoderRerankResults(
+      query,
+      maybeRerankSemanticResults(query, initialSemanticResults, CHENGYU, config),
+      config,
+      options
+    );
   }
 
   let queryEmbedding;
   try {
-    queryEmbedding = await options.generateQueryEmbedding(query);
+    queryEmbedding = await options.generateQueryEmbedding(embeddingQuery);
   } catch (e) {
     const initialSemanticResults = tokenScoredResults
-      .map(r => ({ chengyu: r.chengyu, semantic_score: r.token_score, item: r.item }))
+      .map(r => ({ id: r.id, chengyu: r.chengyu, semantic_score: r.token_score, item: r.item }))
       .sort((a, b) => b.semantic_score - a.semantic_score)
       .slice(0, topK);
-    return maybeRerankSemanticResults(query, initialSemanticResults, CHENGYU, config);
+    return maybeCrossEncoderRerankResults(
+      query,
+      maybeRerankSemanticResults(query, initialSemanticResults, CHENGYU, config),
+      config,
+      options
+    );
   }
 
-  const maxTokenScore = tokenScoredResults.reduce((max, r) => Math.max(max, r.token_score), 0);
-  const tokenNormalizer = maxTokenScore > 0 ? maxTokenScore : 1;
   const weightDenominator = (embeddingWeight + tokenWeight) || 1;
 
   const initialSemanticResults = tokenScoredResults
     .map(r => {
-      const embeddingEntry = CHENGYU_EMBEDDINGS[r.index];
-      const embeddingVec = embeddingEntry && embeddingEntry.embedding;
+      const embeddingVec = getEmbeddingVector(CHENGYU_EMBEDDINGS, r);
       let embeddingSimilarity = 0;
 
       if (Array.isArray(embeddingVec) || embeddingVec instanceof Float32Array) {
@@ -600,14 +676,15 @@ async function semanticSearch(query, CHENGYU, CHENGYU_EMBEDDINGS, config, option
         embeddingSimilarity = Math.max(0, Math.min(1, embeddingSimilarity));
       }
 
-      const normalizedTokenScore = r.token_score / tokenNormalizer;
+      const boundedTokenScore = squashPositiveScore(r.token_score, config.tokenScoreScale || 2);
       const blendedScore = (
         embeddingSimilarity * embeddingWeight +
-        normalizedTokenScore * tokenWeight
+        boundedTokenScore * tokenWeight
       ) / weightDenominator;
 
       return {
         chengyu: r.chengyu,
+        id: r.id,
         semantic_score: blendedScore,
         item: r.item
       };
@@ -615,7 +692,70 @@ async function semanticSearch(query, CHENGYU, CHENGYU_EMBEDDINGS, config, option
     .sort((a, b) => b.semantic_score - a.semantic_score)
     .slice(0, topK);
 
-  return maybeRerankSemanticResults(query, initialSemanticResults, CHENGYU, config);
+  return maybeCrossEncoderRerankResults(
+    query,
+    maybeRerankSemanticResults(query, initialSemanticResults, CHENGYU, config),
+    config,
+    options
+  );
+}
+
+async function maybeCrossEncoderRerankResults(query, semanticResults, config = {}, options = {}) {
+  const rerankTopK = Number(config.crossEncoderTopK || 0);
+  const blendWeight = Number(config.crossEncoderBlendWeight || 0);
+
+  if (!Number.isFinite(rerankTopK)
+    || rerankTopK <= 0
+    || !Number.isFinite(blendWeight)
+    || blendWeight <= 0
+    || typeof options.scoreCrossEncoder !== 'function'
+    || semanticResults.length <= 1
+    || containsChinese(query)) {
+    return semanticResults;
+  }
+
+  const rerankQuery = options.semanticQuery || query;
+  const rerankCount = Math.min(rerankTopK, semanticResults.length);
+  const candidatesToScore = semanticResults.slice(0, rerankCount);
+  let rawScores;
+  try {
+    rawScores = await options.scoreCrossEncoder(rerankQuery, candidatesToScore);
+  } catch (_) {
+    return semanticResults;
+  }
+
+  if (!Array.isArray(rawScores) || rawScores.length !== candidatesToScore.length) {
+    return semanticResults;
+  }
+
+  const finiteScores = rawScores.map(score => Number(score)).filter(Number.isFinite);
+  if (finiteScores.length !== rawScores.length) {
+    return semanticResults;
+  }
+
+  const minScore = Math.min(...finiteScores);
+  const maxScore = Math.max(...finiteScores);
+  const spread = maxScore - minScore;
+  const safeBlendWeight = Math.min(Math.max(blendWeight, 0), 1);
+
+  const rerankedCandidates = candidatesToScore
+    .map((candidate, index) => {
+      const normalizedCrossEncoderScore = spread > 0 ? (rawScores[index] - minScore) / spread : 0.5;
+      return {
+        ...candidate,
+        semantic_score: candidate.semantic_score * (1 - safeBlendWeight)
+          + normalizedCrossEncoderScore * safeBlendWeight
+      };
+    })
+    .sort((a, b) => b.semantic_score - a.semantic_score);
+
+  const lowestRerankedScore = rerankedCandidates[rerankedCandidates.length - 1]?.semantic_score ?? 0;
+  const unscoredCandidates = semanticResults.slice(rerankCount).map((candidate, index) => ({
+    ...candidate,
+    semantic_score: Math.min(candidate.semantic_score, lowestRerankedScore - ((index + 1) * 1e-12))
+  }));
+
+  return [...rerankedCandidates, ...unscoredCandidates];
 }
 
 function maybeRerankSemanticResults(query, semanticResults, CHENGYU, config = {}) {
@@ -637,6 +777,7 @@ function maybeRerankSemanticResults(query, semanticResults, CHENGYU, config = {}
   const queryBigrams = buildBigrams(queryTokens);
   const queryTrigrams = buildNgrams(queryTokens, 3);
   const semanticStats = getSemanticStats(CHENGYU);
+  const documentFeatures = getDocumentFeatures(CHENGYU);
   const rerankCount = Math.min(rerankTopK, semanticResults.length);
 
   const scored = semanticResults.map((candidate, index) => {
@@ -649,19 +790,22 @@ function maybeRerankSemanticResults(query, semanticResults, CHENGYU, config = {}
     }
 
     const item = candidate.item || {};
-    const meaning = (item.meaning || '').toLowerCase();
-    const literal = (item.literal || '').toLowerCase();
-    const usage = (item.usage || '').toLowerCase();
-    const example = (item.example || '').toLowerCase();
-    const conceptText = [item.meaning, item.literal, item.usage, item.example, ...((item.tags || []))].join(' ').toLowerCase();
-    const conceptTokenSet = new Set(tokenizeContent(conceptText));
-    const conceptTokenFreq = tokenFrequencyMap(conceptText);
+    const feature = documentFeatures.byId.get(getResultId(candidate) || getEntryId(item))
+      || documentFeatures.byItem.get(item)
+      || documentFeatures.byChengyu.get(candidate.chengyu || item.chengyu);
+    if (!feature) {
+      return {
+        ...candidate,
+        rerank_raw_score: 0,
+        rerank_applied: true
+      };
+    }
+    const { meaning, literal, example, conceptTokenSet, conceptTokenFreq } = feature;
 
     let rerankScore = 0;
 
     if (meaning.includes(qLower)) rerankScore += config.rerankMeaningPhraseWeight || 0;
     if (literal.includes(qLower)) rerankScore += config.rerankLiteralPhraseWeight || 0;
-    if (usage.includes(qLower)) rerankScore += config.rerankUsagePhraseWeight || 0;
     if (example.includes(qLower)) rerankScore += config.rerankExamplePhraseWeight || 0;
 
     let overlapCount = 0;
@@ -690,16 +834,13 @@ function maybeRerankSemanticResults(query, semanticResults, CHENGYU, config = {}
     }
 
     if ((config.rerankBigramWeight || 0) > 0 || (config.rerankTrigramWeight || 0) > 0) {
-      const fieldTokens = tokenizeContent([item.meaning, item.literal, item.usage, item.example].join(' '));
-      const fieldBigrams = new Set(buildNgrams(fieldTokens, 2));
-      const fieldTrigrams = new Set(buildNgrams(fieldTokens, 3));
       let bigramHits = 0;
       let trigramHits = 0;
       queryBigrams.forEach(bg => {
-        if (fieldBigrams.has(bg)) bigramHits += 1;
+        if (feature.fieldBigrams.has(bg)) bigramHits += 1;
       });
       queryTrigrams.forEach(tg => {
-        if (fieldTrigrams.has(tg)) trigramHits += 1;
+        if (feature.fieldTrigrams.has(tg)) trigramHits += 1;
       });
       if (bigramHits > 0 && queryBigrams.length > 0) {
         rerankScore += (bigramHits / queryBigrams.length) * (config.rerankBigramWeight || 0);
@@ -754,7 +895,9 @@ function mergeAndRank(keywordResults, semanticResults, exactPinyinResults, confi
   const merged = new Map();
   
   semanticResults.forEach(r => {
-    merged.set(r.chengyu, { 
+    const key = getMergeKey(r);
+    merged.set(key, {
+      id: getResultId(r),
       chengyu: r.chengyu, 
       semantic_score: r.semantic_score, 
       keyword_score: 0, 
@@ -764,12 +907,14 @@ function mergeAndRank(keywordResults, semanticResults, exactPinyinResults, confi
   });
   
   keywordResults.forEach(r => {
-    if (merged.has(r.chengyu)) {
-      const existing = merged.get(r.chengyu);
+    const key = getMergeKey(r);
+    if (merged.has(key)) {
+      const existing = merged.get(key);
       existing.keyword_score = r.keyword_score;
       existing.source = 'both';
     } else {
-      merged.set(r.chengyu, { 
+      merged.set(key, {
+        id: getResultId(r),
         chengyu: r.chengyu, 
         semantic_score: 0, 
         keyword_score: r.keyword_score, 
@@ -780,11 +925,13 @@ function mergeAndRank(keywordResults, semanticResults, exactPinyinResults, confi
   });
 
   exactPinyinResults.forEach(r => {
-    if (merged.has(r.chengyu)) {
-      const existing = merged.get(r.chengyu);
+    const key = getMergeKey(r);
+    if (merged.has(key)) {
+      const existing = merged.get(key);
       existing.pinyin_exact_score = Math.max(existing.pinyin_exact_score || 0, r.pinyin_exact_score);
     } else {
-      merged.set(r.chengyu, {
+      merged.set(key, {
+        id: getResultId(r),
         chengyu: r.chengyu,
         semantic_score: 0,
         keyword_score: 0,
@@ -798,6 +945,7 @@ function mergeAndRank(keywordResults, semanticResults, exactPinyinResults, confi
   const results = Array.from(merged.values()).map(r => {
     if ((r.pinyin_exact_score || 0) > 0) {
       return {
+        id: r.id,
         chengyu: r.chengyu,
         score: (config.exactPinyinBoost || 10) + r.pinyin_exact_score,
         item: r.item
@@ -806,14 +954,15 @@ function mergeAndRank(keywordResults, semanticResults, exactPinyinResults, confi
 
     let score;
     if (r.source === 'both') {
-      score = r.semantic_score * (config.semanticWeight || 0.72) + r.keyword_score * (config.keywordWeight || 0.28);
-      score *= (config.bothBoost || 1.7);
+      score = r.semantic_score * (config.semanticWeight || 0.72)
+        + r.keyword_score * (config.keywordWeight || 0.28)
+        + (config.overlapBonus ?? 0.12);
     } else if (r.source === 'semantic') {
       score = r.semantic_score;
     } else {
       score = r.keyword_score;
     }
-    return { chengyu: r.chengyu, score, item: r.item };
+    return { id: r.id, chengyu: r.chengyu, score, item: r.item };
   });
 
   results.sort((a, b) => b.score - a.score);
@@ -834,7 +983,8 @@ function rankKeywordOnly(keywordResults, exactPinyinResults, config, options = {
   const merged = new Map();
 
   keywordResults.forEach(r => {
-    merged.set(r.chengyu, {
+    merged.set(getMergeKey(r), {
+      id: getResultId(r),
       chengyu: r.chengyu,
       keyword_score: r.keyword_score,
       pinyin_exact_score: 0,
@@ -843,12 +993,14 @@ function rankKeywordOnly(keywordResults, exactPinyinResults, config, options = {
   });
 
   exactPinyinResults.forEach(r => {
-    if (merged.has(r.chengyu)) {
-      const existing = merged.get(r.chengyu);
+    const key = getMergeKey(r);
+    if (merged.has(key)) {
+      const existing = merged.get(key);
       existing.pinyin_exact_score = Math.max(existing.pinyin_exact_score || 0, r.pinyin_exact_score);
       existing.item = existing.item || r.item;
     } else {
-      merged.set(r.chengyu, {
+      merged.set(key, {
+        id: getResultId(r),
         chengyu: r.chengyu,
         keyword_score: 0,
         pinyin_exact_score: r.pinyin_exact_score,
@@ -859,6 +1011,7 @@ function rankKeywordOnly(keywordResults, exactPinyinResults, config, options = {
 
   return Array.from(merged.values())
     .map(r => ({
+      id: r.id,
       chengyu: r.chengyu,
       score: (r.pinyin_exact_score || 0) > 0
         ? (config.exactPinyinBoost || 10) + r.pinyin_exact_score
@@ -877,21 +1030,20 @@ function keywordSearchOnly(query, CHENGYU, config = {}, options = {}) {
     keywordTopK: Math.max(effectiveConfig.keywordTopK || 20, resultLimit),
     pinyinTopK: Math.max(effectiveConfig.pinyinTopK || 15, resultLimit)
   };
-  const directQuery = query.trim();
-  const processedQuery = preprocessQuery(query);
+  const { directQuery, lexicalQuery } = getQueryVariants(query);
 
   const exactPinyinResults = [
     ...getPinyinExactMatches(directQuery, CHENGYU),
-    ...(processedQuery !== directQuery ? getPinyinExactMatches(processedQuery, CHENGYU) : [])
+    ...(lexicalQuery !== directQuery ? getPinyinExactMatches(lexicalQuery, CHENGYU) : [])
   ];
 
   let keywordResults;
-  if (containsChinese(directQuery) && processedQuery !== directQuery) {
-    keywordResults = keywordSearch(processedQuery, CHENGYU, keywordConfig);
+  if (containsChinese(directQuery) && lexicalQuery !== directQuery) {
+    keywordResults = keywordSearch(lexicalQuery, CHENGYU, keywordConfig);
   } else {
     keywordResults = keywordSearch(directQuery, CHENGYU, keywordConfig);
-    if (keywordResults.length === 0 && processedQuery !== directQuery) {
-      keywordResults = keywordSearch(processedQuery, CHENGYU, keywordConfig);
+    if (keywordResults.length === 0 && lexicalQuery !== directQuery) {
+      keywordResults = keywordSearch(lexicalQuery, CHENGYU, keywordConfig);
     }
   }
 
@@ -905,17 +1057,18 @@ async function semanticSearchOnly(query, CHENGYU, CHENGYU_EMBEDDINGS, config = {
     ...effectiveConfig,
     semanticTopK: Math.max(effectiveConfig.semanticTopK || 20, resultLimit)
   };
-  const processedQuery = preprocessQuery(query);
+  const { semanticQuery, lexicalQuery } = getQueryVariants(query);
   const semanticResults = await semanticSearch(
-    processedQuery,
+    lexicalQuery,
     CHENGYU,
     CHENGYU_EMBEDDINGS,
     semanticConfig,
-    options
+    { ...options, semanticQuery }
   );
 
   return semanticResults
     .map(r => ({
+      id: getResultId(r),
       chengyu: r.chengyu,
       score: r.semantic_score,
       item: r.item
@@ -935,16 +1088,19 @@ async function search(query, CHENGYU, CHENGYU_EMBEDDINGS, config, options = {}) 
     semanticTopK: Math.max(effectiveConfig.semanticTopK || 20, resultLimit * 2),
     pinyinTopK: Math.max(effectiveConfig.pinyinTopK || 15, resultLimit)
   };
-  const processedQuery = preprocessQuery(query);
+  const { directQuery, semanticQuery, lexicalQuery } = getQueryVariants(query);
   
-  const exactPinyinResults = getPinyinExactMatches(processedQuery, CHENGYU);
-  const keywordResults = keywordSearch(processedQuery, CHENGYU, hybridConfig);
+  const exactPinyinResults = [
+    ...getPinyinExactMatches(directQuery, CHENGYU),
+    ...(lexicalQuery !== directQuery ? getPinyinExactMatches(lexicalQuery, CHENGYU) : [])
+  ];
+  const keywordResults = keywordSearch(lexicalQuery, CHENGYU, hybridConfig);
   const semanticResults = await semanticSearch(
-    processedQuery,
+    lexicalQuery,
     CHENGYU,
     CHENGYU_EMBEDDINGS,
     hybridConfig,
-    options
+    { ...options, semanticQuery }
   );
   
   return mergeAndRank(keywordResults, semanticResults, exactPinyinResults, hybridConfig, { resultLimit });
@@ -956,6 +1112,8 @@ module.exports = {
   keywordSearchOnly,
   semanticSearchOnly,
   preprocessQuery,
+  preprocessSemanticQuery,
+  getQueryVariants,
   containsChinese,
   normalizePinyin
 };

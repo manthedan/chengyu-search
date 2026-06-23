@@ -29,7 +29,7 @@ The browser UI calls the **auto-routed** endpoint (`POST /api/search`), and the 
 On startup, the server loads:
 
 - **idiom database** from `chengyuData.js`
-- **embedding artifact** from `embeddings-local.json` by default
+- **embedding artifact** from compact `embeddings-local.bin` by default (`embeddings-local.json` remains available as a readable source/fallback)
 - **runtime embedding model** via `@xenova/transformers`
 
 The current default embedding model is:
@@ -38,7 +38,7 @@ The current default embedding model is:
 
 The current promoted baseline embedding artifact was generated from the template:
 
-- `meaning-literal-tags`
+- `rich`
 
 ### Embedding artifact format
 
@@ -47,26 +47,13 @@ The server supports both:
 1. **legacy raw array**
 2. **metadata-wrapped object**
 
-Current preferred format:
+Current preferred runtime format: `embeddings-local.bin`, a compact binary artifact with metadata plus raw float32 vectors. The readable JSON artifact has the same metadata and embeddings and can be converted with:
 
-```json
-{
-  "version": 1,
-  "model": "Xenova/all-MiniLM-L6-v2",
-  "template": "meaning-literal-tags",
-  "dimensions": 384,
-  "generatedAt": "2026-...",
-  "entryCount": 5925,
-  "embeddings": [
-    {
-      "chengyu": "画蛇添足",
-      "embedding": [0.01, -0.02, ...]
-    }
-  ]
-}
+```bash
+node scripts/convert-embeddings-binary.js --input embeddings-local.json --output embeddings-local.bin
 ```
 
-The server checks that embedding count matches database count. If not, semantic search is disabled and hybrid falls back to non-embedding signals.
+The server validates stable IDs, count, dimensions, finite vector values, model, pooling, normalization, template, and corpus hash. If validation fails, semantic search is disabled and hybrid falls back to non-embedding signals.
 
 ## 3. Query classification and auto-routing
 
@@ -92,7 +79,7 @@ In simplified form:
 
 ### Auto-routing policy
 
-The backend currently routes by a query-type default plus a small exact-query override layer audited against the benchmark set.
+The backend routes by query-type defaults plus corpus-signal heuristics audited against the benchmark set.
 
 Default mapping:
 
@@ -103,7 +90,7 @@ Default mapping:
 - `pinyin` → **hybrid**
 - `chinese_exact` → **hybrid**
 
-Benchmark-backed exact-query overrides can still redirect some lexical English queries to a different mode, including `keyword` for certain lexical/theme lookups and `semantic` or `hybrid` for specific audited phrases.
+Corpus-signal heuristics can redirect lexical English queries to a different mode. For example, strong tag coverage can favor `keyword`, broad concrete nouns can favor `hybrid`, and longer descriptive phrases usually stay on `semantic`.
 
 If semantic search is unavailable or returns no results for an auto-routed semantic query, the server falls back to hybrid. If an auto-routed keyword query returns no results, the server also falls back to hybrid.
 
@@ -214,8 +201,8 @@ Global defaults:
 Current type-specific overrides:
 
 - `english_meaning`
-  - `embeddingWeight`: `0.8`
-  - `tokenWeight`: `0.2`
+  - `embeddingWeight`: `0.6`
+  - `tokenWeight`: `0.4`
 - `thematic`
   - `embeddingWeight`: `0.65`
   - `tokenWeight`: `0.35`
@@ -223,7 +210,7 @@ Current type-specific overrides:
   - `embeddingWeight`: `0.35`
   - `tokenWeight`: `0.65`
 
-These values were chosen by holdout benchmarking after promoting the `meaning-literal-tags` embedding baseline.
+These values were chosen by holdout benchmarking after promoting the `rich` embedding baseline.
 
 ## 7. Hybrid search
 
@@ -239,13 +226,14 @@ Hybrid search calls both keyword and semantic retrieval, then merges them.
 
 - exact pinyin matches get a strong direct boost
 - items found by both semantic and keyword search get a combined score
-- overlap between both systems is rewarded by `bothBoost`
+- overlap between both systems is rewarded by a small additive `overlapBonus`
 
 Current high-level merge parameters:
 
 - `semanticWeight`: `0.72`
 - `keywordWeight`: `0.28`
-- `bothBoost`: `1.7`
+- `overlapBonus`: `0.12`
+- `tokenScoreScale`: `3` (fixed token-score bound; avoids per-query max normalization)
 
 There is also `autoresearch/hybrid-config.json`, which can further override hybrid ranking at runtime.
 
@@ -315,6 +303,8 @@ This provides in-memory visibility into:
 - load-more usage
 - embedding cache hits / misses / bypasses
 - ranked-result cache hits / misses / bypasses
+
+Embedding queries and cache keys are canonicalized with Unicode NFKC normalization, lowercasing, whitespace collapse, and conservative trailing sentence-punctuation stripping. The key also includes the embedding model, pooling mode, normalization flag, and an embedding preprocessing version so cache entries cannot silently cross embedding spaces.
 - simple latency summaries by endpoint and mode
 
 This is not a full production observability stack, but it is enough to confirm that:
@@ -330,6 +320,7 @@ This is not a full production observability stack, but it is enough to confirm t
 - `PORT`
 - `EMBEDDINGS_FILE`
 - `EMBEDDING_MODEL_ID`
+- `EMBEDDING_CACHE_SIZE`
 - `SEARCH_CONFIG_OVERRIDE_JSON`
 - `SEARCH_CONFIG_OVERRIDE_FILE`
 - `QUIET_LOGS`
@@ -348,8 +339,8 @@ The current architecture reflects these choices:
 - **auto routing** instead of a manual UI mode toggle
 - **semantic-by-default** for English-language description traffic
 - **hybrid-by-default** for pinyin and Chinese traffic
-- a **small benchmark-backed route override layer** for audited lexical English queries
-- promoted embedding baseline: **MiniLM + meaning-literal-tags**
+- **corpus-signal auto-routing heuristics** for audited lexical English queries
+- promoted embedding baseline: **MiniLM + rich**
 - promoted semantic blend weights tuned against holdout results
 - paginated access to deeper results without sacrificing the default 10-result hot path
 

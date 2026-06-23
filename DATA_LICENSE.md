@@ -16,9 +16,8 @@ The original code in this repository is licensed separately under MIT, but the i
 That includes, at minimum, files such as:
 - `chengyuData.js`
 - `cedict-all-idioms.json`
-- `cedict-chengyu-raw.json`
-- `chengyu-4char.json`
 - `embeddings-local.json`
+- `embeddings-local.bin`
 - derivative benchmark/runtime artifacts that substantially encode the idiom corpus
 
 When in doubt, if a file primarily republishes the idiom corpus or data derived from it, treat it as covered by this data notice rather than MIT alone.
@@ -28,7 +27,7 @@ When in doubt, if a file primarily republishes the idiom corpus or data derived 
 This project has modified and enriched the source material, including things like:
 - cleaned / restructured dataset packaging
 - refined literal glosses
-- added usage notes
+- refined English definitions
 - added example sentences
 - added tags / formality metadata
 - generated embedding artifacts from the curated idiom records

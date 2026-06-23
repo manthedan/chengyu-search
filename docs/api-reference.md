@@ -169,9 +169,9 @@ Development and explicitly verbose environments may return:
   "database": true,
   "embeddings": true,
   "embeddingModel": true,
-  "embeddingFile": "embeddings-local.json",
+  "embeddingFile": "embeddings-local.bin",
   "embeddingDimensions": 384,
-  "embeddingTemplate": "meaning-literal-tags",
+  "embeddingTemplate": "rich",
   "configuredEmbeddingModel": "Xenova/all-MiniLM-L6-v2",
   "loadedEmbeddingModel": "Xenova/all-MiniLM-L6-v2",
   "searchConfigOverride": false,
@@ -306,7 +306,7 @@ The backend classifies the query and auto-routes it.
 
 ### Current routing policy
 
-`/api/search` uses a query-type default plus a small benchmark-backed exact-query override layer.
+`/api/search` uses query-type defaults plus corpus-signal heuristics audited against the benchmark set.
 
 Default mapping:
 
@@ -317,7 +317,7 @@ Default mapping:
 - `pinyin` → hybrid
 - `chinese_exact` → hybrid
 
-Some audited lexical English queries can still be routed to `keyword`, `semantic`, or `hybrid` via exact-query overrides.
+Audited lexical English queries can still route to `keyword`, `semantic`, or `hybrid` based on corpus signals such as tag coverage, phrase matches, and concrete-noun ambiguity.
 
 If semantic search fails or returns no results, the endpoint falls back to hybrid. If an auto-routed keyword query returns no results, it also falls back to hybrid.
 
@@ -633,6 +633,8 @@ That means the same server handles both:
 - `PORT`
 - `EMBEDDINGS_FILE`
 - `EMBEDDING_MODEL_ID`
+- `EMBEDDING_CACHE_SIZE`
+  - positive integer; defaults to `5000` cached query embeddings
 - `SEARCH_CONFIG_OVERRIDE_JSON`
 - `SEARCH_CONFIG_OVERRIDE_FILE`
 - `QUIET_LOGS`

@@ -18,7 +18,8 @@
     "benchmark:weights": "node benchmark/tune-weights.js",
     "benchmark:failures": "node benchmark/failures.js",
     "benchmark:reranker": "node benchmark/tune-reranker.js",
-    "benchmark:routes": "node benchmark/route-audit.js"
+    "benchmark:routes": "node benchmark/route-audit.js",
+    "benchmark:vector-scan": "node benchmark/vector-scan.js"
   },
   "keywords": [
     "chinese",

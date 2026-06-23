@@ -2,12 +2,19 @@ const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
 
-const CHENGYU = require('../chengyuData.js');
+const { buildStableChengyuId, withStableChengyuIds } = require('../autoresearch/chengyu-identity.js');
+const CHENGYU = withStableChengyuIds(require('../chengyuData.js'));
+const {
+    buildEmbeddingArtifact,
+    buildEmbeddingTemplateText
+} = require('../autoresearch/embedding-validation.js');
 
 const REPO_ROOT = path.join(__dirname, '..');
 const DEFAULT_VARIANT_DIR = path.join(REPO_ROOT, 'embeddings', 'variants');
-const DEFAULT_BASELINE_FILE = path.join(REPO_ROOT, 'embeddings-local.json');
+const DEFAULT_BASELINE_FILE = path.join(REPO_ROOT, 'embeddings-local.bin');
 const DEFAULT_BASELINE_MODEL_ID = 'Xenova/all-MiniLM-L6-v2';
+const EMBEDDING_POOLING = 'mean';
+const EMBEDDING_NORMALIZE = true;
 
 const EMBEDDING_MODELS = {
     minilm: {
@@ -29,6 +36,11 @@ const EMBEDDING_MODELS = {
         key: 'gte-small',
         modelId: 'Xenova/gte-small',
         label: 'GTE small'
+    },
+    'multilingual-minilm': {
+        key: 'multilingual-minilm',
+        modelId: 'Xenova/paraphrase-multilingual-MiniLM-L12-v2',
+        label: 'Paraphrase multilingual MiniLM L12 v2'
     }
 };
 
@@ -51,12 +63,12 @@ const EMBEDDING_TEMPLATES = {
     'english-dense': {
         key: 'english-dense',
         label: 'English dense',
-        build: (entry) => `${entry.meaning || ''}. ${entry.literal || ''}. ${entry.usage || ''}. Topics: ${(entry.tags || []).join(', ')}`.trim()
+        build: (entry) => `${entry.meaning || ''}. ${entry.literal || ''}. Topics: ${(entry.tags || []).join(', ')}`.trim()
     },
     rich: {
         key: 'rich',
         label: 'Rich mixed context',
-        build: (entry) => `Chinese idiom: ${entry.chengyu}. Pinyin: ${entry.pinyin || ''}. Meaning: ${entry.meaning || ''}. Literal: ${entry.literal || ''}. Usage: ${entry.usage || ''}. Tags: ${(entry.tags || []).join(', ')}`.trim()
+        build: (entry) => `Chinese idiom: ${entry.chengyu}. Pinyin: ${entry.pinyin || ''}. Meaning: ${entry.meaning || ''}. Literal: ${entry.literal || ''}. Tags: ${(entry.tags || []).join(', ')}`.trim()
     },
     'tags-meaning': {
         key: 'tags-meaning',
@@ -73,6 +85,20 @@ const EMBEDDING_PRESETS = {
         'bge-small:english-dense',
         'gte-small:english-dense'
     ],
+    multilingual: [
+        'current',
+        'multilingual-minilm:meaning-literal-tags',
+        'multilingual-minilm:english-dense',
+        'multilingual-minilm:rich'
+    ],
+    'field-specific': [
+        'current',
+        'minilm:meaning-only',
+        'minilm:meaning-literal',
+        'minilm:tags-meaning',
+        'minilm:english-dense',
+        'minilm:rich'
+    ],
     broad: [
         'current',
         'minilm:meaning-only',
@@ -83,7 +109,9 @@ const EMBEDDING_PRESETS = {
         'bge-small:english-dense',
         'bge-base:english-dense',
         'gte-small:english-dense',
-        'gte-small:meaning-literal-tags'
+        'gte-small:meaning-literal-tags',
+        'multilingual-minilm:english-dense',
+        'multilingual-minilm:rich'
     ]
 };
 
@@ -184,13 +212,7 @@ function variantExists(variant) {
 }
 
 function buildTemplateText(templateKey, entry) {
-    const template = EMBEDDING_TEMPLATES[templateKey];
-    if (!template) {
-        throw new Error(`Unknown embedding template "${templateKey}"`);
-    }
-
-    const text = template.build(entry);
-    return text && text.trim() ? text.trim() : (entry.meaning || entry.literal || entry.chengyu || '');
+    return buildEmbeddingTemplateText(templateKey, entry);
 }
 
 async function getEmbedder(modelId) {
@@ -242,11 +264,12 @@ async function generateVariantEmbeddings(variant, {
         const entry = CHENGYU[i];
         const text = buildTemplateText(variant.templateKey, entry);
         const output = await embedder(text, {
-            pooling: 'mean',
-            normalize: true
+            pooling: EMBEDDING_POOLING,
+            normalize: EMBEDDING_NORMALIZE
         });
 
         embeddings.push({
+            id: entry.id || buildStableChengyuId(entry),
             chengyu: entry.chengyu,
             embedding: Array.from(output.data)
         });
@@ -261,16 +284,15 @@ async function generateVariantEmbeddings(variant, {
         }
     }
 
-    const metadata = {
-        version: 1,
+    const metadata = buildEmbeddingArtifact({
+        database: CHENGYU,
+        embeddings,
         model: variant.modelId,
         modelKey: variant.modelKey,
         template: variant.templateKey,
-        dimensions: embeddings[0] ? embeddings[0].embedding.length : 0,
-        generatedAt: new Date().toISOString(),
-        entryCount: embeddings.length,
-        embeddings
-    };
+        pooling: EMBEDDING_POOLING,
+        normalize: EMBEDDING_NORMALIZE
+    });
 
     await fsp.writeFile(variant.filePath, JSON.stringify(metadata));
 
@@ -287,11 +309,19 @@ async function generateVariantEmbeddings(variant, {
 }
 
 function getVariantEnv(variant) {
-    return {
+    const env = {
         EMBEDDINGS_FILE: variant.relativeFilePath,
         EMBEDDING_MODEL_ID: variant.modelId,
+        EMBEDDING_POOLING: EMBEDDING_POOLING,
+        EMBEDDING_NORMALIZE: String(EMBEDDING_NORMALIZE),
         QUIET_LOGS: '1'
     };
+
+    if (variant.templateKey && variant.templateKey !== 'current') {
+        env.EMBEDDING_TEMPLATE = variant.templateKey;
+    }
+
+    return env;
 }
 
 module.exports = {

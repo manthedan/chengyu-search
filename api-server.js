@@ -10,12 +10,38 @@ const {
     semanticSearchOnly
 } = require('./autoresearch/search-logic.js');
 const searchConfig = require('./autoresearch/search-config.js');
+const { withStableChengyuIds } = require('./autoresearch/chengyu-identity.js');
+const {
+    buildEmbeddingCorpusHash,
+    validateEmbeddingArtifact
+} = require('./autoresearch/embedding-validation.js');
+const {
+    isBinaryEmbeddingPath,
+    readBinaryEmbeddingArtifact
+} = require('./autoresearch/embedding-binary.js');
+const {
+    getCedictVariantIndices,
+    normalizeCedictPinyinKey
+} = require('./autoresearch/cedict-variants.js');
 
 const app = express();
 const DEFAULT_PORT = process.env.PORT || 3000;
 const QUIET_LOGS = process.env.QUIET_LOGS === '1';
-const DEFAULT_EMBEDDINGS_FILE = 'embeddings-local.json';
+const DEFAULT_EMBEDDINGS_FILE = 'embeddings-local.bin';
 const DEFAULT_EMBEDDING_MODEL_ID = 'Xenova/all-MiniLM-L6-v2';
+const DEFAULT_EMBEDDING_TEMPLATE = 'rich';
+const DEFAULT_EMBEDDING_POOLING = 'mean';
+const DEFAULT_EMBEDDING_NORMALIZE = true;
+const EMBEDDING_PREPROCESSING_VERSION = 'v1';
+const DEFAULT_EMBEDDING_CACHE_SIZE = 5000;
+const DEFAULT_CROSS_ENCODER_MODEL_ID = 'Xenova/ms-marco-MiniLM-L-6-v2';
+const EMBEDDING_MODEL_DIMENSIONS = {
+    'Xenova/all-MiniLM-L6-v2': 384,
+    'Xenova/bge-small-en-v1.5': 384,
+    'Xenova/bge-base-en-v1.5': 768,
+    'Xenova/gte-small': 384,
+    'Xenova/paraphrase-multilingual-MiniLM-L12-v2': 384
+};
 const DEFAULT_MAX_QUERY_LENGTH = 500;
 const DEFAULT_HSTS_MAX_AGE_SECONDS = 86400;
 const SEARCH_RATE_LIMIT_PATHS = new Set([
@@ -172,18 +198,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 let CHENGYU_DATABASE = [];
 let CHENGYU_BY_ID = new Map();
 let CHENGYU_EMBEDDINGS = null;
-let CEDICT_VARIANT_BY_SIMPLIFIED_AND_PINYIN = null;
-let CEDICT_VARIANT_BY_SIMPLIFIED = null;
 let embeddingMetadata = {
     file: null,
     model: null,
     template: null,
     dimensions: null,
     generatedAt: null,
-    entryCount: null
+    entryCount: null,
+    validationDiagnostics: []
 };
 let embeddingModelReady = false;
 let embeddingPipeline = null;
+let crossEncoderReady = false;
+let crossEncoderTokenizer = null;
+let crossEncoderModel = null;
 let initialized = false;
 let initializationPromise = null;
 let activeServer = null;
@@ -239,7 +267,32 @@ class TTLCache extends LRUCache {
     }
 }
 
-const embeddingCache = new LRUCache(100);
+function getPositiveIntegerEnv(name, defaultValue) {
+    const value = Number.parseInt(process.env[name] || '', 10);
+    return Number.isInteger(value) && value > 0 ? value : defaultValue;
+}
+
+function normalizeEmbeddingCacheKey(query) {
+    return String(query || '')
+        .normalize('NFKC')
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, ' ')
+        .replace(/[.!?]+$/u, '')
+        .trim();
+}
+
+function createEmbeddingCacheKey(query) {
+    return [
+        getEmbeddingModelId(),
+        getEmbeddingPooling(),
+        getEmbeddingNormalize() ? 'normalize:true' : 'normalize:false',
+        EMBEDDING_PREPROCESSING_VERSION,
+        normalizeEmbeddingCacheKey(query)
+    ].join('::');
+}
+
+const embeddingCache = new LRUCache(getPositiveIntegerEnv('EMBEDDING_CACHE_SIZE', DEFAULT_EMBEDDING_CACHE_SIZE));
 const searchResultCache = new TTLCache(75, 300000);
 const DEFAULT_RESULT_LIMIT = 10;
 const MAX_RESULT_WINDOW = 50;
@@ -250,17 +303,6 @@ const AUTO_MODE_BY_QUERY_TYPE = {
     partial: 'hybrid',
     pinyin: 'hybrid',
     chinese_exact: 'hybrid'
-};
-
-const AUTO_MODE_BY_QUERY_OVERRIDE = {
-    'reaping what you sow': 'hybrid',
-    'surrounded by enemies': 'keyword',
-    friendship: 'keyword',
-    dragon: 'keyword',
-    heart: 'keyword',
-    mountain: 'keyword',
-    tiger: 'semantic',
-    water: 'semantic'
 };
 
 function createRuntimeMetrics() {
@@ -485,43 +527,43 @@ function getEmbeddingModelId() {
     return process.env.EMBEDDING_MODEL_ID || DEFAULT_EMBEDDING_MODEL_ID;
 }
 
-function normalizeCedictPinyinKey(value) {
-    return String(value || '')
-        .toLowerCase()
-        .replace(/[^a-z0-9üv:\s]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
+function getEmbeddingTemplate() {
+    return process.env.EMBEDDING_TEMPLATE || DEFAULT_EMBEDDING_TEMPLATE;
 }
 
-function getCedictVariantIndices() {
-    if (CEDICT_VARIANT_BY_SIMPLIFIED_AND_PINYIN && CEDICT_VARIANT_BY_SIMPLIFIED) {
-        return {
-            bySimplifiedAndPinyin: CEDICT_VARIANT_BY_SIMPLIFIED_AND_PINYIN,
-            bySimplified: CEDICT_VARIANT_BY_SIMPLIFIED
-        };
+function getEmbeddingPooling() {
+    return process.env.EMBEDDING_POOLING || DEFAULT_EMBEDDING_POOLING;
+}
+
+function getEmbeddingNormalize() {
+    const configured = process.env.EMBEDDING_NORMALIZE;
+    if (configured === undefined) return DEFAULT_EMBEDDING_NORMALIZE;
+    return !['0', 'false', 'no'].includes(String(configured).trim().toLowerCase());
+}
+
+function getEmbeddingExpectedDimensions(modelId = getEmbeddingModelId()) {
+    const configured = Number(process.env.EMBEDDING_DIMENSIONS);
+    if (Number.isInteger(configured) && configured > 0) {
+        return configured;
     }
+    return EMBEDDING_MODEL_DIMENSIONS[modelId] || null;
+}
 
-    const cedictIdioms = require('./cedict-all-idioms.json');
-    const bySimplifiedAndPinyin = new Map();
-    const bySimplified = new Map();
+function getCrossEncoderModelId() {
+    return process.env.CROSS_ENCODER_MODEL_ID || DEFAULT_CROSS_ENCODER_MODEL_ID;
+}
 
-    cedictIdioms.forEach(entry => {
-        const simplified = entry.simplified;
-        const pinyinKey = normalizeCedictPinyinKey(entry.pinyin);
-        const combinedKey = `${simplified}::${pinyinKey}`;
+function hasCrossEncoderConfig(config) {
+    if (!config || typeof config !== 'object') return false;
+    if (Number(config.crossEncoderTopK || 0) > 0 && Number(config.crossEncoderBlendWeight || 0) > 0) return true;
+    const typeOverrides = config.typeOverrides || {};
+    return Object.values(typeOverrides).some(override => hasCrossEncoderConfig(override));
+}
 
-        if (!bySimplifiedAndPinyin.has(combinedKey)) {
-            bySimplifiedAndPinyin.set(combinedKey, entry);
-        }
-        if (!bySimplified.has(simplified)) {
-            bySimplified.set(simplified, entry);
-        }
-    });
-
-    CEDICT_VARIANT_BY_SIMPLIFIED_AND_PINYIN = bySimplifiedAndPinyin;
-    CEDICT_VARIANT_BY_SIMPLIFIED = bySimplified;
-
-    return { bySimplifiedAndPinyin, bySimplified };
+function isCrossEncoderConfigured() {
+    if (process.env.CROSS_ENCODER_ENABLED === '1') return true;
+    if (['0', 'false', 'no'].includes(String(process.env.CROSS_ENCODER_ENABLED || '').trim().toLowerCase())) return false;
+    return hasCrossEncoderConfig(loadFreshSearchConfig()) || hasCrossEncoderConfig(loadHybridOverrides());
 }
 
 function enrichChengyuEntryWithVariants(entry) {
@@ -541,8 +583,8 @@ async function loadChengyuDatabase() {
     logInfo('📚 Loading chengyu database...');
     try {
         const chengyuModule = require('./chengyuData.js');
-        CHENGYU_DATABASE = chengyuModule.map(enrichChengyuEntryWithVariants);
-        CHENGYU_BY_ID = new Map(CHENGYU_DATABASE.map(entry => [entry.chengyu, entry]));
+        CHENGYU_DATABASE = withStableChengyuIds(chengyuModule.map(enrichChengyuEntryWithVariants));
+        CHENGYU_BY_ID = new Map(CHENGYU_DATABASE.map(entry => [entry.id, entry]));
         logInfo(`✓ Loaded ${CHENGYU_DATABASE.length} chengyu entries`);
         return true;
     } catch (error) {
@@ -555,33 +597,59 @@ async function loadEmbeddings() {
     const embeddingsFilePath = getEmbeddingsFilePath();
     logInfo(`🧠 Loading embeddings from ${path.relative(__dirname, embeddingsFilePath) || path.basename(embeddingsFilePath)}...`);
     try {
-        const embeddingsData = await fs.readFile(embeddingsFilePath, 'utf-8');
-        const parsed = JSON.parse(embeddingsData);
+        const embeddingsData = await fs.readFile(embeddingsFilePath);
+        const parsed = isBinaryEmbeddingPath(embeddingsFilePath)
+            ? readBinaryEmbeddingArtifact(embeddingsData)
+            : JSON.parse(embeddingsData.toString('utf8'));
         const embeddingEntries = Array.isArray(parsed) ? parsed : parsed.embeddings;
 
         if (!Array.isArray(embeddingEntries)) {
             throw new Error('Embedding file must contain an array or an object with an embeddings array');
         }
 
-        CHENGYU_EMBEDDINGS = embeddingEntries;
+        const expectedModel = getEmbeddingModelId();
+        const expectedTemplate = getEmbeddingTemplate();
+        const expectedDimensions = getEmbeddingExpectedDimensions(expectedModel);
+        const expectedCorpusHash = buildEmbeddingCorpusHash(CHENGYU_DATABASE, expectedTemplate);
+        const validation = validateEmbeddingArtifact(parsed, CHENGYU_DATABASE, {
+            expectedModel,
+            expectedPooling: getEmbeddingPooling(),
+            expectedNormalize: getEmbeddingNormalize(),
+            expectedTemplate,
+            expectedDimensions,
+            expectedCorpusHash,
+            allowLegacyIds: false
+        });
         embeddingMetadata = {
             file: embeddingsFilePath,
             model: parsed && !Array.isArray(parsed) ? (parsed.model || null) : null,
             template: parsed && !Array.isArray(parsed) ? (parsed.template || null) : null,
+            pooling: parsed && !Array.isArray(parsed) ? (parsed.pooling || null) : null,
+            normalize: parsed && !Array.isArray(parsed) ? (parsed.normalize ?? null) : null,
             dimensions: parsed && !Array.isArray(parsed)
                 ? (parsed.dimensions || (embeddingEntries[0] && embeddingEntries[0].embedding && embeddingEntries[0].embedding.length) || null)
                 : ((embeddingEntries[0] && embeddingEntries[0].embedding && embeddingEntries[0].embedding.length) || null),
             generatedAt: parsed && !Array.isArray(parsed) ? (parsed.generatedAt || null) : null,
-            entryCount: parsed && !Array.isArray(parsed) ? (parsed.entryCount || embeddingEntries.length) : embeddingEntries.length
+            entryCount: parsed && !Array.isArray(parsed) ? (parsed.entryCount || embeddingEntries.length) : embeddingEntries.length,
+            corpusHash: parsed && !Array.isArray(parsed) ? (parsed.corpusHash || null) : null,
+            validationDiagnostics: validation.diagnostics
         };
 
-        if (CHENGYU_EMBEDDINGS.length !== CHENGYU_DATABASE.length) {
-            console.error(`❌ Embeddings count (${CHENGYU_EMBEDDINGS.length}) does not match database (${CHENGYU_DATABASE.length})`);
+        if (!validation.ok) {
+            console.error('❌ Embedding artifact validation failed:');
+            validation.diagnostics.slice(0, 10).forEach(diagnostic => {
+                console.error(`   - ${diagnostic}`);
+            });
+            if (validation.diagnostics.length > 10) {
+                console.error(`   - ... ${validation.diagnostics.length - 10} additional validation errors`);
+            }
             console.error('   Hybrid search will fall back to keyword/token scoring only');
             CHENGYU_EMBEDDINGS = null;
             return false;
         }
-        logInfo(`✓ Loaded ${CHENGYU_EMBEDDINGS.length} embeddings (${Math.round(embeddingsData.length / 1024 / 1024)}MB)`);
+
+        CHENGYU_EMBEDDINGS = validation.embeddingsById;
+        logInfo(`✓ Loaded ${CHENGYU_EMBEDDINGS.size} embeddings (${Math.round(embeddingsData.length / 1024 / 1024)}MB)`);
         return true;
     } catch (error) {
         console.error(`⚠️  Embeddings not found at ${embeddingsFilePath} - semantic endpoint will be disabled`);
@@ -591,9 +659,13 @@ async function loadEmbeddings() {
             file: embeddingsFilePath,
             model: null,
             template: null,
+            pooling: null,
+            normalize: null,
             dimensions: null,
             generatedAt: null,
-            entryCount: null
+            entryCount: null,
+            corpusHash: null,
+            validationDiagnostics: [error.message]
         };
         return false;
     }
@@ -625,8 +697,11 @@ async function generateQueryEmbedding(query, { bypassCache = false } = {}) {
         throw new Error('Embedding model not initialized');
     }
 
+    const normalizedQuery = normalizeEmbeddingCacheKey(query);
+    const cacheKey = createEmbeddingCacheKey(normalizedQuery);
+
     if (!bypassCache) {
-        const cached = embeddingCache.get(query);
+        const cached = embeddingCache.get(cacheKey);
         if (cached) {
             recordCacheOutcome('embedding', 'hit');
             return cached;
@@ -636,17 +711,85 @@ async function generateQueryEmbedding(query, { bypassCache = false } = {}) {
         recordCacheOutcome('embedding', 'bypass');
     }
 
-    const output = await embeddingPipeline(query, {
-        pooling: 'mean',
-        normalize: true
+    const output = await embeddingPipeline(normalizedQuery, {
+        pooling: getEmbeddingPooling(),
+        normalize: getEmbeddingNormalize()
     });
     const embedding = Array.from(output.data);
 
     if (!bypassCache) {
-        embeddingCache.set(query, embedding);
+        embeddingCache.set(cacheKey, embedding);
     }
 
     return embedding;
+}
+
+async function initializeCrossEncoderReranker() {
+    if (!isCrossEncoderConfigured()) {
+        crossEncoderReady = false;
+        crossEncoderTokenizer = null;
+        crossEncoderModel = null;
+        return false;
+    }
+
+    const modelId = getCrossEncoderModelId();
+    logInfo(`🔁 Loading cross-encoder reranker (${modelId})...`);
+    try {
+        const { AutoTokenizer, AutoModelForSequenceClassification } = await import('@xenova/transformers');
+        crossEncoderTokenizer = await AutoTokenizer.from_pretrained(modelId);
+        crossEncoderModel = await AutoModelForSequenceClassification.from_pretrained(modelId);
+        crossEncoderReady = true;
+        logInfo('✓ Cross-encoder reranker ready');
+        return true;
+    } catch (error) {
+        console.error('⚠️  Error loading cross-encoder reranker:', error.message || error);
+        console.error('   Continuing without cross-encoder reranking');
+        crossEncoderReady = false;
+        crossEncoderTokenizer = null;
+        crossEncoderModel = null;
+        return false;
+    }
+}
+
+function buildCrossEncoderDocumentText(entry = {}) {
+    return [
+        entry.meaning ? `Meaning: ${entry.meaning}` : '',
+        entry.literal ? `Literal: ${entry.literal}` : '',
+        entry.example ? `Example: ${entry.example}` : '',
+        Array.isArray(entry.tags) && entry.tags.length ? `Topics: ${entry.tags.join(', ')}` : ''
+    ].filter(Boolean).join('. ');
+}
+
+async function scoreCrossEncoderCandidates(query, candidates) {
+    if (!crossEncoderReady || !crossEncoderTokenizer || !crossEncoderModel) {
+        throw new Error('Cross-encoder reranker not initialized');
+    }
+
+    const queryTexts = candidates.map(() => query);
+    const documentTexts = candidates.map(candidate => buildCrossEncoderDocumentText(candidate.item || {}));
+    const features = crossEncoderTokenizer(queryTexts, {
+        text_pair: documentTexts,
+        padding: true,
+        truncation: true
+    });
+    const output = await crossEncoderModel(features);
+    const logits = output.logits;
+    const values = Array.from(logits.data || []);
+    const dims = Array.isArray(logits.dims) ? logits.dims : [];
+    const labelCount = dims.length >= 2 ? dims[1] : 1;
+
+    if (labelCount <= 1) return values;
+
+    const scores = [];
+    for (let i = 0; i < candidates.length; i++) {
+        const offset = i * labelCount;
+        scores.push(values[offset + labelCount - 1] - values[offset]);
+    }
+    return scores;
+}
+
+function getCrossEncoderSearchOption() {
+    return crossEncoderReady ? { scoreCrossEncoder: scoreCrossEncoderCandidates } : {};
 }
 
 function isPlainObject(value) {
@@ -717,17 +860,17 @@ function clampRelevanceScore(score) {
 
 function buildResultPayload(rankedResults) {
     return rankedResults
-        .map(({ item, chengyu, score }) => {
-            const entry = item || CHENGYU_BY_ID.get(chengyu);
+        .map(({ item, id, chengyu, score }) => {
+            const entry = item || CHENGYU_BY_ID.get(id);
             if (!entry) return null;
             return {
+                id: entry.id,
                 chengyu: entry.chengyu,
                 simplified: entry.simplified || entry.chengyu,
                 traditional: entry.traditional || entry.chengyu,
                 pinyin: entry.pinyin,
                 literal: entry.literal,
                 meaning: entry.meaning,
-                usage: entry.usage,
                 example: entry.example,
                 tags: entry.tags,
                 formality: entry.formality,
@@ -925,11 +1068,113 @@ function normalizeAutoRouteQuery(query) {
         .trim();
 }
 
+const AUTO_ROUTE_STOPWORDS = new Set([
+    'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from', 'in', 'into',
+    'is', 'it', 'its', 'of', 'on', 'or', 'that', 'the', 'their', 'this', 'to',
+    'with', 'like', 'up', 'out', 'off', 'over', 'under', 'about', 'through',
+    'what', 'you', 'your'
+]);
+
+function getAutoRouteTokenSignals(normalizedQuery, normalizedTokens) {
+    const contentTokens = normalizedTokens.filter(token => !AUTO_ROUTE_STOPWORDS.has(token));
+    const signals = {
+        contentTokens,
+        exactPhraseHits: 0,
+        allContentHits: 0,
+        anyContentHits: 0,
+        tagHits: 0,
+        meaningHits: 0,
+        literalHits: 0,
+        exampleHits: 0
+    };
+
+    if (!normalizedQuery || CHENGYU_DATABASE.length === 0) {
+        return signals;
+    }
+
+    const contentTokenSet = new Set(contentTokens);
+
+    CHENGYU_DATABASE.forEach(entry => {
+        const tagText = (entry.tags || []).join(' ');
+        const normalizedFieldText = normalizeAutoRouteQuery([
+            entry.meaning,
+            entry.literal,
+            entry.example,
+            tagText
+        ].join(' '));
+        const fieldTokens = new Set(normalizedFieldText.split(' ').filter(Boolean));
+
+        if (contentTokens.length > 0 && ` ${normalizedFieldText} `.includes(` ${normalizedQuery} `)) {
+            signals.exactPhraseHits += 1;
+        }
+        if (contentTokens.length > 0 && contentTokens.every(token => fieldTokens.has(token))) {
+            signals.allContentHits += 1;
+        }
+        if (contentTokens.some(token => fieldTokens.has(token))) {
+            signals.anyContentHits += 1;
+        }
+        if ((entry.tags || []).some(tag => contentTokenSet.has(normalizeAutoRouteQuery(tag)))) {
+            signals.tagHits += 1;
+        }
+
+        if (normalizedTokens.length === 1) {
+            const [token] = normalizedTokens;
+            if (new Set(normalizeAutoRouteQuery(entry.meaning).split(' ')).has(token)) {
+                signals.meaningHits += 1;
+            }
+            if (new Set(normalizeAutoRouteQuery(entry.literal).split(' ')).has(token)) {
+                signals.literalHits += 1;
+            }
+            if (new Set(normalizeAutoRouteQuery(entry.example).split(' ')).has(token)) {
+                signals.exampleHits += 1;
+            }
+        }
+    });
+
+    return signals;
+}
+
 function getPreferredSearchMode(queryType, query) {
     const normalizedQuery = normalizeAutoRouteQuery(query);
-    if (AUTO_MODE_BY_QUERY_OVERRIDE[normalizedQuery]) {
-        return AUTO_MODE_BY_QUERY_OVERRIDE[normalizedQuery];
+    const normalizedTokens = normalizedQuery ? normalizedQuery.split(' ') : [];
+    const signals = getAutoRouteTokenSignals(normalizedQuery, normalizedTokens);
+
+    if (queryType === 'partial' && normalizedTokens.length === 1) {
+        const singleTokenHits = signals.meaningHits + signals.literalHits + signals.exampleHits + signals.tagHits;
+        if (signals.meaningHits >= 40) {
+            return 'keyword';
+        }
+        if (signals.literalHits >= 55 || singleTokenHits >= 80) {
+            return 'hybrid';
+        }
+        if (signals.literalHits >= 40 && signals.meaningHits <= 10) {
+            return 'semantic';
+        }
+        return 'keyword';
     }
+
+    if (queryType === 'thematic' && normalizedTokens.length === 1 && signals.tagHits >= 10) {
+        return 'keyword';
+    }
+
+    if (['english_meaning', 'literal', 'thematic'].includes(queryType)) {
+        if (queryType === 'thematic' && signals.contentTokens.length > 1 && signals.tagHits >= 50) {
+            return 'semantic';
+        }
+        if (signals.exactPhraseHits > 0 && signals.contentTokens.length <= 3) {
+            if (signals.contentTokens.length >= 3 && signals.anyContentHits > 100) {
+                return 'semantic';
+            }
+            if (signals.allContentHits === 1 && signals.anyContentHits <= 30) {
+                return 'keyword';
+            }
+            return 'hybrid';
+        }
+        if (normalizedTokens.includes('what') && normalizedTokens.includes('you') && signals.contentTokens.length <= 2) {
+            return 'hybrid';
+        }
+    }
+
     return AUTO_MODE_BY_QUERY_TYPE[queryType] || 'hybrid';
 }
 
@@ -977,7 +1222,8 @@ async function getSemanticRankedResults(query, {
                 resultLimit,
                 generateQueryEmbedding: input => generateQueryEmbedding(input, {
                     bypassCache: bypassEmbeddingCache
-                })
+                }),
+                ...getCrossEncoderSearchOption()
             }
         )
     });
@@ -1009,7 +1255,8 @@ async function getHybridRankedResults(query, {
                     resultLimit,
                     generateQueryEmbedding: input => generateQueryEmbedding(input, {
                         bypassCache: bypassEmbeddingCache
-                    })
+                    }),
+                    ...getCrossEncoderSearchOption()
                 }
             );
         }
@@ -1223,11 +1470,8 @@ async function initializeSearchState() {
         const embeddingsLoaded = await loadEmbeddings();
         if (embeddingsLoaded) {
             await initializeEmbeddingModel();
-            const configuredModel = getEmbeddingModelId();
-            if (embeddingMetadata.model && embeddingMetadata.model !== configuredModel) {
-                console.error(`⚠️  Embedding file model (${embeddingMetadata.model}) does not match query model (${configuredModel})`);
-            }
         }
+        await initializeCrossEncoderReranker();
 
         resetCaches();
         initialized = true;
@@ -1247,6 +1491,7 @@ function buildHealthPayload() {
         database: CHENGYU_DATABASE.length > 0,
         embeddings: CHENGYU_EMBEDDINGS !== null,
         embeddingModel: embeddingModelReady,
+        crossEncoderReranker: crossEncoderReady,
         autoRouting: true,
         defaultRoute: 'auto',
         chengyuCount: CHENGYU_DATABASE.length
@@ -1261,8 +1506,16 @@ function buildHealthPayload() {
         embeddingFile: sanitizeEmbeddingFileLabel(embeddingMetadata.file),
         embeddingDimensions: embeddingMetadata.dimensions,
         embeddingTemplate: embeddingMetadata.template,
+        embeddingPooling: embeddingMetadata.pooling,
+        embeddingNormalize: embeddingMetadata.normalize,
+        embeddingCorpusHash: embeddingMetadata.corpusHash,
         configuredEmbeddingModel: getEmbeddingModelId(),
+        configuredEmbeddingTemplate: getEmbeddingTemplate(),
+        configuredEmbeddingPooling: getEmbeddingPooling(),
+        configuredEmbeddingNormalize: getEmbeddingNormalize(),
         loadedEmbeddingModel: embeddingMetadata.model,
+        crossEncoderModel: crossEncoderReady ? getCrossEncoderModelId() : null,
+        embeddingValidationDiagnostics: (embeddingMetadata.validationDiagnostics || []).slice(0, 10),
         searchConfigOverride: Boolean(loadSearchConfigOverride())
     };
 }
@@ -1494,5 +1747,7 @@ if (require.main === module) {
 module.exports = {
     app,
     startServer,
-    initializeSearchState
+    initializeSearchState,
+    normalizeEmbeddingCacheKey,
+    createEmbeddingCacheKey
 };
