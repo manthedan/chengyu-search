@@ -671,7 +671,7 @@ function render() {
     document.body.dataset.theme = STATE.theme;
 
     const app = document.getElementById('app');
-    app.innerHTML = `
+    const html = `
         ${renderHeader()}
         ${STATE.view === 'landing' ? renderHero() : ''}
         ${renderSearchSection()}
@@ -681,7 +681,10 @@ function render() {
         ${renderPopover()}
     `;
 
-    bind();
+    if (app.innerHTML.trim() !== html.trim()) {
+        app.innerHTML = html;
+        bind();
+    }
 }
 
 function bind() {
@@ -818,14 +821,12 @@ function init() {
     render();
     SPEECH.getSpeechVoices().catch(() => {});
     checkBackendHealth();
-    loadDictionaryData().then(() => {
-        if (DICTIONARY.loaded) render();
-    }).catch(() => {});
-    refreshBookmarksIfNeeded().then(changed => {
-        if (changed) {
-            render();
-        }
-    }).catch(() => {});
+    Promise.allSettled([
+        loadDictionaryData(),
+        refreshBookmarksIfNeeded(),
+    ]).then(() => {
+        render();
+    });
 }
 
 document.addEventListener('DOMContentLoaded', init);

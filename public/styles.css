@@ -15,10 +15,11 @@
     --radius-lg: 8px;
     --shadow-soft: 0 1px 0 rgba(26, 22, 19, 0.04), 0 1px 2px rgba(26, 22, 19, 0.04), 0 8px 24px -12px rgba(26, 22, 19, 0.10);
     --shadow-hover: 0 2px 0 rgba(26, 22, 19, 0.05), 0 4px 8px rgba(26, 22, 19, 0.06), 0 20px 40px -16px rgba(26, 22, 19, 0.18);
-    --font-display: "Source Serif 4", Georgia, serif;
-    --font-ui: "Inter", -apple-system, system-ui, sans-serif;
-    --font-cn: "Noto Serif SC", "Songti SC", serif;
-    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    --font-display: Georgia, "Times New Roman", serif;
+    --font-ui: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, sans-serif;
+    --font-cn: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", "Source Han Serif SC", serif;
+    --font-cn-system: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", "Source Han Serif SC", serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
     --max-hero: 780px;
     --max-results: 1100px;
     --page-pad: 40px;
@@ -286,7 +287,7 @@ body[data-theme="dark"] .noise {
 .hero-chars {
     margin: 0 0 18px;
     display: inline-block;
-    font-family: var(--font-cn);
+    font-family: var(--font-cn-system);
     font-size: clamp(56px, 9vw, 112px);
     font-weight: 700;
     line-height: 1;
