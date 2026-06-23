@@ -65,6 +65,18 @@ const API_CLIENT = FRONTEND_API_FACTORY.createChengyuApiClient({
     pageSize: PAGE_SIZE
 });
 
+const FRONTEND_ANKI_FACTORY = window.ChengyuFrontendAnki;
+if (!FRONTEND_ANKI_FACTORY) {
+    throw new Error('frontend-anki.js must load before app.js');
+}
+const ANKI = FRONTEND_ANKI_FACTORY.createAnkiExporter({
+    escapeHtml,
+    toneMarkPinyinString,
+    getDisplayHeadword
+});
+const buildAnkiFieldColumns = ANKI.buildAnkiFieldColumns;
+const buildAnkiExportContent = ANKI.buildAnkiExportContent;
+
 const INITIAL_BOOKMARKS = STORAGE.loadBookmarks();
 
 const STATE = {
@@ -816,49 +828,6 @@ function getBookmarkedResults() {
     return Object.values(STATE.bookmarks).sort((a, b) => a.chengyu.localeCompare(b.chengyu, 'zh-Hans-CN'));
 }
 
-function sanitizeAnkiField(value) {
-    return escapeHtml(String(value ?? ''))
-        .replace(/\t/g, ' ')
-        .replace(/\r?\n+/g, '<br>');
-}
-
-function buildAnkiFieldColumns(result) {
-    return [
-        sanitizeAnkiField(getDisplayHeadword(result)),
-        sanitizeAnkiField(result.simplified || result.chengyu),
-        sanitizeAnkiField(result.traditional || result.chengyu),
-        sanitizeAnkiField(result.pinyin || ''),
-        sanitizeAnkiField(toneMarkPinyinString(result.pinyin)),
-        sanitizeAnkiField(result.meaning || ''),
-        sanitizeAnkiField(result.literal || ''),
-        sanitizeAnkiField(result.example || ''),
-        sanitizeAnkiField(Array.isArray(result.tags) ? result.tags.join(', ') : ''),
-        sanitizeAnkiField(result.formality || '')
-    ];
-}
-
-function buildAnkiExportContent(results) {
-    const rows = results.map(result => buildAnkiFieldColumns(result).join('\t'));
-
-    return [
-        '#separator:tab',
-        '#html:true',
-        ...rows
-    ].join('\n');
-}
-
-function downloadTextFile({ filename, content, type }) {
-    const blob = new Blob([content], { type });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.append(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-}
-
 function exportSavedAsAnki(button) {
     const saved = getBookmarkedResults();
     if (!saved.length) {
@@ -870,7 +839,7 @@ function exportSavedAsAnki(button) {
     STATE.error = null;
     const content = buildAnkiExportContent(saved);
     const stamp = new Date().toISOString().slice(0, 10);
-    downloadTextFile({
+    ANKI.downloadTextFile({
         filename: `chengyu-search-anki-${stamp}.tsv`,
         content,
         type: 'text/tab-separated-values;charset=utf-8'

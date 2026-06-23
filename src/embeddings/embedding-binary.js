@@ -1,10 +1,27 @@
+/** @ts-check */
+
 const MAGIC = Buffer.from('CHENGYU_EMBEDDINGS_BIN_V1\n');
 
+/**
+ * @typedef {{ id?: string, chengyu?: string, embedding: readonly number[] | Float32Array }} BinaryEmbeddingRow
+ * @typedef {{ dimensions?: number, entryCount?: number, embeddings?: BinaryEmbeddingRow[], [key: string]: unknown }} BinaryEmbeddingArtifact
+ * @typedef {{ id?: string, chengyu?: string }} BinaryEmbeddingMetadataEntry
+ * @typedef {{ dimensions?: number, entryCount?: number, entries?: BinaryEmbeddingMetadataEntry[], [key: string]: unknown }} BinaryEmbeddingMetadata
+ */
+
+/**
+ * @param {BinaryEmbeddingArtifact} artifact
+ * @returns {Record<string, unknown>}
+ */
 function stripEmbeddings(artifact) {
-  const { embeddings, ...metadata } = artifact || {};
+  const { embeddings: _embeddings, ...metadata } = artifact || {};
   return metadata;
 }
 
+/**
+ * @param {BinaryEmbeddingArtifact} artifact
+ * @returns {Buffer}
+ */
 function writeBinaryEmbeddingArtifact(artifact) {
   if (!artifact || !Array.isArray(artifact.embeddings)) {
     throw new Error('Embedding artifact must contain an embeddings array');
@@ -16,13 +33,14 @@ function writeBinaryEmbeddingArtifact(artifact) {
     throw new Error('Embedding artifact dimensions must be a positive integer');
   }
 
-  const entries = artifact.embeddings.map(entry => {
+  const artifactEmbeddings = artifact.embeddings;
+  const entries = artifactEmbeddings.map(entry => {
     if (!entry || !Array.isArray(entry.embedding) || entry.embedding.length !== dimensions) {
       throw new Error('All embeddings must have the declared dimensions');
     }
     return {
-      id: entry.id,
-      chengyu: entry.chengyu
+      ...(entry.id !== undefined ? { id: entry.id } : {}),
+      ...(entry.chengyu !== undefined ? { chengyu: entry.chengyu } : {})
     };
   });
 
@@ -40,7 +58,7 @@ function writeBinaryEmbeddingArtifact(artifact) {
 
   const vectorBuffer = Buffer.alloc(entryCount * dimensions * 4);
   let offset = 0;
-  artifact.embeddings.forEach(entry => {
+  artifactEmbeddings.forEach(entry => {
     entry.embedding.forEach(value => {
       vectorBuffer.writeFloatLE(Number(value), offset);
       offset += 4;
@@ -50,22 +68,29 @@ function writeBinaryEmbeddingArtifact(artifact) {
   return Buffer.concat([header, metadataBuffer, vectorBuffer]);
 }
 
+/**
+ * @param {Buffer | ArrayBuffer | Uint8Array} buffer
+ * @returns {BinaryEmbeddingArtifact & { embeddings: { id?: string, chengyu?: string, embedding: number[] }[], dimensions: number, entryCount: number }}
+ */
 function readBinaryEmbeddingArtifact(buffer) {
-  if (!Buffer.isBuffer(buffer)) {
-    buffer = Buffer.from(buffer);
-  }
-  if (buffer.length < MAGIC.length + 4 || !buffer.subarray(0, MAGIC.length).equals(MAGIC)) {
+  const binaryBuffer = Buffer.isBuffer(buffer)
+    ? buffer
+    : buffer instanceof ArrayBuffer
+      ? Buffer.from(buffer)
+      : Buffer.from(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+
+  if (binaryBuffer.length < MAGIC.length + 4 || !binaryBuffer.subarray(0, MAGIC.length).equals(MAGIC)) {
     throw new Error('Invalid binary embedding artifact magic header');
   }
 
-  const metadataLength = buffer.readUInt32LE(MAGIC.length);
+  const metadataLength = binaryBuffer.readUInt32LE(MAGIC.length);
   const metadataStart = MAGIC.length + 4;
   const metadataEnd = metadataStart + metadataLength;
-  if (metadataEnd > buffer.length) {
+  if (metadataEnd > binaryBuffer.length) {
     throw new Error('Invalid binary embedding artifact metadata length');
   }
 
-  const metadata = JSON.parse(buffer.subarray(metadataStart, metadataEnd).toString('utf8'));
+  const metadata = /** @type {BinaryEmbeddingMetadata} */ (JSON.parse(binaryBuffer.subarray(metadataStart, metadataEnd).toString('utf8')));
   const dimensions = Number(metadata.dimensions);
   const entries = metadata.entries;
   if (!Number.isInteger(dimensions) || dimensions <= 0 || !Array.isArray(entries)) {
@@ -74,19 +99,20 @@ function readBinaryEmbeddingArtifact(buffer) {
 
   const expectedVectorBytes = entries.length * dimensions * 4;
   const vectorStart = metadataEnd;
-  if (buffer.length - vectorStart !== expectedVectorBytes) {
+  if (binaryBuffer.length - vectorStart !== expectedVectorBytes) {
     throw new Error('Binary embedding vector payload length does not match metadata');
   }
 
   const embeddings = entries.map((entry, entryIndex) => {
+    /** @type {number[]} */
     const embedding = new Array(dimensions);
     const entryOffset = vectorStart + entryIndex * dimensions * 4;
     for (let i = 0; i < dimensions; i++) {
-      embedding[i] = buffer.readFloatLE(entryOffset + i * 4);
+      embedding[i] = binaryBuffer.readFloatLE(entryOffset + i * 4);
     }
     return {
-      id: entry.id,
-      chengyu: entry.chengyu,
+      ...(entry.id !== undefined ? { id: entry.id } : {}),
+      ...(entry.chengyu !== undefined ? { chengyu: entry.chengyu } : {}),
       embedding
     };
   });
@@ -100,6 +126,10 @@ function readBinaryEmbeddingArtifact(buffer) {
   };
 }
 
+/**
+ * @param {string} [filePath]
+ * @returns {boolean}
+ */
 function isBinaryEmbeddingPath(filePath = '') {
   return String(filePath).toLowerCase().endsWith('.bin');
 }

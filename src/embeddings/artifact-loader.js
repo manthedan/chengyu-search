@@ -1,3 +1,5 @@
+/** @ts-check */
+
 const fs = require('fs').promises;
 const path = require('path');
 const {
@@ -9,6 +11,19 @@ const {
     readBinaryEmbeddingArtifact
 } = require('./embedding-binary.js');
 
+/**
+ * @typedef {import('../search/types').ChengyuEntry} ChengyuEntry
+ * @typedef {{ id?: string, chengyu?: string, embedding?: number[] | Float32Array }} EmbeddingArtifactRow
+ * @typedef {{ model?: string, template?: string, pooling?: string, normalize?: boolean, dimensions?: number, generatedAt?: string, entryCount?: number, corpusHash?: string, embeddings?: EmbeddingArtifactRow[] }} EmbeddingArtifactObject
+ * @typedef {{ ok: boolean, diagnostics: string[], embeddingsById: Map<string, number[] | Float32Array> }} EmbeddingValidationResult
+ * @typedef {{ file: string, model: string | null, template: string | null, pooling: string | null, normalize: boolean | null, dimensions: number | null, generatedAt: string | null, entryCount: number | null, corpusHash: string | null, validationDiagnostics: string[] }} LoadedEmbeddingMetadata
+ * @typedef {{ ok: true, embeddingsById: Map<string, number[] | Float32Array>, metadata: LoadedEmbeddingMetadata } | { ok: false, embeddingsById: null, metadata: LoadedEmbeddingMetadata }} LoadEmbeddingArtifactResult
+ */
+
+/**
+ * @param {{ filePath: string, parsed: EmbeddingArtifactObject | EmbeddingArtifactRow[], embeddingEntries: EmbeddingArtifactRow[], validation: EmbeddingValidationResult }} options
+ * @returns {LoadedEmbeddingMetadata}
+ */
 function buildEmbeddingMetadata({ filePath, parsed, embeddingEntries, validation }) {
     const hasMetadata = parsed && !Array.isArray(parsed);
     return {
@@ -27,7 +42,13 @@ function buildEmbeddingMetadata({ filePath, parsed, embeddingEntries, validation
     };
 }
 
+/**
+ * @param {string} filePath
+ * @param {unknown} error
+ * @returns {LoadedEmbeddingMetadata}
+ */
 function buildMissingEmbeddingMetadata(filePath, error) {
+    const message = error instanceof Error ? error.message : String(error);
     return {
         file: filePath,
         model: null,
@@ -38,10 +59,14 @@ function buildMissingEmbeddingMetadata(filePath, error) {
         generatedAt: null,
         entryCount: null,
         corpusHash: null,
-        validationDiagnostics: [error.message]
+        validationDiagnostics: [message]
     };
 }
 
+/**
+ * @param {{ filePath: string, database: ChengyuEntry[], expectedModel?: string, expectedTemplate: string, expectedDimensions?: number, expectedPooling?: string, expectedNormalize?: boolean, logInfo?: (message: string) => void, logError?: (message: string) => void, displayPath?: string }} options
+ * @returns {Promise<LoadEmbeddingArtifactResult>}
+ */
 async function loadEmbeddingArtifact({
     filePath,
     database,
@@ -57,9 +82,9 @@ async function loadEmbeddingArtifact({
     logInfo(`🧠 Loading embeddings from ${displayPath}...`);
     try {
         const embeddingsData = await fs.readFile(filePath);
-        const parsed = isBinaryEmbeddingPath(filePath)
+        const parsed = /** @type {EmbeddingArtifactObject | EmbeddingArtifactRow[]} */ (isBinaryEmbeddingPath(filePath)
             ? readBinaryEmbeddingArtifact(embeddingsData)
-            : JSON.parse(embeddingsData.toString('utf8'));
+            : JSON.parse(embeddingsData.toString('utf8')));
         const embeddingEntries = Array.isArray(parsed) ? parsed : parsed.embeddings;
 
         if (!Array.isArray(embeddingEntries)) {
@@ -67,15 +92,18 @@ async function loadEmbeddingArtifact({
         }
 
         const expectedCorpusHash = buildEmbeddingCorpusHash(database, expectedTemplate);
-        const validation = validateEmbeddingArtifact(parsed, database, {
-            expectedModel,
-            expectedPooling,
-            expectedNormalize,
+        /** @type {import('./embedding-validation.js').ValidationOptions} */
+        const validationOptions = {
             expectedTemplate,
-            expectedDimensions,
             expectedCorpusHash,
             allowLegacyIds: false
-        });
+        };
+        if (expectedModel !== undefined) validationOptions.expectedModel = expectedModel;
+        if (expectedPooling !== undefined) validationOptions.expectedPooling = expectedPooling;
+        if (expectedNormalize !== undefined) validationOptions.expectedNormalize = expectedNormalize;
+        if (expectedDimensions !== undefined) validationOptions.expectedDimensions = expectedDimensions;
+
+        const validation = validateEmbeddingArtifact(parsed, database, validationOptions);
         const metadata = buildEmbeddingMetadata({
             filePath,
             parsed,

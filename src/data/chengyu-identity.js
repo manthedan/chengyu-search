@@ -1,5 +1,16 @@
+/** @ts-check */
+
 const crypto = require('crypto');
 
+/**
+ * @typedef {import('../search/types').ChengyuEntry} ChengyuEntry
+ * @typedef {ChengyuEntry & { id?: string, publicId?: string, embeddingId?: string }} IdentifiedChengyuEntry
+ */
+
+/**
+ * @param {unknown} value
+ * @returns {unknown}
+ */
 function normalizeIdentityValue(value) {
   if (Array.isArray(value)) {
     return value.map(normalizeIdentityValue);
@@ -10,6 +21,10 @@ function normalizeIdentityValue(value) {
   return String(value).trim().replace(/\s+/g, ' ');
 }
 
+/**
+ * @param {Partial<ChengyuEntry>} [entry]
+ * @returns {string}
+ */
 function buildStableChengyuId(entry = {}) {
   const identityPayload = {
     chengyu: normalizeIdentityValue(entry.chengyu),
@@ -30,6 +45,10 @@ function buildStableChengyuId(entry = {}) {
   return `chengyu_${digest}`;
 }
 
+/**
+ * @param {ChengyuEntry[]} [entries]
+ * @returns {IdentifiedChengyuEntry[]}
+ */
 function withStableChengyuIds(entries = []) {
   return entries.map(entry => {
     const id = buildStableChengyuId(entry);
