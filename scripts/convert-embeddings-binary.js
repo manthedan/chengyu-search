@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const {
   writeBinaryEmbeddingArtifact
-} = require('../autoresearch/embedding-binary.js');
+} = require('../src/embeddings/embedding-binary.js');
 
 function parseArgs(argv) {
   const args = {};

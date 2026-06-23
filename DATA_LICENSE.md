@@ -18,6 +18,8 @@ That includes, at minimum, files such as:
 - `cedict-all-idioms.json`
 - `embeddings-local.json`
 - `embeddings-local.bin`
+- `public/generated/dictionary-subset.json`
+- `public/generated/example-annotations.json`
 - derivative benchmark/runtime artifacts that substantially encode the idiom corpus
 
 When in doubt, if a file primarily republishes the idiom corpus or data derived from it, treat it as covered by this data notice rather than MIT alone.

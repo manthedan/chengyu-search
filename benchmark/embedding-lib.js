@@ -2,12 +2,12 @@ const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
 
-const { buildStableChengyuId, withStableChengyuIds } = require('../autoresearch/chengyu-identity.js');
+const { buildStableChengyuId, withStableChengyuIds } = require('../src/data/chengyu-identity.js');
 const CHENGYU = withStableChengyuIds(require('../chengyuData.js'));
 const {
     buildEmbeddingArtifact,
     buildEmbeddingTemplateText
-} = require('../autoresearch/embedding-validation.js');
+} = require('../src/embeddings/embedding-validation.js');
 
 const REPO_ROOT = path.join(__dirname, '..');
 const DEFAULT_VARIANT_DIR = path.join(REPO_ROOT, 'embeddings', 'variants');

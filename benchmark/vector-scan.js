@@ -5,7 +5,7 @@ const { performance } = require('perf_hooks');
 const {
     isBinaryEmbeddingPath,
     readBinaryEmbeddingArtifact
-} = require('../autoresearch/embedding-binary.js');
+} = require('../src/embeddings/embedding-binary.js');
 
 const REPO_ROOT = path.join(__dirname, '..');
 const DEFAULT_EMBEDDINGS_FILE = path.join(REPO_ROOT, 'embeddings-local.bin');

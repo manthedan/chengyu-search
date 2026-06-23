@@ -16,7 +16,7 @@ Highlights:
 - Automatic search routing for English descriptions, Chinese characters, and pinyin
 - Simplified/traditional headword display toggle
 - Local saved idioms shelf
-- Anki-friendly TSV export with separate columns for headword, simplified, traditional, pinyin, tone pinyin, meaning, literal, usage, example, tags, and formality
+- Anki-friendly TSV export with separate columns for headword, simplified, traditional, pinyin, tone pinyin, meaning, literal, example, tags, and formality
 
 ## Documentation
 
@@ -27,6 +27,7 @@ Highlights:
 
 ### Backend
 - Node.js + Express
+- Modular runtime under `src/` with separate server, search, embedding, and data boundaries
 
 ### Frontend
 - Plain HTML/CSS/JS
@@ -35,6 +36,7 @@ Highlights:
 - **Keyword retrieval**: Fuse.js
 - **Semantic reranking / query embeddings**: `@xenova/transformers`
 - **Local checked-in idiom embeddings**: compact `embeddings-local.bin` artifact (`embeddings-local.json` remains as a readable source/fallback)
+- **Evaluation**: labeled relevance set in `evaluation/datasets/relevance.json` plus benchmark tooling in `benchmark/`
 
 ## Local Development
 

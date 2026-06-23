@@ -237,7 +237,7 @@ The current primary metric is based on:
 - `english_meaning`
 - `thematic`
 
-This matches the existing autoresearch conventions.
+This matches the historical tuning convention used before the labeled dataset moved under `evaluation/`.
 
 ### Semantic-routed slice
 For embedding/model experiments we also track a fixed semantic-routed slice:
@@ -248,12 +248,14 @@ For embedding/model experiments we also track a fixed semantic-routed slice:
 That corresponds to the query types currently routed to semantic search by the app.
 
 ### Overall slice
-The overall score includes all labeled query types in `autoresearch/test-set.json`.
+The overall score includes all labeled query types in `evaluation/datasets/relevance.json`.
 
-## Relationship to `autoresearch/`
+## Relationship to production code and experiments
 
-- `benchmark/` is the **formal product-facing benchmark toolkit**
-- `autoresearch/` remains the place for search experimentation and tuning workflows
-- the holdout split is meant to reduce accidental benchmark overfitting during manual tuning
+- `src/` contains production search/data/embedding modules used by the API.
+- `evaluation/datasets/relevance.json` contains the labeled relevance dataset used by the benchmark toolkit.
+- `benchmark/` is the **formal product-facing benchmark toolkit**.
+- `autoresearch/` is retained only for legacy/manual experiment scripts; production code should not import from it.
+- the holdout split is meant to reduce accidental benchmark overfitting during manual tuning.
 
-The old `autoresearch/benchmark-real.js` now acts as a compatibility wrapper around the new benchmarking utilities.
+The old `autoresearch/benchmark-real.js` remains as a compatibility wrapper around the benchmark utilities.

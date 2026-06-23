@@ -9,15 +9,15 @@ const path = require('node:path');
 const {
     getQueryVariants,
     semanticSearchOnly
-} = require('../autoresearch/search-logic.js');
+} = require('../src/search/search-logic.js');
 const {
     buildStableChengyuId,
     withStableChengyuIds
-} = require('../autoresearch/chengyu-identity.js');
+} = require('../src/data/chengyu-identity.js');
 const {
     buildEmbeddingCorpusHash,
     validateEmbeddingArtifact
-} = require('../autoresearch/embedding-validation.js');
+} = require('../src/embeddings/embedding-validation.js');
 
 function makeCorpus() {
     return withStableChengyuIds([

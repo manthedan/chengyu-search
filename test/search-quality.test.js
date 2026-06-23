@@ -523,7 +523,7 @@ describe('Security Hardening', () => {
     it('should not let rotated X-Forwarded-For values bypass rate limiting by default', async () => withTemporaryEnv({
         NODE_ENV: 'production',
         RATE_LIMIT_MAX_REQUESTS: '2',
-        RATE_LIMIT_WINDOW_MS: '150',
+        RATE_LIMIT_WINDOW_MS: '10000',
         TRUST_PROXY: null
     }, async () => {
         const makeRequest = index => fetch(`${BASE_URL}/api/search/keyword`, {
@@ -545,25 +545,25 @@ describe('Security Hardening', () => {
         assert.strictEqual(third.status, 429, 'Third request should be rate limited even with a rotated X-Forwarded-For header');
         assert.strictEqual(thirdBody.error, 'Too many requests. Please try again later.');
 
-        await new Promise(resolve => setTimeout(resolve, 180));
     }));
 
     it('should apply lightweight rate limiting to search endpoints in production mode', async () => withTemporaryEnv({
         NODE_ENV: 'production',
         RATE_LIMIT_MAX_REQUESTS: '2',
-        RATE_LIMIT_WINDOW_MS: '150'
+        RATE_LIMIT_WINDOW_MS: '10000'
     }, async () => {
-        const first = await fetch(`${BASE_URL}/api/search/keyword`, {
+        const endpoint = `${BASE_URL}/api/search`;
+        const first = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: '画蛇添足' })
         });
-        const second = await fetch(`${BASE_URL}/api/search/keyword`, {
+        const second = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: '画蛇添足' })
         });
-        const third = await fetch(`${BASE_URL}/api/search/keyword`, {
+        const third = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: '画蛇添足' })
@@ -577,7 +577,5 @@ describe('Security Hardening', () => {
         assert.strictEqual(third.headers.get('ratelimit-limit'), '2');
         assert.strictEqual(third.headers.get('ratelimit-remaining'), '0');
         assert.ok(Number(third.headers.get('retry-after')) >= 1, 'Rate-limited responses should include Retry-After');
-
-        await new Promise(resolve => setTimeout(resolve, 180));
     }));
 });

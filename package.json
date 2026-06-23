@@ -19,7 +19,8 @@
     "benchmark:failures": "node benchmark/failures.js",
     "benchmark:reranker": "node benchmark/tune-reranker.js",
     "benchmark:routes": "node benchmark/route-audit.js",
-    "benchmark:vector-scan": "node benchmark/vector-scan.js"
+    "benchmark:vector-scan": "node benchmark/vector-scan.js",
+    "dictionary:build": "node scripts/build-dictionary.js"
   },
   "keywords": [
     "chinese",

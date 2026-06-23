@@ -50,3 +50,9 @@ embeddings-local.backup.json
 embeddings/variants/
 benchmark/results/
 public-export/
+
+# Raw CEDICT source (downloaded during dictionary build, not tracked)
+cedict_ts.u8
+
+# Dictionary build coverage report (generated artifact)
+data/coverage-report.json

@@ -50,10 +50,15 @@ At minimum:
 
 ## Repo structure
 
-- `api-server.js` — Express API server
+- `api-server.js` — API process entrypoint and server lifecycle
+- `src/server/` — Express app composition, middleware, routes, response shaping, and runtime metrics
+- `src/search/` — production query classification, retrieval, ranking, fusion, routing, and execution service
+- `src/embeddings/` — embedding artifact loading/validation, cache-key helpers, and model providers
+- `src/data/` — corpus loading, stable identity, and dictionary/variant helpers used at runtime
 - `public/` — browser UI
-- `autoresearch/` — search logic and research-oriented helpers
+- `evaluation/` — labeled relevance datasets used by benchmarks
 - `benchmark/` — benchmark and tuning toolkit
+- `autoresearch/` — legacy/manual experiment scripts only; production code must not import from here
 - `docs/` — technical/project docs
 - `test/` — regression tests
 

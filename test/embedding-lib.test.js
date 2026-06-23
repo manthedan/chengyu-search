@@ -4,7 +4,7 @@ const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const {
     buildStableChengyuId,
-} = require('../autoresearch/chengyu-identity.js');
+} = require('../src/data/chengyu-identity.js');
 const {
     buildTemplateText,
     buildVariant,
@@ -15,7 +15,7 @@ const {
 const {
     readBinaryEmbeddingArtifact,
     writeBinaryEmbeddingArtifact
-} = require('../autoresearch/embedding-binary.js');
+} = require('../src/embeddings/embedding-binary.js');
 
 describe('embedding variant registry', () => {
     it('parses current and generated variant specs', () => {

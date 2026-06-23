@@ -1,18 +1,12 @@
 /**
- * Search Logic — THE FILE THE AGENT MODIFIES (Phase 2)
- * 
- * This contains the actual search algorithm. The agent can make structural
- * changes: new ranking strategies, query preprocessing, field expansion,
- * re-ranking heuristics, etc.
- * 
- * Contract: must export a function search(query, CHENGYU, CHENGYU_EMBEDDINGS, config, options)
- * that returns a Promise resolving to an array of { chengyu, score } objects, sorted by score descending, max 10.
- * 
- * Current best NDCG: 0.4214 (Phase 1 parameter tuning)
+ * Production search engine logic.
+ *
+ * Exports search(query, chengyuEntries, embeddingIndex, config, options), returning
+ * ranked result objects sorted by descending internal score.
  */
 
 const Fuse = require('fuse.js');
-const { getTraditionalVariantMaps } = require('./cedict-variants.js');
+const { getTraditionalVariantMaps } = require('../data/cedict-variants.js');
 
 // ---- Utilities ----
 

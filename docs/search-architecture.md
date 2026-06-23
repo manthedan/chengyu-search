@@ -1,12 +1,22 @@
 # Search and Embedding Architecture
 
-This document describes the current production search stack in `chengyu-search` as implemented in:
+This document describes the current production search stack in `chengyu-search`.
 
-- `api-server.js`
-- `autoresearch/search-logic.js`
-- `autoresearch/search-config.js`
+The runtime is now split by boundary:
 
-It is meant to explain how search works today, not to describe every historical experiment.
+- `api-server.js` — process entrypoint, state composition, and server lifecycle
+- `src/server/app.js` — Express app composition, middleware, and route mounting
+- `src/server/*` — HTTP route helpers, response shaping, runtime metrics, security/rate-limit middleware, and config helpers
+- `src/search/search-service.js` — cache-aware search execution, pagination, auto-routing, and fallback behavior
+- `src/search/search-logic.js` — query classification, retrieval, scoring, ranking, and fusion primitives
+- `src/search/search-config.js` and `src/search/hybrid-config.json` — promoted ranking configuration
+- `src/embeddings/*` — embedding artifact loading/validation, binary format, query cache keys, and Transformers.js provider
+- `src/data/*` — corpus loading, stable IDs, and CEDICT variant helpers
+- `evaluation/datasets/relevance.json` — labeled relevance set used by benchmarks
+
+Production runtime code should not import from `autoresearch/`; that directory is retained only for legacy/manual experiment scripts.
+
+This document explains how search works today, not every historical experiment.
 
 ## 1. System overview
 
@@ -28,9 +38,9 @@ The browser UI calls the **auto-routed** endpoint (`POST /api/search`), and the 
 
 On startup, the server loads:
 
-- **idiom database** from `chengyuData.js`
-- **embedding artifact** from compact `embeddings-local.bin` by default (`embeddings-local.json` remains available as a readable source/fallback)
-- **runtime embedding model** via `@xenova/transformers`
+- **idiom database** from `chengyuData.js` via `src/data/corpus-loader.js`
+- **embedding artifact** from compact `embeddings-local.bin` by default (`embeddings-local.json` remains available as a readable source/fallback) via `src/embeddings/artifact-loader.js`
+- **runtime embedding model** via `@xenova/transformers` through `src/embeddings/transformers-provider.js`
 
 The current default embedding model is:
 
@@ -235,7 +245,7 @@ Current high-level merge parameters:
 - `overlapBonus`: `0.12`
 - `tokenScoreScale`: `3` (fixed token-score bound; avoids per-query max normalization)
 
-There is also `autoresearch/hybrid-config.json`, which can further override hybrid ranking at runtime.
+There is also `src/search/hybrid-config.json`, which can further override hybrid ranking at runtime.
 
 ## 8. Result shaping
 
@@ -258,8 +268,10 @@ The server uses two in-memory caches.
 ### Embedding cache
 
 - type: LRU
-- size: 100
-- stores query embeddings
+- default size: 5,000 entries (`EMBEDDING_CACHE_SIZE`)
+- stores query embeddings keyed by embedding-space metadata and canonical query text
+
+Embedding queries and cache keys are canonicalized with NFKC normalization, lowercasing, whitespace collapse, trim, and conservative trailing `.`, `!`, `?` stripping. The cache key also includes model, pooling, normalization flag, and preprocessing version so incompatible embedding spaces do not collide.
 
 Used by:
 
@@ -327,8 +339,8 @@ This is not a full production observability stack, but it is enough to confirm t
 
 ### Search config files
 
-- base config: `autoresearch/search-config.js`
-- hybrid-only overrides: `autoresearch/hybrid-config.json`
+- base config: `src/search/search-config.js`
+- hybrid-only overrides: `src/search/hybrid-config.json`
 
 `SEARCH_CONFIG_OVERRIDE_JSON` and `SEARCH_CONFIG_OVERRIDE_FILE` are mainly used by the benchmark tooling for non-destructive sweeps.
 
@@ -355,7 +367,34 @@ The current design still has a few important limitations:
 - benchmark quality depends on the coverage of the labeled test set
 - there is no reranker stage yet beyond the current hybrid blending logic
 
-## 14. Future high-ROI directions
+## 14. Dictionary tooltip system
+
+The frontend includes a click-to-lookup dictionary tooltip system powered by offline-pre-segmented data.
+
+### Build pipeline
+
+```bash
+npm run dictionary:build
+```
+
+This runs `scripts/build-dictionary.js`, which:
+
+1. Downloads CC-CEDICT (if not present) from MDBG
+2. Builds a trie from all CEDICT entries plus chengyu headwords not in CEDICT
+3. Segments all 5,925 example sentences using dictionary-constrained DP segmentation
+4. Segments each chengyu headword into sub-words where possible (e.g. 聪明伶俐 splits as 聪明 + 伶俐)
+5. Generates two static artifacts:
+   - `public/generated/dictionary-subset.json` - only the dictionary entries referenced by the corpus
+   - `public/generated/example-annotations.json` - pre-segmented tokens with entry IDs for every example
+6. Reports coverage; exits non-zero if any Chinese character lacks a definition
+
+Vocabulary overrides for rare or variant characters not in CEDICT live in `data/dictionary-overrides.json`.
+
+### Frontend behavior
+
+The browser loads both JSON files at startup. Example sentences render as clickable word tokens. Chengyu headwords render as clickable word groups (or individual characters when no sub-word exists). Clicking any token opens a single reusable popover showing the word, pinyin, traditional form, and definitions. The system gracefully falls back to plain highlighting if the dictionary data fails to load.
+
+## 15. Future high-ROI directions
 
 The benchmark harness now supports two particularly promising next steps:
 

@@ -9,7 +9,7 @@ const DEFAULT_MODES = ['auto', 'semantic', 'hybrid', 'keyword'];
 
 function loadTestSet() {
     return JSON.parse(
-        fs.readFileSync(path.join(__dirname, '..', 'autoresearch', 'test-set.json'), 'utf8')
+        fs.readFileSync(path.join(__dirname, '..', 'evaluation', 'datasets', 'relevance.json'), 'utf8')
     );
 }
 

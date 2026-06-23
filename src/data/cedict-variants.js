@@ -1,4 +1,4 @@
-const cedictIdioms = require('../cedict-all-idioms.json');
+const cedictIdioms = require('../../cedict-all-idioms.json');
 
 let variantIndicesCache = null;
 let traditionalVariantMapsCache = null;
