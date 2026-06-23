@@ -28,6 +28,8 @@
     "src/embeddings/transformers-provider.js",
     "src/search/config-loader.js",
     "src/server/config.js",
+    "src/server/middleware.js",
+    "src/server/runtime-metrics.js",
     "src/server/search-response.js"
   ]
 }

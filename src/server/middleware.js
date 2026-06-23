@@ -1,3 +1,14 @@
+/** @ts-check */
+
+/**
+ * @typedef {{ path: string }} RequestLike
+ * @typedef {{ setHeader(name: string, value: string): void, status(code: number): { json(body: unknown): unknown } }} ResponseLike
+ * @typedef {() => unknown} NextFn
+ * @typedef {{ count: number, resetAt: number }} RateLimitEntry
+ * @typedef {{ statusCode?: number, error?: string }} HttpErrorLike
+ */
+
+/** @type {Set<string>} */
 const SEARCH_RATE_LIMIT_PATHS = new Set([
     '/api/search',
     '/api/search/keyword',
@@ -5,6 +16,11 @@ const SEARCH_RATE_LIMIT_PATHS = new Set([
     '/api/search/hybrid'
 ]);
 
+/**
+ * @param {object} options
+ * @param {() => string | null} options.buildHstsHeader
+ * @returns {(req: RequestLike, res: ResponseLike, next: NextFn) => unknown}
+ */
 function createSecurityHeadersMiddleware({ buildHstsHeader }) {
     return function securityHeadersMiddleware(req, res, next) {
         res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -21,6 +37,10 @@ function createSecurityHeadersMiddleware({ buildHstsHeader }) {
     };
 }
 
+/**
+ * @param {string} requestPath
+ * @returns {string}
+ */
 function getEndpointMetricKeyForPath(requestPath) {
     if (requestPath === '/api/search') return 'search_auto';
     if (requestPath === '/api/search/keyword') return 'search_keyword';
@@ -31,6 +51,11 @@ function getEndpointMetricKeyForPath(requestPath) {
     return 'unknown';
 }
 
+/**
+ * @param {Map<string, RateLimitEntry>} searchRateLimitState
+ * @param {number} [now]
+ * @returns {void}
+ */
 function pruneRateLimitState(searchRateLimitState, now = Date.now()) {
     for (const [key, value] of searchRateLimitState.entries()) {
         if (!value || value.resetAt <= now) {
@@ -39,6 +64,17 @@ function pruneRateLimitState(searchRateLimitState, now = Date.now()) {
     }
 }
 
+/**
+ * @param {object} options
+ * @param {() => boolean} options.isRateLimitingEnabled
+ * @param {() => number} options.getRateLimitWindowMs
+ * @param {() => number} options.getRateLimitMaxRequests
+ * @param {(req: RequestLike) => string} options.getRateLimitClientId
+ * @param {(endpoint: string, startedAt: number, error: HttpErrorLike) => void} options.recordFailedRequest
+ * @param {(statusCode: number, payload: { error: string }) => HttpErrorLike} options.createHttpError
+ * @param {Map<string, RateLimitEntry>} [options.searchRateLimitState]
+ * @returns {(req: RequestLike, res: ResponseLike, next: NextFn) => unknown}
+ */
 function createSearchRateLimitMiddleware({
     isRateLimitingEnabled,
     getRateLimitWindowMs,

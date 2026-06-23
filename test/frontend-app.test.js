@@ -31,6 +31,7 @@ function loadFrontendApp(options = {}) {
     const ankiSourcePath = path.join(__dirname, '..', 'public', 'frontend-anki.js');
     const bookmarksSourcePath = path.join(__dirname, '..', 'public', 'frontend-bookmarks.js');
     const speechSourcePath = path.join(__dirname, '..', 'public', 'frontend-speech.js');
+    const dictionarySourcePath = path.join(__dirname, '..', 'public', 'frontend-dictionary.js');
     const sourcePath = path.join(__dirname, '..', 'public', 'app.js');
     const utilsSource = fs.readFileSync(utilsSourcePath, 'utf8');
     const storageSource = fs.readFileSync(storageSourcePath, 'utf8');
@@ -38,8 +39,9 @@ function loadFrontendApp(options = {}) {
     const ankiSource = fs.readFileSync(ankiSourcePath, 'utf8');
     const bookmarksSource = fs.readFileSync(bookmarksSourcePath, 'utf8');
     const speechSource = fs.readFileSync(speechSourcePath, 'utf8');
+    const dictionarySource = fs.readFileSync(dictionarySourcePath, 'utf8');
     const source = fs.readFileSync(sourcePath, 'utf8');
-    const augmentedSource = `${utilsSource}\n${storageSource}\n${apiSource}\n${ankiSource}\n${bookmarksSource}\n${speechSource}\n${source}
+    const augmentedSource = `${utilsSource}\n${storageSource}\n${apiSource}\n${ankiSource}\n${bookmarksSource}\n${speechSource}\n${dictionarySource}\n${source}
 ;globalThis.__APP_TEST_HOOKS__ = {
     bind,
     render,

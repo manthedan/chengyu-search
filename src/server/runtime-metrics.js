@@ -1,3 +1,32 @@
+/** @ts-check */
+
+/**
+ * @typedef {Record<string, number>} CounterBucket
+ * @typedef {{ total: number, count: number, min: number | null, max: number }} LatencyBucket
+ * @typedef {{ hits: number, misses: number, bypasses: number }} CacheOutcomeBucket
+ * @typedef {CacheOutcomeBucket & { by_mode?: Record<string, CacheOutcomeBucket> }} CacheBucket
+ * @typedef {object} RuntimeMetrics
+ * @property {string} startedAt
+ * @property {{ total: number, by_endpoint: CounterBucket, by_status: CounterBucket, by_mode: CounterBucket, by_query_type: CounterBucket, by_offset: CounterBucket, empty_results: number, load_more_requests: number }} requests
+ * @property {{ embedding: CacheBucket, ranked_results: CacheBucket }} caches
+ * @property {LatencyBucket & { by_endpoint: Record<string, LatencyBucket>, by_mode: Record<string, LatencyBucket> }} latency_ms
+ * @typedef {object} SearchResponseMetrics
+ * @property {string} [mode]
+ * @property {string} [queryType]
+ * @property {number} [offset]
+ * @property {number} [count]
+ * @typedef {object} RequestMetricDetails
+ * @property {string} endpoint
+ * @property {number} statusCode
+ * @property {number} durationMs
+ * @property {SearchResponseMetrics | null} [response]
+ * @typedef {'embedding' | 'ranked_results'} CacheType
+ * @typedef {'hit' | 'miss' | 'bypass'} CacheOutcome
+ */
+
+/**
+ * @returns {RuntimeMetrics}
+ */
 function createRuntimeMetrics() {
     return {
         startedAt: new Date().toISOString(),
@@ -35,10 +64,21 @@ function createRuntimeMetrics() {
     };
 }
 
+/**
+ * @param {CounterBucket} bucket
+ * @param {string} key
+ * @param {number} [amount]
+ * @returns {void}
+ */
 function incrementCounter(bucket, key, amount = 1) {
     bucket[key] = (bucket[key] || 0) + amount;
 }
 
+/**
+ * @param {LatencyBucket} bucket
+ * @param {number} durationMs
+ * @returns {void}
+ */
 function updateLatencyBucket(bucket, durationMs) {
     bucket.total = (bucket.total || 0) + durationMs;
     bucket.count = (bucket.count || 0) + 1;
@@ -46,6 +86,11 @@ function updateLatencyBucket(bucket, durationMs) {
     bucket.max = Math.max(bucket.max || 0, durationMs);
 }
 
+/**
+ * @param {Record<string, LatencyBucket>} collection
+ * @param {string} key
+ * @returns {LatencyBucket}
+ */
 function getNestedLatencyBucket(collection, key) {
     if (!collection[key]) {
         collection[key] = {
@@ -58,6 +103,10 @@ function getNestedLatencyBucket(collection, key) {
     return collection[key];
 }
 
+/**
+ * @param {LatencyBucket} bucket
+ * @returns {{ count: number, avg: number, min: number, max: number, total: number }}
+ */
 function finalizeLatencyBucket(bucket) {
     return {
         count: bucket.count || 0,
@@ -68,18 +117,27 @@ function finalizeLatencyBucket(bucket) {
     };
 }
 
+/**
+ * @returns {{ recordCacheOutcome: (cacheType: CacheType, outcome: CacheOutcome, mode?: string | null) => void, recordRequestMetrics: (details: RequestMetricDetails) => void, getRuntimeMetricsSnapshot: () => object }}
+ */
 function createRuntimeMetricsRecorder() {
     const runtimeMetrics = createRuntimeMetrics();
 
+    /**
+     * @param {CacheType} cacheType
+     * @param {CacheOutcome} outcome
+     * @param {string | null} [mode]
+     * @returns {void}
+     */
     function recordCacheOutcome(cacheType, outcome, mode = null) {
         const cacheBucket = runtimeMetrics.caches[cacheType];
         if (!cacheBucket) return;
 
-        const fieldName = {
+        const fieldName = /** @type {'hits' | 'misses' | 'bypasses'} */ ({
             hit: 'hits',
             miss: 'misses',
             bypass: 'bypasses'
-        }[outcome];
+        }[outcome]);
 
         if (!fieldName) return;
 
@@ -93,6 +151,10 @@ function createRuntimeMetricsRecorder() {
         }
     }
 
+    /**
+     * @param {RequestMetricDetails} details
+     * @returns {void}
+     */
     function recordRequestMetrics({ endpoint, statusCode, durationMs, response = null }) {
         runtimeMetrics.requests.total += 1;
         incrementCounter(runtimeMetrics.requests.by_endpoint, endpoint);
@@ -119,12 +181,17 @@ function createRuntimeMetricsRecorder() {
         updateLatencyBucket(getNestedLatencyBucket(runtimeMetrics.latency_ms.by_mode, response.mode || 'unknown'), durationMs);
     }
 
+    /**
+     * @returns {object}
+     */
     function getRuntimeMetricsSnapshot() {
+        /** @type {Record<string, ReturnType<typeof finalizeLatencyBucket>>} */
         const byEndpoint = {};
         Object.entries(runtimeMetrics.latency_ms.by_endpoint).forEach(([endpoint, bucket]) => {
             byEndpoint[endpoint] = finalizeLatencyBucket(bucket);
         });
 
+        /** @type {Record<string, ReturnType<typeof finalizeLatencyBucket>>} */
         const byMode = {};
         Object.entries(runtimeMetrics.latency_ms.by_mode).forEach(([mode, bucket]) => {
             byMode[mode] = finalizeLatencyBucket(bucket);
