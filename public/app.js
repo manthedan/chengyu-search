@@ -1,11 +1,5 @@
-const API_BASE_URL = window.location.origin;
 const PAGE_SIZE = 10;
 const PUBLIC_GITHUB_URL = 'https://github.com/manthedan/chengyu-search';
-const STORAGE_KEYS = {
-    theme: 'chengyu-theme',
-    bookmarks: 'chengyu-bookmarks',
-    scriptMode: 'chengyu-script-mode'
-};
 
 const EXAMPLE_QUERIES = [
     {
@@ -40,11 +34,42 @@ const EXAMPLE_QUERIES = [
     }
 ];
 
-const INITIAL_BOOKMARKS = loadBookmarks();
+const FRONTEND_UTILS = window.ChengyuFrontendUtils;
+if (!FRONTEND_UTILS) {
+    throw new Error('frontend-utils.js must load before app.js');
+}
+const {
+    createEmptySearchState,
+    normalizeBookmarkRecord,
+    escapeHtml,
+    escapeRegExp,
+    toneMarkPinyinString,
+    extractToneMarkedPinyinSyllables,
+    containsChineseCharacter,
+    buildCharacterPins,
+    splitExampleText
+} = FRONTEND_UTILS;
+
+const FRONTEND_STORAGE_FACTORY = window.ChengyuFrontendStorage;
+if (!FRONTEND_STORAGE_FACTORY) {
+    throw new Error('frontend-storage.js must load before app.js');
+}
+const STORAGE = FRONTEND_STORAGE_FACTORY.createFrontendStorage({ normalizeBookmarkRecord });
+
+const FRONTEND_API_FACTORY = window.ChengyuFrontendApi;
+if (!FRONTEND_API_FACTORY) {
+    throw new Error('frontend-api.js must load before app.js');
+}
+const API_CLIENT = FRONTEND_API_FACTORY.createChengyuApiClient({
+    baseUrl: window.location.origin,
+    pageSize: PAGE_SIZE
+});
+
+const INITIAL_BOOKMARKS = STORAGE.loadBookmarks();
 
 const STATE = {
-    theme: loadTheme(),
-    scriptMode: loadScriptMode(),
+    theme: STORAGE.loadTheme(),
+    scriptMode: STORAGE.loadScriptMode(),
     view: 'landing',
     query: '',
     loading: false,
@@ -246,161 +271,8 @@ function handleDictionaryKeydown(event) {
 
 // ---------------------------------------------------------------------------
 
-function loadTheme() {
-    return localStorage.getItem(STORAGE_KEYS.theme) === 'dark' ? 'dark' : 'light';
-}
-
-function loadScriptMode() {
-    return localStorage.getItem(STORAGE_KEYS.scriptMode) === 'traditional' ? 'traditional' : 'simplified';
-}
-
-function normalizeBookmarkRecord(record, fallbackChengyu = '') {
-    if (!record || typeof record !== 'object') {
-        return null;
-    }
-
-    const chengyu = record.chengyu || fallbackChengyu;
-    if (!chengyu) {
-        return null;
-    }
-
-    return {
-        id: typeof record.id === 'string' && record.id.length > 0 ? record.id : '',
-        chengyu,
-        simplified: typeof record.simplified === 'string' ? record.simplified : chengyu,
-        traditional: typeof record.traditional === 'string' ? record.traditional : '',
-        pinyin: typeof record.pinyin === 'string' ? record.pinyin : '',
-        literal: typeof record.literal === 'string' ? record.literal : '',
-        meaning: typeof record.meaning === 'string' ? record.meaning : '',
-        example: typeof record.example === 'string' ? record.example : '',
-        tags: Array.isArray(record.tags) ? [...record.tags] : [],
-        formality: typeof record.formality === 'string' ? record.formality : ''
-    };
-}
-
-function loadBookmarks() {
-    try {
-        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.bookmarks) || '{}');
-        if (!parsed || typeof parsed !== 'object') {
-            return {};
-        }
-
-        return Object.fromEntries(
-            Object.entries(parsed)
-                .map(([key, record]) => {
-                    const normalized = normalizeBookmarkRecord(record, key);
-                    return [normalized?.id || key, normalized];
-                })
-                .filter(([, record]) => Boolean(record))
-        );
-    } catch {
-        return {};
-    }
-}
-
 function persistBookmarks() {
-    localStorage.setItem(STORAGE_KEYS.bookmarks, JSON.stringify(STATE.bookmarks));
-}
-
-function createEmptySearchState() {
-    return {
-        query: '',
-        mode: null,
-        queryType: null,
-        preferredMode: null,
-        autoRouted: false,
-        fallbackFrom: null,
-        loadedCount: 0,
-        hasMore: false,
-        nextOffset: null
-    };
-}
-
-function escapeHtml(value) {
-    return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
-
-function escapeRegExp(value) {
-    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-const TONE_MARKS = { 1: '\u0304', 2: '\u0301', 3: '\u030C', 4: '\u0300', 5: '' };
-const VOWEL_PRIORITY = ['a', 'o', 'e', 'iu', 'ui', 'i', 'u', 'ü'];
-
-function toToneMarkedSyllable(syllable) {
-    const match = String(syllable || '').match(/^([a-züv:]+)([1-5])$/i);
-    if (!match) return syllable;
-
-    let [, base, tone] = match;
-    base = base.toLowerCase().replace(/u:/g, 'ü').replace(/v/g, 'ü');
-
-    let index = -1;
-    if (base.includes('a')) index = base.indexOf('a');
-    else if (base.includes('o')) index = base.indexOf('o');
-    else if (base.includes('e')) index = base.indexOf('e');
-    else if (base.includes('iu')) index = base.indexOf('u');
-    else if (base.includes('ui')) index = base.indexOf('i');
-    else {
-        for (const vowel of ['i', 'u', 'ü']) {
-            const candidateIndex = base.indexOf(vowel);
-            if (candidateIndex >= 0) {
-                index = candidateIndex;
-                break;
-            }
-        }
-    }
-
-    if (index < 0) return base;
-    return `${base.slice(0, index + 1)}${TONE_MARKS[Number(tone)]}${base.slice(index + 1)}`;
-}
-
-function toneMarkPinyinString(pinyin) {
-    return String(pinyin || '').replace(/[a-züv:]+[1-5]/gi, token => toToneMarkedSyllable(token));
-}
-
-function extractToneMarkedPinyinSyllables(pinyin) {
-    const tokens = String(pinyin || '').match(/[a-züv:]+[1-5]?/gi) || [];
-    return tokens.map(token => toToneMarkedSyllable(token));
-}
-
-function containsChineseCharacter(char) {
-    return /[\u3400-\u9fff]/.test(char);
-}
-
-function buildCharacterPins(chengyu, pinyin) {
-    const syllables = extractToneMarkedPinyinSyllables(pinyin);
-    let syllableIndex = 0;
-
-    return Array.from(String(chengyu || '')).map(char => {
-        if (!containsChineseCharacter(char)) {
-            return { char, pin: '', punctuation: true };
-        }
-        const pin = syllables[syllableIndex] || '';
-        syllableIndex += 1;
-        return { char, pin, punctuation: false };
-    });
-}
-
-function splitExampleText(example) {
-    const text = String(example || '').trim();
-    if (!text) {
-        return { zh: '', en: '' };
-    }
-
-    const match = text.match(/^(.*?)(?:[（(]([^()（）]+)[）)])?\s*$/);
-    if (!match) {
-        return { zh: text, en: '' };
-    }
-
-    return {
-        zh: (match[1] || '').trim(),
-        en: (match[2] || '').trim()
-    };
+    STORAGE.persistBookmarks(STATE.bookmarks);
 }
 
 function getExampleDisplayText(text, result) {
@@ -730,8 +602,7 @@ function flashActionButton(button, label) {
 
 async function checkBackendHealth() {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/health`);
-        const data = await response.json();
+        const data = await API_CLIENT.fetchHealth();
         STATE.healthChecked = true;
         if (!data.database) {
             STATE.error = 'Backend search index is not ready yet.';
@@ -744,46 +615,8 @@ async function checkBackendHealth() {
     render();
 }
 
-async function performSearchRequest(query, offset = 0) {
-    const response = await fetch(`${API_BASE_URL}/api/search`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            query,
-            offset,
-            limit: PAGE_SIZE
-        })
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Search failed');
-    }
-
-    return response.json();
-}
-
 function bookmarkNeedsRefresh(record) {
     return !record?.id || !record?.simplified || !record?.traditional || !record?.example || !record?.formality || !Array.isArray(record?.tags) || record.tags.length === 0;
-}
-
-async function fetchBookmarkSearchResult(record) {
-    const chengyu = record.chengyu;
-    const response = await fetch(`${API_BASE_URL}/api/search/keyword`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: chengyu, limit: 10, offset: 0 })
-    });
-
-    if (!response.ok) {
-        throw new Error('Bookmark refresh failed');
-    }
-
-    const data = await response.json();
-    return data.results?.find(result => record.id && result.id === record.id)
-        || data.results?.find(result => result.chengyu === chengyu)
-        || data.results?.[0]
-        || null;
 }
 
 async function refreshBookmarksIfNeeded() {
@@ -796,7 +629,7 @@ async function refreshBookmarksIfNeeded() {
 
     await Promise.all(staleEntries.map(async ([key, record]) => {
         try {
-            const refreshed = await fetchBookmarkSearchResult(record);
+            const refreshed = await API_CLIENT.fetchBookmarkSearchResult(record);
             if (!refreshed) {
                 return;
             }
@@ -863,7 +696,7 @@ async function runSearch(query, { append = false } = {}) {
     render();
 
     try {
-        const data = await performSearchRequest(trimmed, append ? STATE.search.nextOffset || 0 : 0);
+        const data = await API_CLIENT.search(trimmed, { offset: append ? STATE.search.nextOffset || 0 : 0 });
         updateSearchStateFromResponse(data, append);
         STATE.query = trimmed;
         STATE.view = 'results';
@@ -1318,7 +1151,7 @@ function bind() {
     document.getElementById('script-toggle')?.addEventListener('click', () => {
         syncQueryFromInput();
         STATE.scriptMode = getNextScriptMode();
-        localStorage.setItem(STORAGE_KEYS.scriptMode, STATE.scriptMode);
+        STORAGE.persistScriptMode(STATE.scriptMode);
         render();
     });
 
@@ -1334,7 +1167,7 @@ function bind() {
     document.getElementById('theme-toggle')?.addEventListener('click', () => {
         syncQueryFromInput();
         STATE.theme = STATE.theme === 'dark' ? 'light' : 'dark';
-        localStorage.setItem(STORAGE_KEYS.theme, STATE.theme);
+        STORAGE.persistTheme(STATE.theme);
         render();
     });
 

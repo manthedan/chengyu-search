@@ -1,5 +1,19 @@
+/** @ts-check */
+
 const crypto = require('crypto');
 
+/**
+ * @typedef {import('../search/types').ChengyuEntry} ChengyuEntry
+ * @typedef {ChengyuEntry & { embedding?: number[], embeddingId?: string, publicId?: string, text?: string }} EmbeddingEntry
+ * @typedef {{ id: string, chengyu?: string, embedding: number[] | Float32Array, text?: string }} EmbeddingArtifactRow
+ * @typedef {{ version?: number, model?: string, modelKey?: string, template?: string, pooling?: string, normalize?: boolean, dimensions?: number, corpusHash?: string, generatedAt?: string, entryCount?: number, embeddings?: EmbeddingArtifactRow[] }} EmbeddingArtifactObject
+ * @typedef {EmbeddingArtifactObject | EmbeddingArtifactRow[]} EmbeddingArtifact
+ * @typedef {{ expectedModel?: string, expectedPooling?: string, expectedNormalize?: boolean, expectedTemplate?: string, expectedCorpusHash?: string, expectedDimensions?: number, allowLegacyIds?: boolean }} ValidationOptions
+ * @typedef {{ ok: boolean, diagnostics: string[], embeddingsById: Map<string, number[] | Float32Array>, dimensions?: number | null, entryCount?: number | undefined }} ValidationResult
+ * @typedef {{ chengyu?: string, pinyin?: string, literal?: string, meaning?: string, example?: string, tags?: readonly string[], formality?: string }} TemplateEntry
+ */
+
+/** @type {Record<string, (entry: TemplateEntry) => string>} */
 const EMBEDDING_TEMPLATES = {
   'meaning-only': entry => entry.meaning || '',
   'meaning-literal': entry => `${entry.meaning || ''}. Literally: ${entry.literal || ''}`.trim(),
@@ -14,31 +28,61 @@ const EMBEDDING_TEMPLATES = {
   'query-style': entry => `${entry.meaning || ''} ${entry.literal || ''} ${(entry.tags || []).join(' ')}`.trim()
 };
 
+/**
+ * @param {unknown} artifact
+ * @returns {EmbeddingArtifactRow[] | null}
+ */
 function getArtifactEntries(artifact) {
   if (Array.isArray(artifact)) {
-    return artifact;
+    return /** @type {EmbeddingArtifactRow[]} */ (artifact);
   }
-  if (artifact && Array.isArray(artifact.embeddings)) {
-    return artifact.embeddings;
+  if (artifact && typeof artifact === 'object') {
+    const objectArtifact = /** @type {{ embeddings?: unknown }} */ (artifact);
+    if (Array.isArray(objectArtifact.embeddings)) {
+      return /** @type {EmbeddingArtifactRow[]} */ (objectArtifact.embeddings);
+    }
   }
   return null;
 }
 
+/**
+ * @param {unknown} artifact
+ * @param {EmbeddingArtifactRow[]} embeddingEntries
+ * @returns {number | undefined}
+ */
 function getArtifactEntryCount(artifact, embeddingEntries) {
   if (Array.isArray(artifact)) {
     return embeddingEntries.length;
   }
-  return artifact ? artifact.entryCount : undefined;
+  if (artifact && typeof artifact === 'object') {
+    return /** @type {{ entryCount?: number }} */ (artifact).entryCount;
+  }
+  return undefined;
 }
 
+/**
+ * @param {unknown} value
+ * @returns {string | undefined}
+ */
 function getEmbeddingId(value) {
-  return value && (value.id || value.embeddingId || value.publicId);
+  if (!value || typeof value !== 'object') return undefined;
+  const entry = /** @type {{ id?: unknown, embeddingId?: unknown, publicId?: unknown }} */ (value);
+  const id = entry.id || entry.embeddingId || entry.publicId;
+  return typeof id === 'string' ? id : undefined;
 }
 
+/**
+ * @param {unknown} value
+ * @returns {value is string}
+ */
 function isConcreteId(value) {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
+/**
+ * @param {unknown} value
+ * @returns {any}
+ */
 function normalizeTemplateValue(value) {
   if (Array.isArray(value)) {
     return value.map(normalizeTemplateValue);
@@ -49,6 +93,11 @@ function normalizeTemplateValue(value) {
   return String(value).trim().replace(/\s+/g, ' ');
 }
 
+/**
+ * @param {string} templateKey
+ * @param {TemplateEntry} [entry]
+ * @returns {string}
+ */
 function buildEmbeddingTemplateText(templateKey, entry = {}) {
   const template = EMBEDDING_TEMPLATES[templateKey];
   if (!template) {
@@ -70,6 +119,11 @@ function buildEmbeddingTemplateText(templateKey, entry = {}) {
   return text && text.trim() ? text.trim() : (normalizedEntry.meaning || normalizedEntry.literal || normalizedEntry.chengyu || '');
 }
 
+/**
+ * @param {EmbeddingEntry[]} database
+ * @param {string} templateKey
+ * @returns {string}
+ */
 function buildEmbeddingCorpusHash(database = [], templateKey) {
   if (!Array.isArray(database)) {
     throw new Error('Database corpus must be an array');
@@ -93,6 +147,10 @@ function buildEmbeddingCorpusHash(database = [], templateKey) {
     .digest('hex');
 }
 
+/**
+ * @param {{ database?: EmbeddingEntry[], embeddings?: EmbeddingEntry[], model?: string, modelKey?: string, template?: string, pooling?: string, normalize?: boolean, generatedAt?: string, version?: number, includeText?: boolean }} [options]
+ * @returns {EmbeddingArtifactObject}
+ */
 function buildEmbeddingArtifact({
   database = [],
   embeddings = [],
@@ -113,6 +171,9 @@ function buildEmbeddingArtifact({
 
   const rows = embeddings.map((entry, index) => {
     const databaseEntry = database[index];
+    if (!databaseEntry) {
+      throw new Error(`Database entry at index ${index} is missing`);
+    }
     const id = getEmbeddingId(databaseEntry);
     if (!isConcreteId(id)) {
       throw new Error(`Database entry at index ${index} has missing stable embedding id`);
@@ -121,6 +182,7 @@ function buildEmbeddingArtifact({
       throw new Error(`Embedding entry at index ${index} must include an embedding array`);
     }
 
+    /** @type {EmbeddingArtifactRow} */
     const row = {
       id,
       chengyu: databaseEntry.chengyu,
@@ -147,32 +209,60 @@ function buildEmbeddingArtifact({
   };
 }
 
+/**
+ * @param {unknown} artifact
+ * @param {EmbeddingArtifactRow[]} embeddingEntries
+ * @param {ValidationOptions} options
+ * @returns {number | null}
+ */
 function getExpectedDimensions(artifact, embeddingEntries, options) {
-  if (Number.isInteger(options.expectedDimensions) && options.expectedDimensions > 0) {
-    return options.expectedDimensions;
+  const configuredDimensions = options.expectedDimensions;
+  if (Number.isInteger(configuredDimensions) && Number(configuredDimensions) > 0) {
+    return Number(configuredDimensions);
   }
 
-  if (Number.isInteger(artifact?.dimensions) && artifact.dimensions > 0) {
-    return artifact.dimensions;
+  if (artifact && typeof artifact === 'object') {
+    const dimensions = /** @type {{ dimensions?: number }} */ (artifact).dimensions;
+    if (Number.isInteger(dimensions) && Number(dimensions) > 0) {
+      return Number(dimensions);
+    }
   }
 
   const firstVector = embeddingEntries.find(entry => Array.isArray(entry?.embedding))?.embedding;
   return firstVector ? firstVector.length : null;
 }
 
+/**
+ * @param {string[]} values
+ * @param {number} [limit]
+ * @returns {string}
+ */
 function pushLimited(values, limit = 5) {
   const visible = values.slice(0, limit).join(', ');
   return values.length > limit ? `${visible}, ... (${values.length} total)` : visible;
 }
 
+/**
+ * @param {unknown} value
+ * @returns {string}
+ */
 function boolLabel(value) {
   return value === true ? 'true' : value === false ? 'false' : String(value);
 }
 
+/**
+ * @param {unknown} artifact
+ * @param {string[]} diagnostics
+ * @param {keyof EmbeddingArtifactObject} field
+ * @param {unknown} expectedValue
+ * @param {string} [label]
+ */
 function validateScalarMetadata(artifact, diagnostics, field, expectedValue, label = field) {
   if (expectedValue === undefined || expectedValue === null) return;
 
-  const actualValue = artifact && !Array.isArray(artifact) ? artifact[field] : undefined;
+  const actualValue = artifact && typeof artifact === 'object' && !Array.isArray(artifact)
+    ? /** @type {EmbeddingArtifactObject} */ (artifact)[field]
+    : undefined;
   if (actualValue === undefined || actualValue === null || actualValue === '') {
     diagnostics.push(`Embedding artifact missing required ${label} metadata (expected ${boolLabel(expectedValue)})`);
     return;
@@ -183,6 +273,12 @@ function validateScalarMetadata(artifact, diagnostics, field, expectedValue, lab
   }
 }
 
+/**
+ * @param {unknown} artifact
+ * @param {EmbeddingEntry[]} [database]
+ * @param {ValidationOptions} [options]
+ * @returns {ValidationResult}
+ */
 function validateEmbeddingArtifact(artifact, database = [], options = {}) {
   const diagnostics = [];
   const embeddingsById = new Map();
@@ -215,7 +311,7 @@ function validateEmbeddingArtifact(artifact, database = [], options = {}) {
   }
 
   const expectedDimensions = getExpectedDimensions(artifact, embeddingEntries, options);
-  if (!Number.isInteger(expectedDimensions) || expectedDimensions <= 0) {
+  if (expectedDimensions === null || !Number.isInteger(expectedDimensions) || expectedDimensions <= 0) {
     diagnostics.push(`Embedding dimensions must be a positive integer, got ${expectedDimensions}`);
   }
 
@@ -259,7 +355,7 @@ function validateEmbeddingArtifact(artifact, database = [], options = {}) {
       return;
     }
 
-    if (Number.isInteger(expectedDimensions) && expectedDimensions > 0 && vector.length !== expectedDimensions) {
+    if (expectedDimensions !== null && Number.isInteger(expectedDimensions) && expectedDimensions > 0 && vector.length !== expectedDimensions) {
       diagnostics.push(`${idLabel} embedding dimension ${vector.length} does not match expected dimension ${expectedDimensions}`);
     }
 

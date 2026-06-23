@@ -25,9 +25,15 @@ function createElement(initial = {}) {
 }
 
 function loadFrontendApp(options = {}) {
+    const utilsSourcePath = path.join(__dirname, '..', 'public', 'frontend-utils.js');
+    const storageSourcePath = path.join(__dirname, '..', 'public', 'frontend-storage.js');
+    const apiSourcePath = path.join(__dirname, '..', 'public', 'frontend-api.js');
     const sourcePath = path.join(__dirname, '..', 'public', 'app.js');
+    const utilsSource = fs.readFileSync(utilsSourcePath, 'utf8');
+    const storageSource = fs.readFileSync(storageSourcePath, 'utf8');
+    const apiSource = fs.readFileSync(apiSourcePath, 'utf8');
     const source = fs.readFileSync(sourcePath, 'utf8');
-    const augmentedSource = `${source}
+    const augmentedSource = `${utilsSource}\n${storageSource}\n${apiSource}\n${source}
 ;globalThis.__APP_TEST_HOOKS__ = {
     bind,
     render,

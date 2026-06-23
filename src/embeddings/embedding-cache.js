@@ -1,3 +1,11 @@
+/** @ts-check */
+
+/**
+ * Conservatively canonicalize semantically equivalent query text for embedding-cache lookup.
+ *
+ * @param {unknown} query
+ * @returns {string}
+ */
 function normalizeEmbeddingCacheKey(query) {
     return String(query || '')
         .normalize('NFKC')
@@ -8,6 +16,11 @@ function normalizeEmbeddingCacheKey(query) {
         .trim();
 }
 
+/**
+ * @param {unknown} query
+ * @param {{ modelId: string, pooling: string, normalize: boolean, preprocessingVersion: string }} metadata
+ * @returns {string}
+ */
 function createEmbeddingCacheKey(query, {
     modelId,
     pooling,

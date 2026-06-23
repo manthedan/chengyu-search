@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node api-server.js",
     "dev": "nodemon api-server.js",
-    "check": "npm test && npm run benchmark:relevance -- --fail-on-errors --min-overall 0.45 --min-primary 0.30",
+    "check": "npm run typecheck && npm test && npm run benchmark:relevance -- --fail-on-errors --min-overall 0.45 --min-primary 0.30",
     "smoke:prod": "node scripts/smoke-production.js",
     "test": "node --test test/*.test.js",
     "benchmark": "npm run benchmark:modes && npm run benchmark:latency",
@@ -22,7 +22,8 @@
     "benchmark:reranker": "node benchmark/tune-reranker.js",
     "benchmark:routes": "node benchmark/route-audit.js",
     "benchmark:vector-scan": "node benchmark/vector-scan.js",
-    "dictionary:build": "node scripts/build-dictionary.js"
+    "dictionary:build": "node scripts/build-dictionary.js",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "chinese",
@@ -42,7 +43,9 @@
     "fuse.js": "^7.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "@types/node": "^26.0.0",
+    "nodemon": "^3.0.1",
+    "typescript": "^6.0.3"
   },
   "private": true,
   "homepage": "https://findchengyu.com",
