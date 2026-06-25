@@ -46,6 +46,7 @@ function loadFrontendApp(options = {}) {
     bind,
     render,
     renderHeader,
+    renderHero,
     renderSearchSection,
     renderSavedSection,
     renderFooter,
@@ -187,6 +188,24 @@ describe('frontend script toggle', () => {
         assert.strictEqual(localStorage.getItem('chengyu-script-mode'), 'simplified');
     });
 
+    it('renders hero and header UI copy in the selected script', () => {
+        const { hooks } = loadFrontendApp();
+
+        hooks.setScriptMode('simplified');
+        const simplifiedHero = hooks.renderHero();
+        assert.match(hooks.renderHeader(), /成语搜索/);
+        assert.match(simplifiedHero, />语<\/span>/);
+        assert.match(simplifiedHero, /Chengyu · 成语 · Four-character wisdom/);
+        assert.doesNotMatch(hooks.renderHeader(), /成語搜索/);
+
+        hooks.setScriptMode('traditional');
+        const traditionalHero = hooks.renderHero();
+        assert.match(hooks.renderHeader(), /成語搜索/);
+        assert.match(traditionalHero, />語<\/span>/);
+        assert.match(traditionalHero, /Chengyu · 成語 · Four-character wisdom/);
+        assert.doesNotMatch(hooks.renderHeader(), /成语搜索/);
+    });
+
     it('renders landing example glosses in the selected script', () => {
         const { hooks } = loadFrontendApp();
         hooks.setView('landing');
@@ -281,8 +300,10 @@ describe('frontend script toggle', () => {
         hooks.setBookmarks({ [second.id]: second });
         hooks.setSavedOpen(true);
 
+        hooks.setScriptMode('traditional');
         const savedMarkup = hooks.renderSavedSection();
         assert.match(savedMarkup, /data-result-id="chengyu_second"/);
+        assert.match(savedMarkup, /Saved idioms · 已存成語/);
 
         const resultMarkup = hooks.renderResultCard(first, 0);
         assert.match(resultMarkup, /data-result-id="chengyu_first"/);

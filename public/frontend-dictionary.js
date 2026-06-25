@@ -131,7 +131,8 @@
                 ? `<span class="dict-pop-trad">${escapeHtml(entry.traditional)}</span>` : '';
             const pinyin = entry.pinyin ? `<div class="dict-pop-pinyin">${escapeHtml(toneMarkPinyinString(entry.pinyin))}</div>` : '';
             const literal = entry.literal ? `<div class="dict-pop-literal"><span class="arrow">—</span> &ldquo;${escapeHtml(entry.literal)}&rdquo;</div>` : '';
-            const isChengyu = entry.isChengyu ? '<span class="dict-pop-tag">成语</span>' : '';
+            const chengyuLabel = getScriptMode() === 'traditional' ? '成語' : '成语';
+            const isChengyu = entry.isChengyu ? `<span class="dict-pop-tag">${chengyuLabel}</span>` : '';
 
             const defs = (entry.definitions || []).map(d =>
                 `<li class="dict-pop-def">${escapeHtml(d)}</li>`

@@ -255,6 +255,30 @@ function getDisplayHeadword(result) {
     return result.simplified || result.chengyu;
 }
 
+const UI_SCRIPT_COPY = {
+    simplified: {
+        siteTitle: '成语搜索',
+        chengyu: '成语',
+        savedIdioms: '已存成语'
+    },
+    traditional: {
+        siteTitle: '成語搜索',
+        chengyu: '成語',
+        savedIdioms: '已存成語'
+    }
+};
+
+function getScriptCopy() {
+    return UI_SCRIPT_COPY[STATE.scriptMode] || UI_SCRIPT_COPY.simplified;
+}
+
+function renderHeroTitleChars() {
+    return Array.from(getScriptCopy().siteTitle).map((char, index) => {
+        const className = index === 2 ? 'ch accent' : 'ch';
+        return `<span class="${className}">${escapeHtml(char)}</span>`;
+    }).join('');
+}
+
 function getResultPublicId(result) {
     return result?.id || result?.chengyu || '';
 }
@@ -393,13 +417,14 @@ function renderHeader() {
     const bookmarkCount = Object.keys(STATE.bookmarks).length;
     const nextScriptMode = getNextScriptMode();
     const nextScriptLabel = nextScriptMode === 'traditional' ? 'traditional' : 'simplified';
+    const scriptCopy = getScriptCopy();
 
     return `
         <header class="site-header">
             <a class="wordmark" href="#" data-home-link>
                 <div class="seal">成</div>
                 <div class="titles">
-                    <div class="cn">成语搜索</div>
+                    <div class="cn">${escapeHtml(scriptCopy.siteTitle)}</div>
                     <div class="en">Chengyu Search</div>
                 </div>
             </a>
@@ -421,13 +446,15 @@ function renderHeader() {
 }
 
 function renderHero() {
+    const scriptCopy = getScriptCopy();
+
     return `
         <section class="hero">
             <h1 class="hero-chars">
-                <span class="ch">成</span><span class="ch">语</span><span class="ch accent">搜</span><span class="ch">索</span>
+                ${renderHeroTitleChars()}
             </h1>
             <p class="hero-sub"><em>Describe a situation, find the idiom.</em></p>
-            <p class="hero-tag">Chengyu · 成语 · Four-character wisdom</p>
+            <p class="hero-tag">Chengyu · ${escapeHtml(scriptCopy.chengyu)} · Four-character wisdom</p>
         </section>
     `;
 }
@@ -503,7 +530,7 @@ function renderSavedSection() {
     return `
         <section class="saved-section">
             <div class="saved-head">
-                <div class="section-rule">Saved idioms · 已存成语</div>
+                <div class="section-rule">Saved idioms · ${escapeHtml(getScriptCopy().savedIdioms)}</div>
                 <div class="saved-toolbar">
                     <span class="saved-meta">${saved.length} ${saved.length === 1 ? 'card' : 'cards'} ready · 10-column TSV</span>
                     <button class="saved-export-btn" id="export-anki-btn" title="Download saved idioms as an Anki TSV with separate columns for headword, simplified, traditional, numbered pinyin, tone-marked pinyin, meaning, literal, example, tags, and formality">
