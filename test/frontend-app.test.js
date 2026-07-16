@@ -51,6 +51,8 @@ function loadFrontendApp(options = {}) {
     renderSavedSection,
     renderFooter,
     renderResultCard,
+    toggleBookmark,
+    formatResultCountLabel,
     getDisplayHeadword,
     findResultByPublicId,
     buildCopyPayload,
@@ -62,6 +64,7 @@ function loadFrontendApp(options = {}) {
     setScriptMode: value => { STATE.scriptMode = value; },
     setView: value => { STATE.view = value; },
     setResults: value => { STATE.results = value; },
+    setSearch: value => { STATE.search = value; },
     setBookmarks: value => { STATE.bookmarks = value; },
     setSavedOpen: value => { STATE.savedOpen = value; }
 };`;
@@ -195,14 +198,16 @@ describe('frontend script toggle', () => {
         const simplifiedHero = hooks.renderHero();
         assert.match(hooks.renderHeader(), /成语搜索/);
         assert.match(simplifiedHero, />语<\/span>/);
-        assert.match(simplifiedHero, /Chengyu · 成语 · Four-character wisdom/);
+        assert.match(simplifiedHero, /Describe a situation, find the idiom\./);
+        assert.doesNotMatch(simplifiedHero, /Four-character wisdom/);
         assert.doesNotMatch(hooks.renderHeader(), /成語搜索/);
 
         hooks.setScriptMode('traditional');
         const traditionalHero = hooks.renderHero();
         assert.match(hooks.renderHeader(), /成語搜索/);
         assert.match(traditionalHero, />語<\/span>/);
-        assert.match(traditionalHero, /Chengyu · 成語 · Four-character wisdom/);
+        assert.match(traditionalHero, /Describe a situation, find the idiom\./);
+        assert.doesNotMatch(traditionalHero, /Four-character wisdom/);
         assert.doesNotMatch(hooks.renderHeader(), /成语搜索/);
     });
 
@@ -303,13 +308,59 @@ describe('frontend script toggle', () => {
         hooks.setScriptMode('traditional');
         const savedMarkup = hooks.renderSavedSection();
         assert.match(savedMarkup, /data-result-id="chengyu_second"/);
-        assert.match(savedMarkup, /Saved idioms · 已存成語/);
+        assert.match(savedMarkup, /Saved idioms <span>· 已存成語<\/span>/);
 
         const resultMarkup = hooks.renderResultCard(first, 0);
         assert.match(resultMarkup, /data-result-id="chengyu_first"/);
 
         assert.strictEqual(hooks.findResultByPublicId('chengyu_second', '难兄难弟').pinyin, 'nan4 xiong1 nan4 di4');
         assert.strictEqual(hooks.findResultByPublicId('', '难兄难弟').pinyin, 'nan2 xiong1 nan2 di4');
+    });
+
+    it('saves an idiom without navigating away from search results', () => {
+        const { hooks, elements } = loadFrontendApp();
+        const result = {
+            id: 'chengyu_only',
+            chengyu: '画蛇添足',
+            simplified: '画蛇添足',
+            traditional: '畫蛇添足',
+            pinyin: 'hua4 she2 tian1 zu2',
+            literal: 'draw snake add legs',
+            meaning: 'to ruin something by overdoing it',
+            tags: [],
+            formality: 'formal'
+        };
+
+        elements.set('app', createElement());
+        hooks.setBookmarks({});
+        hooks.setSavedOpen(false);
+        hooks.toggleBookmark(result);
+
+        assert.strictEqual(hooks.getState().savedOpen, false);
+        assert.strictEqual(hooks.getState().bookmarks[result.id].chengyu, result.chengyu);
+    });
+
+    it('returns to search when the final saved idiom is removed', () => {
+        const { hooks, elements } = loadFrontendApp();
+        const result = {
+            id: 'chengyu_only',
+            chengyu: '画蛇添足',
+            simplified: '画蛇添足',
+            traditional: '畫蛇添足',
+            pinyin: 'hua4 she2 tian1 zu2',
+            literal: 'draw snake add legs',
+            meaning: 'to ruin something by overdoing it',
+            tags: [],
+            formality: 'formal'
+        };
+
+        elements.set('app', createElement());
+        hooks.setBookmarks({ [result.id]: result });
+        hooks.setSavedOpen(true);
+        hooks.toggleBookmark(result);
+
+        assert.strictEqual(hooks.getState().savedOpen, false);
+        assert.deepStrictEqual(Object.keys(hooks.getState().bookmarks), []);
     });
 
     it('refreshes older saved bookmarks so script toggling works for existing local saves', async () => {
@@ -409,13 +460,53 @@ describe('frontend script toggle', () => {
         assert.doesNotMatch(app.innerHTML, /今日成语/);
     });
 
-    it('renders a simplified footer with a clear GitHub CTA', () => {
+    it('renders a compact footer with a source-code link', () => {
         const { hooks } = loadFrontendApp();
         const markup = hooks.renderFooter();
 
-        assert.match(markup, /View public GitHub/);
-        assert.match(markup, /Search Chinese idioms by meaning, characters, or pinyin\./);
-        assert.doesNotMatch(markup, /Local embeddings/i);
-        assert.doesNotMatch(markup, /learner-first presentation/i);
+        assert.match(markup, /Source code/);
+        assert.match(markup, /Chengyu Search/);
+        assert.doesNotMatch(markup, /Search Chinese idioms by meaning, characters, or pinyin\./);
+        assert.doesNotMatch(markup, /View public GitHub/);
+    });
+
+    it('distinguishes loaded results from the total when pagination continues', () => {
+        const { hooks } = loadFrontendApp();
+
+        hooks.setSearch({ loadedCount: 10, hasMore: true });
+        assert.strictEqual(hooks.formatResultCountLabel(), '10 matches shown');
+
+        hooks.setSearch({ loadedCount: 10, hasMore: false });
+        assert.strictEqual(hooks.formatResultCountLabel(), '10 matches');
+    });
+
+    it('keeps every result expanded while preserving compact secondary hierarchy', () => {
+        const { hooks } = loadFrontendApp();
+        const result = {
+            chengyu: '画蛇添足',
+            simplified: '画蛇添足',
+            traditional: '畫蛇添足',
+            pinyin: 'hua4 she2 tian1 zu2',
+            literal: 'draw snake add legs',
+            meaning: 'to ruin something by overdoing it',
+            example: '别再画蛇添足了。（Do not overdo it.）',
+            tags: ['warning'],
+            formality: 'formal'
+        };
+
+        const primary = hooks.renderResultCard(result, 0);
+        assert.match(primary, /class="result-card rank-1"/);
+        assert.match(primary, /class="result-body hero-body"/);
+        assert.doesNotMatch(primary, /class="pinyin-line"/);
+        assert.strictEqual((primary.match(/<span class="field-label">Meaning<\/span>/g) || []).length, 1);
+        assert.strictEqual((primary.match(/<span class="field-label">Literal<\/span>/g) || []).length, 0);
+
+        const secondary = hooks.renderResultCard(result, 1);
+        assert.match(secondary, /result-card-compact/);
+        assert.match(secondary, /class="compact-meaning"/);
+        assert.match(secondary, /class="result-body secondary-result-body"/);
+        assert.match(secondary, /class="example-zh"/);
+        assert.doesNotMatch(secondary, /<details/);
+        assert.doesNotMatch(secondary, /class="pinyin-line"/);
     });
 });

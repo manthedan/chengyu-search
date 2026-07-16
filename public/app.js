@@ -101,7 +101,7 @@ const STATE = {
     error: null,
     results: [],
     bookmarks: INITIAL_BOOKMARKS,
-    savedOpen: Object.keys(INITIAL_BOOKMARKS).length > 0,
+    savedOpen: false,
     speakingChengyu: null,
     search: createEmptySearchState()
 };
@@ -211,9 +211,9 @@ function formatQueryTypeLabel(queryType) {
 
 function formatResultCountLabel() {
     const count = STATE.search.loadedCount;
-    if (!count) return 'No results';
-    const noun = count === 1 ? 'result' : 'results';
-    return STATE.search.hasMore ? `${count} ${noun} shown` : `${count} ${noun}`;
+    if (!count) return 'No matches';
+    const label = `${count} ${count === 1 ? 'match' : 'matches'}`;
+    return STATE.search.hasMore ? `${label} shown` : label;
 }
 
 function getVisibleTags(result) {
@@ -241,6 +241,9 @@ function removeBookmark(result) {
 
 function toggleBookmark(result) {
     BOOKMARKS.toggleBookmark(STATE, result);
+    if (Object.keys(STATE.bookmarks).length === 0) {
+        STATE.savedOpen = false;
+    }
     render();
 }
 
@@ -421,7 +424,7 @@ function renderHeader() {
 
     return `
         <header class="site-header">
-            <a class="wordmark" href="#" data-home-link>
+            <a class="wordmark" href="#" data-home-link aria-label="Chengyu Search home">
                 <div class="seal">成</div>
                 <div class="titles">
                     <div class="cn">${escapeHtml(scriptCopy.siteTitle)}</div>
@@ -434,8 +437,10 @@ function renderHeader() {
                     <span class="script-toggle-divider">↔</span>
                     <span class="script-toggle-option ${STATE.scriptMode === 'traditional' ? 'active' : ''}">繁</span>
                 </button>
-                <button class="saved-pill ${STATE.savedOpen ? 'active' : ''}" id="saved-toggle" title="Show saved idioms">
-                    Saved <span>${bookmarkCount}</span>
+                <button class="saved-pill ${STATE.savedOpen ? 'active' : ''}" id="saved-toggle" title="${STATE.savedOpen ? 'Return to search' : 'Show saved idioms'}" aria-label="${STATE.savedOpen ? 'Return to search' : `Show ${bookmarkCount} saved idioms`}">
+                    ${renderIcon('bookmark')}
+                    <span class="saved-label">Saved</span>
+                    <span class="saved-count">${bookmarkCount}</span>
                 </button>
                 <button class="icon-btn" id="theme-toggle" title="Toggle theme">
                     ${renderIcon(STATE.theme === 'dark' ? 'sun' : 'moon')}
@@ -446,15 +451,12 @@ function renderHeader() {
 }
 
 function renderHero() {
-    const scriptCopy = getScriptCopy();
-
     return `
         <section class="hero">
             <h1 class="hero-chars">
                 ${renderHeroTitleChars()}
             </h1>
             <p class="hero-sub"><em>Describe a situation, find the idiom.</em></p>
-            <p class="hero-tag">Chengyu · ${escapeHtml(scriptCopy.chengyu)} · Four-character wisdom</p>
         </section>
     `;
 }
@@ -478,13 +480,13 @@ function renderSearchSection() {
                     </button>
                 </div>
                 <div class="search-footer search-footer-plain">
-                    <span class="hint">tip: try a feeling, situation, relationship, or scene</span>
+                    <span class="hint">Try a feeling, situation, relationship, or scene.</span>
                 </div>
             </div>
             ${STATE.view === 'landing' ? `
                 <div class="examples">
                     <span class="examples-label">Try:</span>
-                    ${EXAMPLE_QUERIES.map(example => `
+                    ${EXAMPLE_QUERIES.slice(0, 3).map(example => `
                         <button class="chip" data-query="${escapeHtml(example.query)}">
                             ${escapeHtml(example.label)}
                             <span class="cn">${escapeHtml(getDisplayHeadword(example))}</span>
@@ -530,10 +532,11 @@ function renderSavedSection() {
     return `
         <section class="saved-section">
             <div class="saved-head">
-                <div class="section-rule">Saved idioms · ${escapeHtml(getScriptCopy().savedIdioms)}</div>
+                <p class="saved-kicker">Your collection</p>
+                <h1 class="saved-title">Saved idioms <span>· ${escapeHtml(getScriptCopy().savedIdioms)}</span></h1>
                 <div class="saved-toolbar">
-                    <span class="saved-meta">${saved.length} ${saved.length === 1 ? 'card' : 'cards'} ready · 10-column TSV</span>
-                    <button class="saved-export-btn" id="export-anki-btn" title="Download saved idioms as an Anki TSV with separate columns for headword, simplified, traditional, numbered pinyin, tone-marked pinyin, meaning, literal, example, tags, and formality">
+                    <span class="saved-meta">${saved.length} saved ${saved.length === 1 ? 'idiom' : 'idioms'}</span>
+                    <button class="saved-export-btn" id="export-anki-btn" title="Download saved idioms as an Anki-compatible TSV file">
                         ${renderIcon('download')}
                         <span>Export for Anki</span>
                     </button>
@@ -588,14 +591,47 @@ function renderTagChips(result) {
     }).join('');
 }
 
-function renderResultCard(result, index) {
-    const { zh, en } = splitExampleText(result.example);
-    const bookmarkIcon = isBookmarked(result) ? 'bookmarkFilled' : 'bookmark';
+function renderResultActions(result, { emphasizeSave = false } = {}) {
+    const bookmarked = isBookmarked(result);
+    const bookmarkIcon = bookmarked ? 'bookmarkFilled' : 'bookmark';
     const resultId = getResultPublicId(result);
     const isSpeaking = STATE.speakingChengyu === resultId;
 
     return `
-        <article class="result-card ${index === 0 ? 'rank-1' : ''}" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}">
+        <div class="card-actions">
+            <button class="icon-btn card-action ${isSpeaking ? 'active' : ''}" data-action="pronounce" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}" title="${isSpeaking ? 'Stop pronunciation' : 'Pronounce'}" aria-label="${isSpeaking ? 'Stop pronunciation' : 'Pronounce idiom'}">
+                ${renderIcon('volume')}
+            </button>
+            <button class="icon-btn card-action save-action ${bookmarked ? 'active' : ''} ${emphasizeSave ? 'save-action-emphasized' : ''}" data-action="bookmark" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}" title="${bookmarked ? 'Remove from saved' : 'Save idiom'}" aria-label="${bookmarked ? 'Remove idiom from saved' : 'Save idiom locally'}">
+                ${renderIcon(bookmarkIcon)}
+                ${emphasizeSave ? `<span>${bookmarked ? 'Saved' : 'Save'}</span>` : ''}
+            </button>
+            <button class="icon-btn card-action" data-action="copy" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}" title="Copy idiom" aria-label="Copy idiom">
+                ${renderIcon('copy')}
+            </button>
+        </div>
+    `;
+}
+
+function renderExampleBlock(result) {
+    const { zh, en } = splitExampleText(result.example);
+
+    return `
+        <div class="field example-block">
+            <span class="field-label">In use · 例句</span>
+            <div class="example-zh">${highlightIdiomInText(zh, result)}</div>
+            ${en ? `<div class="example-en">${escapeHtml(en)}</div>` : ''}
+        </div>
+    `;
+}
+
+function renderResultCard(result, index) {
+    const resultId = getResultPublicId(result);
+    const tags = renderTagChips(result);
+    const isPrimary = index === 0;
+
+    return `
+        <article class="result-card ${isPrimary ? 'rank-1' : 'result-card-compact'}" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}">
             <div class="hero-row">
                 <div class="rank-badge">
                     <span>NO.</span>
@@ -603,37 +639,25 @@ function renderResultCard(result, index) {
                 </div>
                 <div class="chars-block">
                     <h3 class="result-chars">${renderCharacterCluster(result)}</h3>
-                    <div class="pinyin-line">${escapeHtml(toneMarkPinyinString(result.pinyin))}</div>
                     <div class="literal-line"><span class="arrow">—</span>&ldquo;${escapeHtml(result.literal)}&rdquo;</div>
+                    ${isPrimary ? '' : `<p class="compact-meaning">${escapeHtml(result.meaning)}</p>`}
                 </div>
-                <div class="card-actions">
-                    <button class="icon-btn card-action ${isSpeaking ? 'active' : ''}" data-action="pronounce" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}" title="${isSpeaking ? 'Stop pronunciation' : 'Pronounce'}">
-                        ${renderIcon('volume')}
-                    </button>
-                    <button class="icon-btn card-action ${isBookmarked(result) ? 'active' : ''}" data-action="bookmark" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}" title="Save locally">
-                        ${renderIcon(bookmarkIcon)}
-                    </button>
-                    <button class="icon-btn card-action" data-action="copy" data-result-id="${escapeHtml(resultId)}" data-chengyu="${escapeHtml(result.chengyu)}" title="Copy idiom">
-                        ${renderIcon('copy')}
-                    </button>
-                </div>
+                ${renderResultActions(result, { emphasizeSave: isPrimary })}
             </div>
-            <div class="result-body ${index === 0 ? 'hero-body' : ''}">
-                <div class="field">
-                    <span class="field-label">Meaning</span>
-                    <span class="field-value">${escapeHtml(result.meaning)}</span>
+            ${isPrimary ? `
+                <div class="result-body hero-body">
+                    <div class="field">
+                        <span class="field-label">Meaning</span>
+                        <span class="field-value">${escapeHtml(result.meaning)}</span>
+                    </div>
+                    ${renderExampleBlock(result)}
                 </div>
-                <div class="field">
-                    <span class="field-label">Literal</span>
-                    <span class="field-value lit">${escapeHtml(result.literal)}</span>
+            ` : `
+                <div class="result-body secondary-result-body">
+                    ${renderExampleBlock(result)}
                 </div>
-                <div class="field example-block">
-                    <span class="field-label">In use · 例句</span>
-                    <div class="example-zh">${highlightIdiomInText(zh, result)}</div>
-                    ${en ? `<div class="example-en">${escapeHtml(en)}</div>` : ''}
-                </div>
-            </div>
-            ${renderTagChips(result) ? `<div class="tags-row">${renderTagChips(result)}</div>` : ''}
+            `}
+            ${tags ? `<div class="tags-row">${tags}</div>` : ''}
         </article>
     `;
 }
@@ -682,13 +706,10 @@ function renderResultsSection() {
 function renderFooter() {
     return `
         <footer class="foot">
-            <div class="footer-copy">
-                <span class="footer-title">Chengyu Search</span>
-                <span class="footer-note">Search Chinese idioms by meaning, characters, or pinyin.</span>
-            </div>
+            <span class="footer-title">Chengyu Search</span>
             <a class="footer-link" href="${PUBLIC_GITHUB_URL}" target="_blank" rel="noreferrer noopener">
                 ${renderIcon('github')}
-                <span>View public GitHub</span>
+                <span>Source code</span>
             </a>
         </footer>
     `;
@@ -698,12 +719,17 @@ function render() {
     document.body.dataset.theme = STATE.theme;
 
     const app = document.getElementById('app');
+    const primaryContent = STATE.savedOpen
+        ? renderSavedSection()
+        : `
+            ${STATE.view === 'landing' ? renderHero() : ''}
+            ${renderSearchSection()}
+            ${STATE.view === 'results' ? renderResultsSection() : ''}
+        `;
+
     const html = `
         ${renderHeader()}
-        ${STATE.view === 'landing' ? renderHero() : ''}
-        ${renderSearchSection()}
-        ${renderSavedSection()}
-        ${STATE.view === 'results' ? renderResultsSection() : ''}
+        ${primaryContent}
         ${renderFooter()}
         ${renderPopover()}
     `;
@@ -718,6 +744,7 @@ function bind() {
     document.querySelector('[data-home-link]')?.addEventListener('click', event => {
         event.preventDefault();
         STATE.view = 'landing';
+        STATE.savedOpen = false;
         STATE.error = null;
         render();
     });
@@ -773,6 +800,7 @@ function bind() {
         button.addEventListener('click', () => {
             const query = button.dataset.savedQuery || '';
             STATE.query = query;
+            STATE.savedOpen = false;
             runSearch(query);
         });
     });
@@ -816,6 +844,11 @@ function bind() {
 
     // Close popover when clicking outside
     document.addEventListener('click', event => {
+        if (event.target.closest('[data-dict-close]')) {
+            hidePopover();
+            return;
+        }
+
         if (!event.target.closest('[data-dict-entry]') &&
             !event.target.closest('[data-dict-char]') &&
             !event.target.closest(`#${POPOVER_ID}`)) {

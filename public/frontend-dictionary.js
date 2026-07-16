@@ -139,6 +139,10 @@
             ).join('');
 
             return `
+                <div class="dict-pop-toolbar">
+                    <span>Dictionary</span>
+                    <button type="button" class="dict-pop-close" data-dict-close aria-label="Close dictionary">Close <span aria-hidden="true">×</span></button>
+                </div>
                 <div class="dict-pop-head">
                     <span class="dict-pop-word">${simp}</span>${trad}
                     ${isChengyu}

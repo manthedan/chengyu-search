@@ -22,7 +22,6 @@
 
         function saveBookmark(state, result) {
             state.bookmarks[getResultPublicId(result)] = normalizeBookmarkRecord(result, result.chengyu);
-            state.savedOpen = true;
             persistBookmarks(state.bookmarks);
         }
 
@@ -30,9 +29,6 @@
             delete state.bookmarks[getResultPublicId(result)];
             if (result.id && result.chengyu) {
                 delete state.bookmarks[result.chengyu];
-            }
-            if (Object.keys(state.bookmarks).length === 0) {
-                state.savedOpen = false;
             }
             persistBookmarks(state.bookmarks);
         }

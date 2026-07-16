@@ -310,6 +310,8 @@ describe('dictionary tooltip frontend', () => {
         assert.match(content, /伶俐/);
         assert.match(content, /clever; sharp; smart/);
         assert.match(content, /dict-pop-pinyin/);
+        assert.match(content, /data-dict-close/);
+        assert.match(content, /Dictionary/);
     });
 
     it('builds popover content with chengyu literal meaning', () => {
