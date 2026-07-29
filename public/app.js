@@ -4,31 +4,31 @@ const PUBLIC_GITHUB_URL = 'https://github.com/manthedan/chengyu-search';
 const EXAMPLE_QUERIES = [
     {
         query: 'adding something unnecessary and ruining it',
-        label: 'unnecessary addition',
+        label: 'I made it worse by overdoing it',
         simplified: '画蛇添足',
         traditional: '畫蛇添足'
     },
     {
         query: 'pretending to be dumb to avoid answering',
-        label: 'playing dumb',
+        label: 'Someone is playing dumb',
         simplified: '装傻充愣',
         traditional: '裝傻充愣'
     },
     {
         query: 'quick-witted and clever',
-        label: 'quick-witted',
+        label: 'I need a quick-witted response',
         simplified: '聪明伶俐',
         traditional: '聰明伶俐'
     },
     {
         query: 'hesitant and unable to move forward',
-        label: 'hesitant',
+        label: 'I hesitated and couldn’t move forward',
         simplified: '趑趄不前',
         traditional: '趑趄不前'
     },
     {
         query: 'easier said than done',
-        label: 'easier said',
+        label: 'It sounded easier than it was',
         simplified: '谈何容易',
         traditional: '談何容易'
     }
@@ -276,9 +276,10 @@ function getScriptCopy() {
 }
 
 function renderHeroTitleChars() {
+    const pinyin = ['chéng', 'yǔ', 'sōu', 'suǒ'];
     return Array.from(getScriptCopy().siteTitle).map((char, index) => {
-        const className = index === 2 ? 'ch accent' : 'ch';
-        return `<span class="${className}">${escapeHtml(char)}</span>`;
+        const className = index === 2 ? 'hero-character accent' : 'hero-character';
+        return `<span class="${className}"><span class="hero-pinyin">${pinyin[index]}</span><span class="ch">${escapeHtml(char)}</span></span>`;
     }).join('');
 }
 
@@ -452,18 +453,22 @@ function renderHeader() {
 
 function renderHero() {
     return `
-        <section class="hero">
-            <h1 class="hero-chars">
+        <section class="hero" aria-labelledby="landing-title">
+            <div class="hero-orbit hero-orbit-one" aria-hidden="true"></div>
+            <div class="hero-orbit hero-orbit-two" aria-hidden="true"></div>
+            <p class="hero-kicker"><span class="kicker-spark">✦</span> A living dictionary of 5,900+ idioms</p>
+            <h1 class="hero-chars" id="landing-title" aria-label="${escapeHtml(getScriptCopy().siteTitle)}">
                 ${renderHeroTitleChars()}
             </h1>
-            <p class="hero-sub"><em>Describe a situation, find the idiom.</em></p>
+            <p class="hero-sub">There’s a four-character phrase for that.</p>
+            <p class="hero-copy">Describe the feeling, predicament, or tiny human drama. We’ll help you find the chengyu that says it beautifully.</p>
         </section>
     `;
 }
 
 function renderSearchSection() {
     return `
-        <section class="search-wrap">
+        <section class="search-wrap ${STATE.view === 'landing' ? 'search-wrap-landing' : ''}">
             <div class="search-box">
                 <div class="search-row">
                     <div class="search-input-wrap">
@@ -484,12 +489,18 @@ function renderSearchSection() {
                 </div>
             </div>
             ${STATE.view === 'landing' ? `
+                <div class="examples-intro">
+                    <span class="examples-label">Need a spark?</span>
+                </div>
                 <div class="examples">
-                    <span class="examples-label">Try:</span>
-                    ${EXAMPLE_QUERIES.slice(0, 3).map(example => `
-                        <button class="chip" data-query="${escapeHtml(example.query)}">
-                            ${escapeHtml(example.label)}
-                            <span class="cn">${escapeHtml(getDisplayHeadword(example))}</span>
+                    ${EXAMPLE_QUERIES.map((example, index) => `
+                        <button class="chip" type="button" data-query="${escapeHtml(example.query)}" aria-label="Search for: ${escapeHtml(example.label)} — ${escapeHtml(getDisplayHeadword(example))}">
+                            <span class="chip-index">${String(index + 1).padStart(2, '0')}</span>
+                            <span class="chip-copy">
+                                <span class="chip-label">${escapeHtml(example.label)}</span>
+                                <span class="cn">${escapeHtml(getDisplayHeadword(example))}</span>
+                            </span>
+                            <span class="chip-arrow" aria-hidden="true">↗</span>
                         </button>
                     `).join('')}
                 </div>

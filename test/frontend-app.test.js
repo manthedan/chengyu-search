@@ -198,16 +198,18 @@ describe('frontend script toggle', () => {
         const simplifiedHero = hooks.renderHero();
         assert.match(hooks.renderHeader(), /成语搜索/);
         assert.match(simplifiedHero, />语<\/span>/);
-        assert.match(simplifiedHero, /Describe a situation, find the idiom\./);
-        assert.doesNotMatch(simplifiedHero, /Four-character wisdom/);
+        assert.match(simplifiedHero, /There’s a four-character phrase for that\./);
+        assert.match(simplifiedHero, /hero-pinyin">chéng/);
+        assert.doesNotMatch(simplifiedHero, /Meaning.*中文.*Pinyin/);
         assert.doesNotMatch(hooks.renderHeader(), /成語搜索/);
 
         hooks.setScriptMode('traditional');
         const traditionalHero = hooks.renderHero();
         assert.match(hooks.renderHeader(), /成語搜索/);
         assert.match(traditionalHero, />語<\/span>/);
-        assert.match(traditionalHero, /Describe a situation, find the idiom\./);
-        assert.doesNotMatch(traditionalHero, /Four-character wisdom/);
+        assert.match(traditionalHero, /There’s a four-character phrase for that\./);
+        assert.match(traditionalHero, /aria-label="成語搜索"/);
+        assert.doesNotMatch(traditionalHero, /Meaning.*中文.*Pinyin/);
         assert.doesNotMatch(hooks.renderHeader(), /成语搜索/);
     });
 
@@ -218,10 +220,14 @@ describe('frontend script toggle', () => {
         hooks.setScriptMode('simplified');
         const simplifiedMarkup = hooks.renderSearchSection();
         assert.match(simplifiedMarkup, /画蛇添足/);
+        assert.match(simplifiedMarkup, /Need a spark\?/);
+        assert.match(simplifiedMarkup, /aria-label="Search for: I made it worse by overdoing it — 画蛇添足"/);
+        assert.strictEqual((simplifiedMarkup.match(/class="chip"/g) || []).length, 5);
         assert.doesNotMatch(simplifiedMarkup, /畫蛇添足/);
 
         hooks.setScriptMode('traditional');
         const traditionalMarkup = hooks.renderSearchSection();
+        assert.match(traditionalMarkup, /aria-label="Search for: I made it worse by overdoing it — 畫蛇添足"/);
         assert.match(traditionalMarkup, /畫蛇添足/);
         assert.doesNotMatch(traditionalMarkup, /画蛇添足/);
     });
