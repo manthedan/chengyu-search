@@ -68,6 +68,14 @@ describe('site metadata and SEO assets', () => {
     assert.ok(contrastRatio(foreground, hover) >= 4.5, 'hovered dark-mode primary button should meet WCAG AA');
   });
 
+  it('keeps the landing hero static', () => {
+    const styles = readRepoFile('public/styles.css');
+
+    assert.doesNotMatch(styles, /animation:\s*character-arrive/);
+    assert.doesNotMatch(styles, /animation:\s*spark-turn/);
+    assert.doesNotMatch(styles, /@keyframes\s+character-arrive/);
+  });
+
   it('includes the social preview and icon assets', () => {
     const socialCardPath = path.join(REPO_ROOT, 'public', 'social-card.png');
     const appleTouchIconPath = path.join(REPO_ROOT, 'public', 'apple-touch-icon.png');
