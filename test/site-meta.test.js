@@ -68,7 +68,7 @@ describe('site metadata and SEO assets', () => {
     assert.ok(contrastRatio(foreground, hover) >= 4.5, 'hovered dark-mode primary button should meet WCAG AA');
   });
 
-  it('keeps the landing hero static', () => {
+  it('keeps replayable hero motion out of CSS', () => {
     const styles = readRepoFile('public/styles.css');
 
     assert.doesNotMatch(styles, /animation:\s*character-arrive/);

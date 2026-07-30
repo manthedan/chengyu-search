@@ -47,6 +47,7 @@ function loadFrontendApp(options = {}) {
     render,
     renderHeader,
     renderHero,
+    playHeroEntranceOnce,
     renderSearchSection,
     renderSavedSection,
     renderFooter,
@@ -84,7 +85,10 @@ function loadFrontendApp(options = {}) {
         querySelector() {
             return null;
         },
-        querySelectorAll() {
+        querySelectorAll(selector) {
+            if (selector === '.hero-character') {
+                return options.heroCharacters || [];
+            }
             return [];
         },
         createElement() {
@@ -104,6 +108,9 @@ function loadFrontendApp(options = {}) {
 
     const window = {
         location: { origin: 'http://example.test' },
+        matchMedia() {
+            return { matches: Boolean(options.prefersReducedMotion) };
+        },
         speechSynthesis: {
             getVoices() {
                 return [];
@@ -211,6 +218,37 @@ describe('frontend script toggle', () => {
         assert.match(traditionalHero, /aria-label="成語搜索"/);
         assert.doesNotMatch(traditionalHero, /Meaning.*中文.*Pinyin/);
         assert.doesNotMatch(hooks.renderHeader(), /成语搜索/);
+    });
+
+    it('plays the hero entrance once without transforms or persistent fill', () => {
+        const animationCalls = [];
+        const heroCharacters = Array.from({ length: 4 }, () => ({
+            animate(keyframes, options) {
+                animationCalls.push({ keyframes, options });
+            }
+        }));
+        const { hooks } = loadFrontendApp({ heroCharacters });
+
+        hooks.playHeroEntranceOnce();
+        hooks.playHeroEntranceOnce();
+
+        assert.strictEqual(animationCalls.length, 4);
+        assert.strictEqual(animationCalls[0].keyframes[0].opacity, 0);
+        assert.strictEqual(animationCalls[0].keyframes[1].opacity, 1);
+        assert.ok(animationCalls[0].keyframes.every(frame => !('transform' in frame)));
+        assert.strictEqual(animationCalls[0].options.delay, 0);
+        assert.strictEqual(animationCalls[3].options.delay, 165);
+        assert.strictEqual(animationCalls[0].options.fill, 'backwards');
+    });
+
+    it('skips the hero entrance when reduced motion is preferred', () => {
+        let animationCount = 0;
+        const heroCharacters = [{ animate() { animationCount += 1; } }];
+        const { hooks } = loadFrontendApp({ heroCharacters, prefersReducedMotion: true });
+
+        hooks.playHeroEntranceOnce();
+
+        assert.strictEqual(animationCount, 0);
     });
 
     it('renders landing example glosses in the selected script', () => {

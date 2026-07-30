@@ -90,6 +90,8 @@ const BOOKMARKS = FRONTEND_BOOKMARKS_FACTORY.createBookmarkHelpers({
 
 const INITIAL_BOOKMARKS = STORAGE.loadBookmarks();
 
+let heroEntrancePlayed = false;
+
 const STATE = {
     theme: STORAGE.loadTheme(),
     scriptMode: STORAGE.loadScriptMode(),
@@ -466,6 +468,34 @@ function renderHero() {
     `;
 }
 
+function playHeroEntranceOnce() {
+    if (heroEntrancePlayed || STATE.view !== 'landing') return;
+
+    const characters = Array.from(document.querySelectorAll('.hero-character'));
+    if (!characters.length) return;
+
+    heroEntrancePlayed = true;
+    if (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+    }
+
+    characters.forEach((character, index) => {
+        if (typeof character.animate !== 'function') return;
+
+        // Web Animations do not change the rendered HTML, so background state
+        // updates cannot restart or interrupt the one-time entrance.
+        character.animate(
+            [{ opacity: 0 }, { opacity: 1 }],
+            {
+                duration: 420,
+                delay: index * 55,
+                easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                fill: 'backwards'
+            }
+        );
+    });
+}
+
 function renderSearchSection() {
     return `
         <section class="search-wrap ${STATE.view === 'landing' ? 'search-wrap-landing' : ''}">
@@ -748,6 +778,7 @@ function render() {
     if (app.innerHTML.trim() !== html.trim()) {
         app.innerHTML = html;
         bind();
+        playHeroEntranceOnce();
     }
 }
 
