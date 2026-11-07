@@ -15,7 +15,8 @@
         windowRef = global,
         fetchFn = global.fetch,
         consoleRef = global.console,
-        popoverId = DEFAULT_POPOVER_ID
+        popoverId = DEFAULT_POPOVER_ID,
+        onPopoverShow = null
     } = {}) {
         if (!escapeHtml || !escapeRegExp || !toneMarkPinyinString || !splitExampleText || !buildCharacterPins || !getDisplayHeadword || !getScriptMode) {
             throw new Error('dictionary helpers require utility and display dependencies');
@@ -87,7 +88,30 @@
         }
 
         function renderPopover() {
-            return `<div id="${popoverId}" class="dict-popover" role="dialog" aria-label="Dictionary definition" hidden></div>`;
+            // The scrim only shows where the popover is a bottom sheet (CSS);
+            // tapping it closes the sheet instead of the content beneath. The
+            // caret points from a floating popover back at its glyph or word.
+            return `<div class="dict-scrim" data-dict-close aria-hidden="true" hidden></div><div id="${popoverId}" class="dict-popover" role="dialog" aria-label="Dictionary definition" hidden></div><span class="dict-caret" aria-hidden="true" hidden></span>`;
+        }
+
+        let activeTarget = null;
+        let repositionBound = false;
+
+        function getCaret(popover) {
+            const next = popover?.nextElementSibling;
+            return next?.classList?.contains('dict-caret') ? next : null;
+        }
+
+        function setActiveTarget(targetEl) {
+            if (activeTarget && activeTarget !== targetEl) {
+                activeTarget.classList?.remove('is-dict-active');
+                activeTarget.removeAttribute?.('aria-expanded');
+            }
+            activeTarget = targetEl || null;
+            if (activeTarget) {
+                activeTarget.classList?.add('is-dict-active');
+                activeTarget.setAttribute?.('aria-expanded', 'true');
+            }
         }
 
         function showPopover(targetEl, content) {
@@ -95,23 +119,98 @@
             if (!popover) return;
             popover.innerHTML = content;
             popover.hidden = false;
+            const scrim = popover.previousElementSibling;
+            if (scrim?.classList?.contains('dict-scrim')) scrim.hidden = false;
+            setActiveTarget(targetEl);
+            positionPopover(popover, targetEl);
+            bindReposition();
+            onPopoverShow?.();
+        }
 
+        // A floating popover opens below its glyph or word, caret pointing
+        // up, and flips above only when there is no room below. It never
+        // covers its target, the search box or the sticky search bar; it may
+        // briefly cover other content, as a transient popover.
+        function getPlacementContext(targetEl) {
             const rect = targetEl.getBoundingClientRect();
-            const popRect = popover.getBoundingClientRect();
-            const viewportWidth = windowRef.innerWidth;
-            const viewportHeight = windowRef.innerHeight;
+            const bottoms = ['.search-box', 'body.show-sticky-search .sticky-search']
+                .map(selector => documentRef.querySelector?.(selector)?.getBoundingClientRect?.()?.bottom || 0);
+            const minTop = Math.max(0, ...bottoms);
+            return { rect, minTop, sides: ['below', 'above'] };
+        }
 
-            let left = rect.left + rect.width / 2 - popRect.width / 2;
-            left = Math.max(8, Math.min(left, viewportWidth - popRect.width - 8));
-
-            let top = rect.bottom + 6;
-            if (top + popRect.height > viewportHeight - 8) {
-                top = rect.top - popRect.height - 6;
+        function positionPopover(popover, targetEl) {
+            popover.style.maxHeight = '';
+            const caret = getCaret(popover);
+            const sheet = windowRef.matchMedia?.('(max-width: 640px)')?.matches;
+            if (sheet) {
+                if (caret) caret.hidden = true;
+                return;
             }
-            top = Math.max(8, top);
+            const context = getPlacementContext(targetEl);
+            const placement = placePopover(
+                context.rect,
+                popover.getBoundingClientRect(),
+                { width: windowRef.innerWidth, height: windowRef.innerHeight },
+                context
+            );
+            popover.style.left = `${placement.left}px`;
+            popover.style.top = `${placement.top}px`;
+            if (placement.maxHeight) popover.style.maxHeight = `${placement.maxHeight}px`;
+            popover.dataset.placement = placement.side;
+            if (caret) {
+                caret.hidden = false;
+                caret.dataset.placement = placement.side;
+                const edge = placement.side === 'below'
+                    ? placement.top
+                    : placement.top + (placement.maxHeight || popover.getBoundingClientRect().height);
+                caret.style.left = `${placement.caretX - 6}px`;
+                caret.style.top = `${edge - 6}px`;
+            }
+        }
 
-            popover.style.left = `${left}px`;
-            popover.style.top = `${top}px`;
+        function placePopover(rect, popRect, viewport, { minTop = 0, sides = ['below', 'above'] } = {}) {
+            const gap = 9;
+            const margin = 8;
+            const top0 = Math.max(margin, minTop + gap);
+            const left = Math.max(margin, Math.min(rect.left + rect.width / 2 - popRect.width / 2, viewport.width - popRect.width - margin));
+            const caretX = Math.max(left + 16, Math.min(rect.left + rect.width / 2, left + popRect.width - 16));
+            const belowTop = rect.bottom + gap;
+            const aboveTop = rect.top - gap - popRect.height;
+            const spaceBelow = viewport.height - margin - belowTop;
+            const spaceAbove = rect.top - gap - top0;
+            const fits = {
+                above: popRect.height <= spaceAbove,
+                below: popRect.height <= spaceBelow
+            };
+            const side = sides.find(name => fits[name]);
+            if (side === 'below') return { side, left, top: belowTop, caretX };
+            if (side === 'above') return { side, left, top: aboveTop, caretX };
+            // Nothing fits whole: use the roomier of above and below and let
+            // the popover scroll.
+            if (spaceBelow >= spaceAbove) {
+                return { side: 'below', left, top: belowTop, caretX, maxHeight: Math.max(120, spaceBelow) };
+            }
+            return { side: 'above', left, top: top0, caretX, maxHeight: Math.max(120, spaceAbove) };
+        }
+
+        // A floating popover follows its target when the page scrolls or
+        // resizes, so the caret keeps pointing at the right glyph.
+        function bindReposition() {
+            if (repositionBound || !windowRef.addEventListener) return;
+            repositionBound = true;
+            let frame = 0;
+            const update = () => {
+                frame = 0;
+                const popover = documentRef.getElementById(popoverId);
+                if (!popover || popover.hidden || !activeTarget?.isConnected) return;
+                positionPopover(popover, activeTarget);
+            };
+            const schedule = () => {
+                if (!frame) frame = (windowRef.requestAnimationFrame || (fn => setTimeout(fn, 16)))(update);
+            };
+            windowRef.addEventListener('scroll', schedule, { passive: true });
+            windowRef.addEventListener('resize', schedule);
         }
 
         function hidePopover() {
@@ -119,7 +218,12 @@
             if (popover) {
                 popover.hidden = true;
                 popover.innerHTML = '';
+                const scrim = popover.previousElementSibling;
+                if (scrim?.classList?.contains('dict-scrim')) scrim.hidden = true;
+                const caret = getCaret(popover);
+                if (caret) caret.hidden = true;
             }
+            setActiveTarget(null);
         }
 
         function buildPopoverContent(entries) {
@@ -130,7 +234,7 @@
             const trad = entry.traditional && entry.traditional !== entry.simplified
                 ? `<span class="dict-pop-trad">${escapeHtml(entry.traditional)}</span>` : '';
             const pinyin = entry.pinyin ? `<div class="dict-pop-pinyin">${escapeHtml(toneMarkPinyinString(entry.pinyin))}</div>` : '';
-            const literal = entry.literal ? `<div class="dict-pop-literal"><span class="arrow">—</span> &ldquo;${escapeHtml(entry.literal)}&rdquo;</div>` : '';
+            const literal = entry.literal ? `<div class="dict-pop-literal"><span class="lit-label">lit.</span> &ldquo;${escapeHtml(entry.literal)}&rdquo;</div>` : '';
             const chengyuLabel = getScriptMode() === 'traditional' ? '成語' : '成语';
             const isChengyu = entry.isChengyu ? `<span class="dict-pop-tag">${chengyuLabel}</span>` : '';
 
@@ -138,18 +242,25 @@
                 `<li class="dict-pop-def">${escapeHtml(d)}</li>`
             ).join('');
 
+            // A word whose traditional form differs names both: 简 屡 · 繁 屢.
+            const word = trad
+                ? `<span class="dict-pop-script">简</span><span class="dict-pop-word">${simp}</span><span class="dict-pop-sep" aria-hidden="true">·</span><span class="dict-pop-script">繁</span>${trad}`
+                : `<span class="dict-pop-word">${simp}</span>`;
+
             return `
                 <div class="dict-pop-toolbar">
+                    <span class="dict-pop-handle" aria-hidden="true"></span>
                     <span>Dictionary</span>
                     <button type="button" class="dict-pop-close" data-dict-close aria-label="Close dictionary">Close <span aria-hidden="true">×</span></button>
                 </div>
                 <div class="dict-pop-head">
-                    <span class="dict-pop-word">${simp}</span>${trad}
+                    ${word}
                     ${isChengyu}
                 </div>
                 ${pinyin}
                 ${literal}
                 ${defs ? `<ol class="dict-pop-defs">${defs}</ol>` : ''}
+                ${simp && !entry.isChengyu ? `<button type="button" class="dict-pop-search" data-dict-search="${simp}">Idioms with <span class="dict-pop-search-word">${simp}</span> <span aria-hidden="true">→</span></button>` : ''}
             `;
         }
 
@@ -280,6 +391,70 @@
             return renderAnnotatedExample(text, result);
         }
 
+        // Ruby pinyin sits over a fixed 1em glyph cell and never widens it.
+        // Each syllable carries its natural width (--pw, in ems of the pinyin
+        // face at its +0.02em tracking), its letter count (--pn) and the
+        // width of its widest neighbour no wider than itself (--pwn), so the
+        // stylesheet can tighten only a syllable too wide for its glyph or
+        // for the space it shares with that neighbour.
+        function pinClass() {
+            return 'pin';
+        }
+
+        // Advance widths of the text serif's lowercase letters, in ems.
+        const PIN_LETTER_EM = {
+            a: 0.5, b: 0.56, c: 0.45, d: 0.57, e: 0.48, f: 0.33, g: 0.51, h: 0.58, i: 0.29,
+            j: 0.29, k: 0.54, l: 0.29, m: 0.88, n: 0.59, o: 0.54, p: 0.57, q: 0.56, r: 0.41,
+            s: 0.43, t: 0.35, u: 0.58, v: 0.5, w: 0.74, x: 0.5, y: 0.49, z: 0.44
+        };
+        const PIN_TRACKING_EM = 0.02;
+
+        function pinMetrics(pin) {
+            const letters = Array.from(String(pin || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase());
+            const width = letters.reduce((sum, letter) => sum + (PIN_LETTER_EM[letter] ?? 0.5) + PIN_TRACKING_EM, 0);
+            return { width: Math.round(width * 100) / 100, count: Math.max(1, letters.length) };
+        }
+
+        function pinStyle(pin, neighbourWidth = 0) {
+            const { width, count } = pinMetrics(pin);
+            return `--pw:${width};--pn:${count}${neighbourWidth ? `;--pwn:${neighbourWidth}` : ''}`;
+        }
+
+        // One style per pin. Neighbours are the adjacent glyphs on either
+        // side; a comma cell separates them. Of two neighbours, only the
+        // wider syllable (or both, when equal) gives way.
+        function pinStyles(pins) {
+            const widths = pins.map(item => (item.punctuation || !item.pin ? 0 : pinMetrics(item.pin).width));
+            return pins.map((item, index) => {
+                if (!widths[index]) return '';
+                const neighbours = [widths[index - 1] || 0, widths[index + 1] || 0].filter(width => width && width <= widths[index]);
+                return pinStyle(item.pin, neighbours.length ? Math.max(...neighbours) : 0);
+            });
+        }
+
+        // Where a long idiom may break onto a second line: after a full-width
+        // comma when it has one, otherwise after its fourth glyph (不到黄河 /
+        // 心不死, 靡不有初， / 鲜克有终). The app's length classes decide which
+        // layouts take the break. Returns the pin index the break follows, or -1.
+        function headwordBreakIndex(pins) {
+            const glyphs = pins.filter(item => !item.punctuation).length;
+            if (glyphs <= 4) return -1;
+            const comma = pins.findIndex((item, index) => item.punctuation && index > 0 && index < pins.length - 1);
+            if (comma >= 0) return comma;
+            let seen = 0;
+            return pins.findIndex(item => !item.punctuation && ++seen === 4);
+        }
+
+        const HEADWORD_BREAK = '<span class="hw-break" aria-hidden="true"></span>';
+
+        function renderPin(pin, style = pinStyle(pin)) {
+            return `<span style="${style}" class="${pinClass(pin)}">${escapeHtml(pin)}</span>`;
+        }
+
+        function renderPunctuation(char) {
+            return `<span class="ch punct">${escapeHtml(char)}</span>`;
+        }
+
         function renderCharacterCluster(result) {
             const pins = buildCharacterPins(getDisplayHeadword(result), result.pinyin);
 
@@ -292,20 +467,17 @@
             }
 
             // Fallback: individual clickable characters.
-            return pins.map(item => {
-                if (item.punctuation) {
-                    return `<span class="ch punct">${escapeHtml(item.char)}</span>`;
-                }
+            const breakAt = headwordBreakIndex(pins);
+            const styles = pinStyles(pins);
+            return pins.map((item, index) => {
+                const after = index === breakAt ? HEADWORD_BREAK : '';
+                if (item.punctuation) return renderPunctuation(item.char) + after;
 
                 const dictAttrs = dictionary.loaded
                     ? ` data-dict-char="${escapeHtml(item.char)}" tabindex="0" role="button"`
                     : '';
 
-                return `
-                    <span class="ch"${dictAttrs}>
-                        <span class="pin">${escapeHtml(item.pin)}</span>${escapeHtml(item.char)}
-                    </span>
-                `;
+                return `<span class="ch"${dictAttrs}>${renderPin(item.pin, styles[index])}${escapeHtml(item.char)}</span>${after}`;
             }).join('');
         }
 
@@ -315,8 +487,17 @@
             // We map by position: consume pins in order, grouping by headword token text.
             const result = [];
             let pinIdx = 0;
+            const breakAt = headwordBreakIndex(pins);
+            const styles = pinStyles(pins);
+            const styleOf = new Map(pins.map((pin, index) => [pin, styles[index]]));
+            let broken = breakAt < 0;
 
             for (const token of headwordTokens) {
+                if (!broken && pinIdx > breakAt) {
+                    result.push(HEADWORD_BREAK);
+                    broken = true;
+                }
+                const tokenStart = pinIdx;
                 const tokenChars = Array.from(token.text);
                 const tokenPins = [];
                 for (const tc of tokenChars) {
@@ -333,27 +514,40 @@
                 const entryIds = (token.entryIds || []).filter(id => findDictionaryEntryById(id));
 
                 if (isPunct) {
-                    result.push(`<span class="ch punct">${escapeHtml(token.text)}</span>`);
+                    result.push(renderPunctuation(token.text));
                 } else if (entryIds.length > 0) {
                     // Wrap individual .ch spans in a clickable group to preserve pinyin positioning.
                     const dataAttr = `data-dict-entry="${escapeHtml(entryIds.join(','))}"`;
-                    const charSpans = tokenPins.map(p =>
+                    const renderGroup = groupPins => `<span class="ch-word" ${dataAttr} tabindex="0" role="button">${groupPins.map(p =>
                         p.pin
-                            ? `<span class="ch"><span class="pin">${escapeHtml(p.pin)}</span>${escapeHtml(p.char)}</span>`
+                            ? `<span class="ch">${renderPin(p.pin, styleOf.get(p))}${escapeHtml(p.char)}</span>`
                             : `<span class="ch">${escapeHtml(p.char)}</span>`
-                    ).join('');
-                    result.push(`<span class="ch-word" ${dataAttr} tabindex="0" role="button">${charSpans}</span>`);
+                    ).join('')}</span>`;
+                    // A word that straddles the line break splits into two
+                    // groups that open the same entry.
+                    const split = !broken && breakAt >= tokenStart && breakAt < pinIdx - 1 ? breakAt - tokenStart + 1 : 0;
+                    if (split) {
+                        result.push(renderGroup(tokenPins.slice(0, split)), HEADWORD_BREAK, renderGroup(tokenPins.slice(split)));
+                        broken = true;
+                    } else {
+                        result.push(renderGroup(tokenPins));
+                    }
                 } else {
                     // No dictionary entry - render chars with individual char lookup.
-                    for (const p of tokenPins) {
+                    tokenPins.forEach((p, offset) => {
                         if (p.punctuation) {
-                            result.push(`<span class="ch punct">${escapeHtml(p.char)}</span>`);
+                            result.push(renderPunctuation(p.char));
                         } else {
-                            result.push(`<span class="ch" data-dict-char="${escapeHtml(p.char)}" tabindex="0" role="button"><span class="pin">${escapeHtml(p.pin)}</span>${escapeHtml(p.char)}</span>`);
+                            result.push(`<span class="ch" data-dict-char="${escapeHtml(p.char)}" tabindex="0" role="button">${renderPin(p.pin, styleOf.get(p))}${escapeHtml(p.char)}</span>`);
                         }
-                    }
+                        if (!broken && tokenStart + offset === breakAt && offset < tokenPins.length - 1) {
+                            result.push(HEADWORD_BREAK);
+                            broken = true;
+                        }
+                    });
                 }
             }
+            if (!broken && pinIdx > breakAt) result.push(HEADWORD_BREAK);
 
             return result.join('');
         }
@@ -376,7 +570,12 @@
             highlightIdiomPlain,
             highlightIdiomInText,
             renderCharacterCluster,
-            renderSegmentedHeadword
+            renderSegmentedHeadword,
+            pinClass,
+            renderPin,
+            pinStyles,
+            headwordBreakIndex,
+            headwordBreak: HEADWORD_BREAK
         };
     }
 

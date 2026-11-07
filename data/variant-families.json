@@ -1,0 +1,5071 @@
+{
+ "version": "variants-v1",
+ "provenance": "experiments/variants-v1: candidate pairs from CC-CEDICT cross-references, identical definitions, containment, one-character, homophone and reordered forms; blind labels from Claude Opus 5.5 and Codex gpt-6.1-sol; split pairs decided by Codex gpt-6.1-astra. \"same\" only when both graders said SAME. Headlines (experiments/variants-v1/headline): one blind grader per model family (Claude Opus 5.5, Codex gpt-6.1-sol, DeepSeek Flash, GLM Flash) chose which form of each short form / full saying pair should headline; a full saying shows as its short form when at least 3 of 4 families pick it.",
+ "links": [
+  {
+   "a": "挨家挨户",
+   "b": "挨门挨户",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "安富恤贫",
+   "b": "安富恤穷",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "安闲自在",
+   "b": "安闲随意",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "安闲自在",
+   "b": "安闲自得",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "暗察明访",
+   "b": "明察暗访",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "暗渡陈仓",
+   "b": "明修栈道，暗渡陈仓",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "暗送秋波",
+   "b": "送秋波",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "盎盂相击",
+   "b": "盎盂相敲",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "八字还没一撇",
+   "b": "八字还没一撇儿",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "八字没一撇",
+   "b": "八字还没一撇儿",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "巴山越岭",
+   "b": "翻山越岭",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "白衣苍狗",
+   "b": "白云苍狗",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "百尺竿头",
+   "b": "百尺竿头，更进一步",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "百废待兴",
+   "b": "百废待举",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "百花齐放，百家争鸣",
+   "b": "百家争鸣",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "百花齐放",
+   "b": "百花齐放，百家争鸣",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "百年树人",
+   "b": "十年树木，百年树人",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "败柳残花",
+   "b": "残花败柳",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "宝刀未老",
+   "b": "宝刀不老",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "宝马香车",
+   "b": "香车宝马",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "饱人不知饿人饥",
+   "b": "饱汉不知饿汉饥",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "饱食终日，无所用心",
+   "b": "无所用心",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "饱食终日",
+   "b": "饱食终日，无所用心",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "抱头鼠窜",
+   "b": "抱头鼠蹿",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "卑鄙龌龊",
+   "b": "卑陋龌龊",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "卑之，毋甚高论",
+   "b": "卑之，无甚高论",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "鼻青脸肿",
+   "b": "鼻青眼肿",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "比翼双飞",
+   "b": "比翼齐飞",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "彼唱此和",
+   "b": "彼倡此和",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "闭口不言",
+   "b": "闭口不谈",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "闭门不出",
+   "b": "杜门不出",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "筚门闺窦",
+   "b": "荜门圭窦",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "碧草如茵",
+   "b": "绿草如茵",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "变化莫测",
+   "b": "变幻莫测",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "标新立异",
+   "b": "标新竞异",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "标新立异",
+   "b": "标新取异",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "标新领异",
+   "b": "标新竞异",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "标新领异",
+   "b": "标新立异",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "标新取异",
+   "b": "标新竞异",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "标新取异",
+   "b": "标新领异",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "别出心裁",
+   "b": "独出心裁",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "别树一旗",
+   "b": "独树一帜",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "别树一帜",
+   "b": "别树一旗",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "宾客盈门",
+   "b": "宾朋盈门",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "冰清玉洁",
+   "b": "玉洁冰清",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "兵来将敌，水来土堰",
+   "b": "兵来将挡，水来土掩",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "病从口入，祸从口出",
+   "b": "祸从口出",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "病国殃民",
+   "b": "祸国殃民",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "病民害国",
+   "b": "病民蛊国",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "波光粼粼",
+   "b": "波涛粼粼",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "博闻强记",
+   "b": "博闻强识",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "不瞅不睬",
+   "b": "不理不睬",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "不打不成才",
+   "b": "不打不成器",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "不甘人后",
+   "b": "不甘后人",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "不咎既往",
+   "b": "既往不咎",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "不可枚举",
+   "b": "不胜枚举",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "不可名状",
+   "b": "莫可名状",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "不可同日而语",
+   "b": "未可同日而语",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "不名一文",
+   "b": "一文不名",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "不容置疑",
+   "b": "无容置疑",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "不识好歹",
+   "b": "不知好歹",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "不识时变",
+   "b": "不识时务",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "不识泰山",
+   "b": "有眼不识泰山",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "不问青红皂白",
+   "b": "不分青红皂白",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "不以词害志",
+   "b": "不以辞害志",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "不以规矩，不能成方圆",
+   "b": "没有规矩，不成方圆",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "不自量力",
+   "b": "自不量力",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "不足为奇",
+   "b": "不足为怪",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "步罡踏斗",
+   "b": "步斗踏罡",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "残垣败壁",
+   "b": "颓垣断壁",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "残垣断壁",
+   "b": "残垣败壁",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "残垣断壁",
+   "b": "断壁颓垣",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "藏龙卧虎",
+   "b": "盘龙卧虎",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "藏污纳垢",
+   "b": "藏垢纳污",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "草草收兵",
+   "b": "草率收兵",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "曾经沧海难为水，除却巫山不是云",
+   "b": "曾经沧海",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "茶饭不思",
+   "b": "茶饭无心",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "豺狼当道",
+   "b": "豺狼当路",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "豺狼当道",
+   "b": "豺狼塞路",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "豺狼当涂",
+   "b": "豺狼当道",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "豺狼当涂",
+   "b": "豺狼当路",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "豺狼当涂",
+   "b": "豺狼塞路",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "豺狼塞路",
+   "b": "豺狼当路",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "朝不虑夕",
+   "b": "朝不保夕",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "朝过夕改",
+   "b": "朝闻夕改",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "车到山前必有路，船到桥头自然直",
+   "b": "车到山前必有路",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "趁热打铁",
+   "b": "打铁趁热",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "成年累月",
+   "b": "积年累月",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "成年累月",
+   "b": "经年累月",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "成千累万",
+   "b": "成千成万",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "成千上万",
+   "b": "成千成万",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "成千上万",
+   "b": "成千累万",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "诚心实意",
+   "b": "诚心诚意",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "诚心实意",
+   "b": "真心实意",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "乘人之危",
+   "b": "趁人之危",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "惩一儆百",
+   "b": "惩一警百",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "吃力不讨好",
+   "b": "费力不讨好",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "赤贫如洗",
+   "b": "家贫如洗",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "臭气熏天",
+   "b": "臭气冲天",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "出乎意料",
+   "b": "出乎意外",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "出乎意料",
+   "b": "出乎预料",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "出乎意外",
+   "b": "出乎预料",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "出其不意，攻其不备",
+   "b": "出其不意",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "出人意表",
+   "b": "出人意料",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "出人意料",
+   "b": "出乎意料",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "出人意料",
+   "b": "出人意外",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "出人意外",
+   "b": "出乎意外",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "出人意外",
+   "b": "出人意表",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "出水芙蓉",
+   "b": "芙蓉出水",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "除旧布新",
+   "b": "除旧更新",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "怵目惊心",
+   "b": "触目惊心",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "疮痍满目",
+   "b": "满目疮痍",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "窗明几净",
+   "b": "明窗净几",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "垂涎欲滴",
+   "b": "馋涎欲滴",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "此起彼落",
+   "b": "此起彼伏",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "大名鼎鼎",
+   "b": "鼎鼎大名",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "大勇若怯",
+   "b": "大勇若怯，大智若愚",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "大智如愚",
+   "b": "大智若愚",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "大智若愚",
+   "b": "大勇若怯，大智若愚",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "单枪匹马",
+   "b": "单人匹马",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "殚精竭虑",
+   "b": "殚精极虑",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "当耳边风",
+   "b": "当耳旁风",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "当机立断",
+   "b": "应机立断",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "当局者迷，旁观者清",
+   "b": "旁观者清",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "当天事当天毕",
+   "b": "今日事今日毕",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "荡气回肠",
+   "b": "回肠荡气",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "倒行逆施",
+   "b": "逆行倒施",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "倒悬之急",
+   "b": "倒悬之苦",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "倒悬之苦",
+   "b": "倒悬之危",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "倒悬之危",
+   "b": "倒悬之急",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "得道多助，失道寡助",
+   "b": "得道多助",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "得意洋洋",
+   "b": "洋洋得意",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "地利人和",
+   "b": "天时地利人和",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "低声细语",
+   "b": "轻声细语",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "滴水不漏",
+   "b": "点水不漏",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "滴水石穿",
+   "b": "滴水穿石",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "滴水石穿",
+   "b": "水滴石穿",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "抵足而眠",
+   "b": "抵足而卧",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "颠沛流离",
+   "b": "流离颠沛",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "点铁成金",
+   "b": "点石成金",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "钉是钉，铆是铆",
+   "b": "丁是丁，卯是卯",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "东奔西走",
+   "b": "东奔西跑",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "东讨西征",
+   "b": "东征西讨",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "抖擞精神",
+   "b": "精神抖擞",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "独断专行",
+   "b": "独断独行",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "独夫民贼",
+   "b": "民贼独夫",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "独具匠心",
+   "b": "别具匠心",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "独树一帜",
+   "b": "别树一帜",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "独行其是",
+   "b": "自行其是",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "短小精悍",
+   "b": "矮小精悍",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "断壁残垣",
+   "b": "残垣败壁",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "断壁残垣",
+   "b": "残垣断壁",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "断壁残垣",
+   "b": "断垣残壁",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "断壁残垣",
+   "b": "颓垣断壁",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "断壁颓垣",
+   "b": "残垣败壁",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "断壁颓垣",
+   "b": "断壁残垣",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "断壁颓垣",
+   "b": "颓垣断壁",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "断垣残壁",
+   "b": "残垣败壁",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "断垣残壁",
+   "b": "残垣断壁",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "断垣残壁",
+   "b": "断壁颓垣",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "断垣残壁",
+   "b": "颓垣断壁",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "对症发药",
+   "b": "对症下药",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "饿殍载道",
+   "b": "饿莩载道",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "发奋图强",
+   "b": "发愤图强",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "发聋振聩",
+   "b": "振聋发聩",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "发人深思",
+   "b": "发人深省",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "翻天覆地",
+   "b": "天翻地覆",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "翻箱倒箧",
+   "b": "翻箱倒柜",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "反脸无情",
+   "b": "转面无情",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "方寸大乱",
+   "b": "方寸已乱",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "方兴未已",
+   "b": "方兴未艾",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "方滋未艾",
+   "b": "方兴未艾",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "方滋未艾",
+   "b": "方兴未已",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "防患未然",
+   "b": "防患未萌",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "放诞不羁",
+   "b": "放诞不拘",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "放诞不羁",
+   "b": "放荡不羁",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "放诞不拘",
+   "b": "放荡不羁",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "放浪不羁",
+   "b": "放诞不羁",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "放浪不羁",
+   "b": "放诞不拘",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "放浪不羁",
+   "b": "放荡不羁",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "飞蛾扑火",
+   "b": "飞蛾投火",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "奋发图强",
+   "b": "发奋图强",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "风和日暖",
+   "b": "风和日丽",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "风和日暄",
+   "b": "风和日丽",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "风和日暄",
+   "b": "风和日暖",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "风流云散",
+   "b": "云散风流",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "风靡一时",
+   "b": "风行一时",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "风趣横生",
+   "b": "妙趣横生",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "风恬浪静",
+   "b": "风平浪静",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "风雨漂摇",
+   "b": "风雨飘摇",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "风中之烛",
+   "b": "风中烛，瓦上霜",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "烽火四起",
+   "b": "烽烟四起",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "奉公克己",
+   "b": "克己奉公",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "扶危济困",
+   "b": "济困扶危",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "扶危济困",
+   "b": "济危扶困",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "付之东流",
+   "b": "付诸东流",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "付之度外",
+   "b": "置之度外",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "富商巨贾",
+   "b": "富商大贾",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "盖棺定论",
+   "b": "盖棺论定",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "甘心情愿",
+   "b": "心甘情愿",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "干柴烈火",
+   "b": "烈火干柴",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "高不成低不就",
+   "b": "高不凑低不就",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "高低不就",
+   "b": "高不成低不就",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "高低不就",
+   "b": "高不凑低不就",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "高飞远走",
+   "b": "远走高飞",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "高风亮节",
+   "b": "高风峻节",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "高朋满座",
+   "b": "宾朋满座",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "高深莫测",
+   "b": "莫测高深",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "革面洗心",
+   "b": "洗心革面",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "各持己见",
+   "b": "各执己见",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "各式各样",
+   "b": "各色各样",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "亘古未有",
+   "b": "旷古未有",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "耕当问奴，织当访婢",
+   "b": "织当访婢",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "耕当问奴",
+   "b": "耕当问奴，织当访婢",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "羹藜唅糗",
+   "b": "羹藜含糗",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "更深人静",
+   "b": "夜深人静",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "公之于世",
+   "b": "公之于众",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "公之于世",
+   "b": "公诸于世",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "攻无不克，战无不胜",
+   "b": "战无不胜",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "攻无不克，战无不胜",
+   "b": "战无不胜，攻无不克",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "攻无不克，战无不胜",
+   "b": "战无不胜，攻无不取",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "拱手让人",
+   "b": "拱手相让",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "狗拿耗子",
+   "b": "狗逮老鼠",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "狗血淋头",
+   "b": "狗血喷头",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "瓜田李下",
+   "b": "瓜田不纳履，李下不整冠",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "官报私仇",
+   "b": "公报私仇",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "光明正大",
+   "b": "正大光明",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "光说不做",
+   "b": "光说不练",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "光宗耀祖",
+   "b": "荣宗耀祖",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "归根到底",
+   "b": "归根究底",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "归根结底",
+   "b": "归根到底",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "归根结底",
+   "b": "归根结蒂",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "归根结底",
+   "b": "归根究底",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "规矩准绳",
+   "b": "规矩绳墨",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "诡计多端",
+   "b": "鬼计多端",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "国家兴亡，匹夫有责",
+   "b": "天下兴亡，匹夫有责",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "国色天香",
+   "b": "天香国色",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "过关斩将",
+   "b": "过五关斩六将",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "过了这个村就没这个店",
+   "b": "过了这村没这店",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "过眼云烟",
+   "b": "过眼烟云",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "海底捞月",
+   "b": "水中捞月",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "海晏河清",
+   "b": "河清海晏",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "含宫咀徵",
+   "b": "含商咀徵",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "毫发不爽",
+   "b": "毫厘不爽",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "毫无二致",
+   "b": "别无二致",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "好事不出门，恶事传千里",
+   "b": "恶事传千里",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "皓齿明眸",
+   "b": "明眸皓齿",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "何济于事",
+   "b": "无济于事",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "何足挂齿",
+   "b": "不足挂齿",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "和尚打伞，无法无天",
+   "b": "无法无天",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "鸿毛泰山",
+   "b": "鸿毛泰岱",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "后车之鉴",
+   "b": "前车之鉴",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "后悔莫及",
+   "b": "悔之无及",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "后悔莫及",
+   "b": "追悔莫及",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "呼牛作马",
+   "b": "呼牛呼马",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "呼之即来",
+   "b": "呼之即来，挥之即去",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "胡诌八扯",
+   "b": "胡诌乱傍",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "胡诌八扯",
+   "b": "胡诌乱扯",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "胡诌八扯",
+   "b": "胡诌乱说",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "胡诌乱傍",
+   "b": "胡诌乱道",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "胡诌乱傍",
+   "b": "胡诌乱说",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "胡诌乱扯",
+   "b": "胡诌乱傍",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "胡诌乱道",
+   "b": "胡诌乱扯",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "胡诌乱说",
+   "b": "胡诌乱扯",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "胡诌乱说",
+   "b": "胡诌乱道",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "虎踞龙蟠",
+   "b": "虎踞龙盘",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "虎头蛇尾",
+   "b": "龙头蛇尾",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "花红柳绿",
+   "b": "柳绿花红",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "化为泡影",
+   "b": "终成泡影",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "画虎类犬",
+   "b": "画虎不成反类犬",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "话不投机半句多",
+   "b": "话不投机",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "话里有话",
+   "b": "话中有话",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "缓急轻重",
+   "b": "轻重缓急",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "唤雨呼风",
+   "b": "呼风唤雨",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "荒诞无稽",
+   "b": "荒唐无稽",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "黄粱美梦",
+   "b": "黄粱一梦",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "会哭的孩子有奶吃",
+   "b": "会哭的孩子有糖吃",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "诲人不倦",
+   "b": "学而不厌，诲人不倦",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "魂不守舍",
+   "b": "神不守舍",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "混水摸鱼",
+   "b": "浑水摸鱼",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "活蹦乱跳",
+   "b": "欢蹦乱跳",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "活灵活现",
+   "b": "活龙活现",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "火上浇油",
+   "b": "火上加油",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "货比三家",
+   "b": "货比三家不吃亏",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "击鼓鸣金",
+   "b": "擂鼓鸣金",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "机不可失，失不再来",
+   "b": "机不可失",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "机不可失，时不再来",
+   "b": "机不可失，失不再来",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "机不可失，时不再来",
+   "b": "时不再来",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "机不可失",
+   "b": "机不可失，时不再来",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "急不可待",
+   "b": "急不可耐",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "疾风劲草",
+   "b": "疾风知劲草",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "疾风劲草",
+   "b": "疾风知劲草，烈火见真金",
+   "relation": "full_form",
+   "common": "equal"
+  },
+  {
+   "a": "疾风知劲草",
+   "b": "疾风知劲草，烈火见真金",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "济危扶困",
+   "b": "济困扶危",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "加官进禄",
+   "b": "加官进位",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "加官进位",
+   "b": "加官进爵",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "佳人才子",
+   "b": "才子佳人",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "家丑不可外扬",
+   "b": "家丑不可外传",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "家给人足",
+   "b": "人给家足",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "家贫如洗",
+   "b": "一贫如洗",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "嫁鸡随鸡",
+   "b": "嫁鸡随鸡，嫁狗随狗",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "兼济天下",
+   "b": "兼善天下",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "见风使舵",
+   "b": "见风转舵",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "见风使帆",
+   "b": "见风使舵",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "见风转舵",
+   "b": "见风使帆",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "江山易改，本性难移",
+   "b": "本性难移",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "姜太公钓鱼，愿者上钩",
+   "b": "太公钓鱼，愿者上钩",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "街坊邻里",
+   "b": "街坊四邻",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "节上生枝",
+   "b": "节外生枝",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "劫富济贫",
+   "b": "打富济贫",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "结队成群",
+   "b": "成群结队",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "斤斤计较",
+   "b": "斤斤较量",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "金碧荧煌",
+   "b": "金碧辉煌",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "金迷纸醉",
+   "b": "纸醉金迷",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "金石良言",
+   "b": "金玉良言",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "金玉其外，败絮其中",
+   "b": "金玉其表，败絮其中",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "筋疲力尽",
+   "b": "精疲力尽",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "尽人皆知",
+   "b": "人人皆知",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "尽心竭力",
+   "b": "尽心尽力",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "近水楼台先得月",
+   "b": "近水楼台",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "进退为难",
+   "b": "进退两难",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "经年累月",
+   "b": "积年累月",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "惊天动地",
+   "b": "震天动地",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "精诚所至，金石为开",
+   "b": "精诚所至",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "精明能干",
+   "b": "精明强干",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "精疲力竭",
+   "b": "精疲力尽",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "精神恍惚",
+   "b": "心神恍惚",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "敬若神明",
+   "b": "奉若神明",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "久闻大名",
+   "b": "久仰大名",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "咎有应得",
+   "b": "罪有应得",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "鞠躬尽瘁",
+   "b": "鞠躬尽瘁，死而后已",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "鞠躬尽力",
+   "b": "鞠躬尽瘁",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "镌骨铭心",
+   "b": "刻骨铭心",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "镌心铭骨",
+   "b": "镌骨铭心",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "决胜千里",
+   "b": "运筹帷幄之中，决胜千里之外",
+   "relation": "full_form",
+   "common": "equal"
+  },
+  {
+   "a": "绝世佳人",
+   "b": "绝代佳人",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "君子之交淡如水",
+   "b": "君子之交",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "看菜吃饭，量体裁衣",
+   "b": "看菜吃饭",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "看菜吃饭，量体裁衣",
+   "b": "量体裁衣",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "可以意会，不可言传",
+   "b": "只可意会，不可言传",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "刻骨铭心",
+   "b": "铭心刻骨",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "溘先朝露",
+   "b": "身先朝露",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "空无所有",
+   "b": "一无所有",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "苦思冥想",
+   "b": "冥思苦索",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "快刀断乱麻",
+   "b": "快刀斩乱麻",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "宽宏大量",
+   "b": "宽宏大度",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "狂风暴雨",
+   "b": "狂风骤雨",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "狂风骤雨",
+   "b": "暴风骤雨",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "旷古未有",
+   "b": "旷古未闻",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "狼烟四起",
+   "b": "烽烟四起",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "老调重弹",
+   "b": "旧调重弹",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "老骥伏枥",
+   "b": "老骥伏枥，志在千里",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "老马识途",
+   "b": "识途老马",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "老马嘶风",
+   "b": "老骥嘶风",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "离乡背井",
+   "b": "背井离乡",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "礼轻情意重",
+   "b": "礼轻人意重",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "礼轻情意重",
+   "b": "千里送鹅毛，礼轻情意重",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "礼轻人意重，千里送鹅毛",
+   "b": "礼轻人意重",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "礼轻人意重，千里送鹅毛",
+   "b": "千里送鹅毛",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "立地成佛",
+   "b": "放下屠刀，立地成佛",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "立功赎罪",
+   "b": "将功赎罪",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "脸红筋暴",
+   "b": "脸红筋涨",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "两虎相争",
+   "b": "两虎相争，必有一伤",
+   "relation": "full_form",
+   "common": "equal"
+  },
+  {
+   "a": "量力而行",
+   "b": "量力而为",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "临渴掘井",
+   "b": "临渴穿井",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "零敲碎打",
+   "b": "零打碎敲",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "另起炉灶",
+   "b": "重起炉灶",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "流水不腐，户枢不蠹",
+   "b": "户枢不蠹",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "隆情厚谊",
+   "b": "深情厚谊",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "漏泄天机",
+   "b": "泄露天机",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "路不拾遗",
+   "b": "道不拾遗",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "露马脚",
+   "b": "露出马脚",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "屡见不鲜",
+   "b": "数见不鲜",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "屡禁不绝",
+   "b": "屡禁不止",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "绿女红男",
+   "b": "红男绿女",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "落井下石",
+   "b": "投井下石",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "落落寡交",
+   "b": "落落寡合",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "满目琳琅",
+   "b": "琳琅满目",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "满山遍野",
+   "b": "漫山遍野",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "漫天遍地",
+   "b": "漫天遍野",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "忙中有错",
+   "b": "忙中有失",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "猫哭老鼠",
+   "b": "猫哭耗子",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "貌合心离",
+   "b": "貌合神离",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "没齿难忘",
+   "b": "没齿不忘",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "媒妁之言",
+   "b": "父母之命，媒妁之言",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "盟山誓海",
+   "b": "海誓山盟",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "盟山誓海",
+   "b": "山盟海誓",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "绵绵不绝",
+   "b": "连绵不绝",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "面如灰土",
+   "b": "面如土色",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "面如灰土",
+   "b": "面色如土",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "面色如土",
+   "b": "面如土色",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "渺乎其微",
+   "b": "微乎其微",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "渺无人烟",
+   "b": "荒无人烟",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "妙语连珠",
+   "b": "妙语如珠",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "民怨鼎沸",
+   "b": "民怨沸腾",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "名不副实",
+   "b": "名不符实",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "名扬四海",
+   "b": "扬名四海",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "明查暗访",
+   "b": "明察暗访",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "明枪好躲，暗箭难防",
+   "b": "明枪易躲，暗箭难防",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "鸣金收兵",
+   "b": "鸣金收军",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "冥思苦索",
+   "b": "冥思苦想",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "冥思苦想",
+   "b": "苦思冥想",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "铭心镂骨",
+   "b": "铭心刻骨",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "谋臣武将",
+   "b": "谋臣猛将",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "牡丹虽好，全凭绿叶扶持",
+   "b": "牡丹虽好，终须绿叶扶持",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "牡丹虽好，全仗绿叶扶持",
+   "b": "牡丹虽好，全凭绿叶扶持",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "牡丹虽好，全仗绿叶扶持",
+   "b": "牡丹虽好，全仗绿叶扶",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "牡丹虽好，全仗绿叶扶",
+   "b": "牡丹虽好，全凭绿叶扶持",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "牡丹虽好，终须绿叶扶持",
+   "b": "牡丹虽好，全仗绿叶扶",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "牡丹虽好，终须绿叶扶持",
+   "b": "牡丹虽好，全仗绿叶扶持",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "目不暇接",
+   "b": "目不暇给",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "目不转睛",
+   "b": "目不转瞬",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "目空一切",
+   "b": "目空四海",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "目怔口呆",
+   "b": "目瞪口呆",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "暮鼓晨钟",
+   "b": "晨钟暮鼓",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "男女老幼",
+   "b": "男女老少",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "南征北讨",
+   "b": "南征北伐",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "南征北战",
+   "b": "南征北伐",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "南征北战",
+   "b": "南征北讨",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "难分难解",
+   "b": "难解难分",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "难舍难分",
+   "b": "难分难舍",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "难舍难离",
+   "b": "难分难舍",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "难舍难离",
+   "b": "难舍难分",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "内忧外困",
+   "b": "内忧外患",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "能屈能伸",
+   "b": "能伸能屈",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "逆水行舟",
+   "b": "逆水行舟，不进则退",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "拈花惹草",
+   "b": "沾花惹草",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "鸟不拉屎，鸡不生蛋",
+   "b": "鸟不生蛋，狗不拉屎",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "捏一把冷汗",
+   "b": "捏一把汗",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "牛骥同槽",
+   "b": "牛骥同皂",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "努力以赴",
+   "b": "全力以赴",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "爬山涉水",
+   "b": "跋山涉水",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "盘根究底",
+   "b": "盘根问底",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "盘根究底",
+   "b": "寻根问底",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "盘根究底",
+   "b": "追根究底",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "盘根问底",
+   "b": "刨根问底",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "刨根问底",
+   "b": "寻根问底",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "刨根问底",
+   "b": "询根问底",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "刨根问底",
+   "b": "追根问底",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "跑得了和尚，跑不了庙",
+   "b": "跑了和尚，跑不了寺",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "跑了和尚跑不了庙",
+   "b": "跑得了和尚，跑不了庙",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "跑了和尚跑不了庙",
+   "b": "跑了和尚，跑不了寺",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "蓬门筚户",
+   "b": "蓬门荜户",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "蓬头垢面",
+   "b": "蓬首垢面",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "披肝沥胆",
+   "b": "剖肝沥胆",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "蚍蜉撼大树",
+   "b": "蚍蜉撼树",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "贫病交加",
+   "b": "贫病交迫",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "贫无立锥之地",
+   "b": "贫无立锥",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "牝鸡牡鸣",
+   "b": "牝鸡司晨",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "牝牡骊黄",
+   "b": "骊黄牝牡",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "评头论足",
+   "b": "品头论足",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "评头论足",
+   "b": "评头品足",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "泼水难收",
+   "b": "覆水难收",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "普济众生",
+   "b": "普度众生",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "齐心合力",
+   "b": "齐心协力",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "齐心协力",
+   "b": "同心协力",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "奇花异草",
+   "b": "奇花异卉",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "奇花异草",
+   "b": "奇葩异卉",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "奇葩异卉",
+   "b": "奇花异卉",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "骑马找马",
+   "b": "骑驴找马",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "千变万化",
+   "b": "千变万轸",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "千方百计",
+   "b": "百计千方",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "千金一诺",
+   "b": "一诺千金",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "千金一掷",
+   "b": "一掷千金",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "千里寄鹅毛",
+   "b": "千里送鹅毛",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "千里送鹅毛，礼轻情意重",
+   "b": "千里送鹅毛",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "千里送鹅毛，礼轻人意重",
+   "b": "礼轻人意重",
+   "relation": "full_form",
+   "common": "equal"
+  },
+  {
+   "a": "千里送鹅毛，礼轻人意重",
+   "b": "礼轻人意重，千里送鹅毛",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "千里送鹅毛，礼轻人意重",
+   "b": "千里送鹅毛，礼轻情意重",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "千里送鹅毛",
+   "b": "千里鹅毛",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "千里送鹅毛",
+   "b": "千里送鹅毛，礼轻人意重",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "千依百顺",
+   "b": "百依百顺",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "千姿百态",
+   "b": "百姿千态",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "前车之覆，后车之鉴",
+   "b": "后车之鉴",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "前门拒虎，后门进狼",
+   "b": "前门打虎，后门打狼",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "前无古人",
+   "b": "前无古人，后无来者",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "切中时病",
+   "b": "切中时弊",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "切中要害",
+   "b": "正中要害",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "窃钩者诛，窃国者侯",
+   "b": "窃国者侯，窃钩者诛",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "勤俭朴素",
+   "b": "勤俭朴实",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "青天霹雳",
+   "b": "晴天霹雳",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "轻声细语",
+   "b": "轻言细语",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "轻嘴薄舌",
+   "b": "轻口薄舌",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "倾国倾城",
+   "b": "倾城倾国",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "清风两袖",
+   "b": "两袖清风",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "情人眼里出西施",
+   "b": "情人眼里有西施",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "罄笔难书",
+   "b": "罄竹难书",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "穷困潦倒",
+   "b": "穷愁潦倒",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "穷奢极欲",
+   "b": "穷奢极侈",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "穷思苦想",
+   "b": "冥思苦想",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "秋后算帐",
+   "b": "秋后算账",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "权宜之计",
+   "b": "权宜之策",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "染指",
+   "b": "染指于鼎",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "人不可貌相",
+   "b": "人不可貌相，海水不可斗量",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "人生朝露",
+   "b": "人生如朝露",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "仁人志士",
+   "b": "志士仁人",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "忍辱偷生",
+   "b": "忍垢偷生",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "任其自然",
+   "b": "听其自然",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "日月如梭",
+   "b": "岁月如梭",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "柔情脉脉",
+   "b": "含情脉脉",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "柔情脉脉",
+   "b": "温情脉脉",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "如痴如醉",
+   "b": "如醉如痴",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "如法泡制",
+   "b": "如法炮制",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "如鲠在喉",
+   "b": "骨鲠在喉",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "入境随俗",
+   "b": "入乡随俗",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "若有所失",
+   "b": "如有所失",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "塞翁失马安知非福",
+   "b": "北叟失马",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "塞翁失马",
+   "b": "北叟失马",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "塞翁失马",
+   "b": "塞翁失马安知非福",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "塞翁失马",
+   "b": "塞翁失马焉知非福",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "塞翁失马焉知非福",
+   "b": "北叟失马",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "塞翁失马焉知非福",
+   "b": "塞翁失马安知非福",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "三番五次",
+   "b": "三番两次",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "三个臭皮匠，顶个诸葛亮",
+   "b": "三个臭皮匠，赛过一个诸葛亮",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "三个臭皮匠，赛过一个诸葛亮",
+   "b": "三个臭皮匠，赛过诸葛亮",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "三个臭皮匠，赛过诸葛亮",
+   "b": "三个臭皮匠，顶个诸葛亮",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "三言两句",
+   "b": "三言两语",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "丧魂落魄",
+   "b": "失魂落魄",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "丧魂失魄",
+   "b": "丧魂落魄",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "丧天害理",
+   "b": "违天害理",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "山不转水转",
+   "b": "山不转路转",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "山盟海誓",
+   "b": "海誓山盟",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "山清水秀",
+   "b": "山明水秀",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "山珍海错",
+   "b": "山珍海味",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "伤筋动骨",
+   "b": "伤筋断骨",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "伤天害理",
+   "b": "丧天害理",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "伤天害理",
+   "b": "违天害理",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "赏心悦目",
+   "b": "爽心悦目",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "上不得台盘",
+   "b": "上不了台面",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "身临其境",
+   "b": "亲临其境",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "身无长物",
+   "b": "别无长物",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "身心交病",
+   "b": "身心交瘁",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "深更半夜",
+   "b": "三更半夜",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "深情厚意",
+   "b": "深情厚谊",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "神差鬼使",
+   "b": "鬼使神差",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "神工鬼斧",
+   "b": "鬼斧神工",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "升堂入室",
+   "b": "登堂入室",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "生机勃勃",
+   "b": "生气勃勃",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "生米熟饭",
+   "b": "生米煮成熟饭",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "生米做成熟饭",
+   "b": "生米熟饭",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "生米做成熟饭",
+   "b": "生米煮成熟饭",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "失道寡助",
+   "b": "得道多助，失道寡助",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "失之毫厘，差以千里",
+   "b": "失之毫厘，差之千里",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "失之毫厘，差之千里",
+   "b": "差之毫厘，失之千里",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "失之毫厘，谬以千里",
+   "b": "差之毫厘，谬以千里",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "失之毫厘，谬以千里",
+   "b": "失之毫厘，差以千里",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "失之毫厘，谬以千里",
+   "b": "失之毫厘，差之千里",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "十之八九",
+   "b": "十有八九",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "时过境迁",
+   "b": "事过境迁",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "世代相传",
+   "b": "代代相传",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "事不关己",
+   "b": "事不关己，高高挂起",
+   "relation": "full_form",
+   "common": "equal"
+  },
+  {
+   "a": "势成骑虎",
+   "b": "骑虎难下",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "誓不两立",
+   "b": "势不两立",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "手到拈来",
+   "b": "手到擒来",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "疏财仗义",
+   "b": "疏财重义",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "疏而不漏",
+   "b": "天网恢恢，疏而不漏",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "数黑论白",
+   "b": "数黑论黄",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "数黑论白",
+   "b": "数黄道黑",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "数黑论黄",
+   "b": "数黄道黑",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "水滴石穿",
+   "b": "滴水穿石",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "舜日尧天",
+   "b": "舜日尧年",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "说长道短",
+   "b": "论长道短",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "硕大无朋",
+   "b": "硕大无比",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "司马昭之心路人皆知",
+   "b": "路人皆知",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "死而后已",
+   "b": "鞠躬尽瘁，死而后已",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "素不相能",
+   "b": "积不相能",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "随波逐流",
+   "b": "随波逊流",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "随心所欲",
+   "b": "从心所欲",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "缩衣节食",
+   "b": "节衣缩食",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "索然寡味",
+   "b": "索然无味",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "贪得无厌",
+   "b": "贪婪无厌",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "贪得无厌",
+   "b": "贪求无厌",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "贪官污吏",
+   "b": "赃官污吏",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "贪求无厌",
+   "b": "贪婪无厌",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "贪猥无厌",
+   "b": "贪得无厌",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "贪猥无厌",
+   "b": "贪婪无厌",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "贪猥无厌",
+   "b": "贪求无厌",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "探头探脑",
+   "b": "巴头探脑",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "螳螂捕蝉，黄雀在后",
+   "b": "螳螂捕蝉",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "体恤入微",
+   "b": "体贴入微",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "涕泪交加",
+   "b": "涕泪交流",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "替古人担忧",
+   "b": "替古人耽忧",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "天差地远",
+   "b": "天差地别",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "天机不可泄漏",
+   "b": "天机不可泄露",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "天网恢恢，疏而不漏",
+   "b": "天网恢恢",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "天网恢恢，疏而不漏",
+   "b": "天网恢恢，疏而不失",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "天网恢恢",
+   "b": "天网恢恢，疏而不失",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "天旋地转",
+   "b": "天摇地转",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "天长地久",
+   "b": "地久天长",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "添油加醋",
+   "b": "加油添醋",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "听其言观其行",
+   "b": "听其言而观其行",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "听天由命",
+   "b": "听天安命",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "头昏眼暗",
+   "b": "头昏眼花",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "头昏眼花",
+   "b": "头晕眼花",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "头晕目眩",
+   "b": "头昏目眩",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "徒劳无益",
+   "b": "徒劳无功",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "徒拥虚名",
+   "b": "徒有其名",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "徒拥虚名",
+   "b": "徒有虚名",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "徒有虚名",
+   "b": "徒有其名",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "土阶茅屋",
+   "b": "土阶茅茨",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "推陈出新",
+   "b": "推陈布新",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "颓垣断壁",
+   "b": "残垣断壁",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "脱骨换胎",
+   "b": "脱胎换骨",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "脱口而出",
+   "b": "冲口而出",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "万里迢迢",
+   "b": "千里迢迢",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "万事皆备，只欠东风",
+   "b": "万事俱备，只欠东风",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "万事皆备，只欠东风",
+   "b": "只欠东风",
+   "relation": "full_form",
+   "common": "equal"
+  },
+  {
+   "a": "万事俱备，只欠东风",
+   "b": "只欠东风",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "万事起头难",
+   "b": "万事开头难",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "王婆卖瓜，自卖自夸",
+   "b": "老王卖瓜，自卖自夸",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "网开一面",
+   "b": "网开三面",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "危若朝露",
+   "b": "危如朝露",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "违强陵弱",
+   "b": "违强凌弱",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "违天逆理",
+   "b": "违天害理",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "为德不终",
+   "b": "为德不卒",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "为富不仁",
+   "b": "为富不仁，为仁不富",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "为仁不富",
+   "b": "为富不仁，为仁不富",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "为时未晚",
+   "b": "为时不晚",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "温故知新",
+   "b": "温故而知新",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "稳操胜券",
+   "b": "稳操胜算",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "稳如泰山",
+   "b": "安如泰山",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "稳坐钓鱼台",
+   "b": "任凭风浪起，稳坐钓鱼台",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "问寒问暖",
+   "b": "嘘寒问暖",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "问心无愧",
+   "b": "扪心无愧",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "卧虎藏龙",
+   "b": "藏龙卧虎",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "卧虎藏龙",
+   "b": "盘龙卧虎",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "屋漏更遭连夜雨",
+   "b": "屋漏偏逢连夜雨",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "无关痛痒",
+   "b": "不关痛痒",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "无精打采",
+   "b": "没精打采",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "无精打采",
+   "b": "无精打彩",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "无容置疑",
+   "b": "无可置疑",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "无思无虑",
+   "b": "无忧无虑",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "五彩缤纷",
+   "b": "五色缤纷",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "物美价廉",
+   "b": "价廉物美",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "物以类聚，人以群分",
+   "b": "物以类聚",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "习惯成自然",
+   "b": "习惯若自然",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "习惯自然",
+   "b": "习惯成自然",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "习惯自然",
+   "b": "习惯若自然",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "喜不自胜",
+   "b": "喜不自禁",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "细微末节",
+   "b": "细枝末节",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "瞎子摸象",
+   "b": "盲人摸象",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "闲言碎语",
+   "b": "闲言闲语",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "相机而动",
+   "b": "相机而行",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "相机行事",
+   "b": "见机行事",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "相体裁衣",
+   "b": "量体裁衣",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "向壁虚构",
+   "b": "向壁虚造",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "项庄舞剑",
+   "b": "项庄舞剑，意在沛公",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "逍遥自得",
+   "b": "逍遥自在",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "小隐隐于野，大隐隐于市",
+   "b": "小隐隐于林，大隐隐于市",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "邪门歪道",
+   "b": "歪门邪道",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "携家带口",
+   "b": "拉家带口",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "携家带口",
+   "b": "携家带眷",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "泄漏天机",
+   "b": "漏泄天机",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "泄露天机",
+   "b": "泄漏天机",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "心灰意懒",
+   "b": "心灰意冷",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "心惊胆战",
+   "b": "胆战心惊",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "心宽体胖",
+   "b": "心广体胖",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "心领神悟",
+   "b": "心领神会",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "心如刀割",
+   "b": "心如刀绞",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "心中有数",
+   "b": "心里有数",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "新愁旧恨",
+   "b": "旧愁新恨",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "新瓶旧酒",
+   "b": "新瓶装旧酒",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "星流电击",
+   "b": "星流霆击",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "星星之火",
+   "b": "星星之火，可以燎原",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "兴师动众",
+   "b": "劳师动众",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "胸有成算",
+   "b": "胸有成略",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "秀才不出门，能知天下事",
+   "b": "秀才不出门，全知天下事",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "虚席以待",
+   "b": "虚位以待",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "叙功行赏",
+   "b": "论功行赏",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "悬梁刺股",
+   "b": "头悬梁，锥刺股",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "悬崖峭壁",
+   "b": "悬崖绝壁",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "学而不厌",
+   "b": "学而不厌，诲人不倦",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "寻根问底",
+   "b": "盘根问底",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "寻根问底",
+   "b": "追根问底",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "询根问底",
+   "b": "盘根究底",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "询根问底",
+   "b": "盘根问底",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "询根问底",
+   "b": "寻根问底",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "哑巴吃黄连",
+   "b": "哑巴吃黄连，有苦说不出",
+   "relation": "full_form",
+   "common": "equal"
+  },
+  {
+   "a": "哑巴吃黄连",
+   "b": "哑巴吃黄莲",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "严以责己宽以待人",
+   "b": "宽以待人",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "严于律己",
+   "b": "严以律己",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "言行不符",
+   "b": "言行不一",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "言行一致",
+   "b": "言行若一",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "眼不转睛",
+   "b": "目不转睛",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "眼观六路耳听八方",
+   "b": "眼观四面，耳听八方",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "眼见为实，耳听为虚",
+   "b": "耳听为虚，眼见为实",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "眼明手快",
+   "b": "眼疾手快",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "燕雀处堂",
+   "b": "处堂燕雀",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "燕雀焉知鸿鹄之志",
+   "b": "燕雀安知鸿鹄之志",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "扬清激浊",
+   "b": "激浊扬清",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "羊触藩篱",
+   "b": "羝羊触藩",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "洋洋自得",
+   "b": "洋洋得意",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "养兵千日，用兵一时",
+   "b": "养兵千日，用在一朝",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "养虎伤身",
+   "b": "养虎遗患",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "养虎遗患",
+   "b": "养虎为患",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "养家活口",
+   "b": "养家糊口",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "养痈遗患",
+   "b": "养痈贻患",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "叶落归根",
+   "b": "落叶归根",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "夜阑人静",
+   "b": "夜深人静",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "一板三眼",
+   "b": "一板一眼",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "一饱眼福",
+   "b": "饱眼福",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "一唱三叹",
+   "b": "一倡三叹",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "一蹴而就",
+   "b": "一蹴而得",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "一分一毫",
+   "b": "一丝一毫",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "一颗老鼠屎坏了一锅汤",
+   "b": "一粒老鼠屎坏了一锅粥",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "一览无遗",
+   "b": "一览无余",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "一贫如洗",
+   "b": "赤贫如洗",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "一钱不值",
+   "b": "一文不值",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "一人得道，鸡犬升天",
+   "b": "鸡犬升天",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "一事无成",
+   "b": "百事无成",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "一团漆黑",
+   "b": "漆黑一团",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "一望无垠",
+   "b": "一望无际",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "一文不值",
+   "b": "不值一文",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "一笑置之",
+   "b": "一笑了之",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "一言一行",
+   "b": "一言一动",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "一语不发",
+   "b": "一言不发",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "衣食无虞",
+   "b": "衣食无忧",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "颐指风使",
+   "b": "颐指气使",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "以牙还牙",
+   "b": "以眼还眼，以牙还牙",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "以言代法，以权压法",
+   "b": "以言代法",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "以眼还眼",
+   "b": "以眼还眼，以牙还牙",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "义愤填胸",
+   "b": "义愤填膺",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "因小失大",
+   "b": "贪小失大",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "阴错阳差",
+   "b": "阴差阳错",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "引火烧身",
+   "b": "惹火烧身",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "引以为荣",
+   "b": "引以为傲",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "饮流怀源",
+   "b": "饮水思源",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "应付裕如",
+   "b": "应付自如",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "迎难而上",
+   "b": "见难而上",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "用尽心机",
+   "b": "费尽心机",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "有仇不报非君子",
+   "b": "有仇不报非君子，有冤不伸枉为人",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "有福同享，有难同当",
+   "b": "有福同享，有祸同当",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "有害无利",
+   "b": "有害无益",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "有名亡实",
+   "b": "有名无实",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "有目共睹",
+   "b": "有目共见",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "有增无已",
+   "b": "有增无减",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "余音绕梁",
+   "b": "余响绕梁",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "鱼沉雁杳",
+   "b": "雁杳鱼沉",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "鱼与熊掌",
+   "b": "鱼与熊掌不可兼得",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "渔人之利",
+   "b": "渔翁之利",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "与狐谋皮",
+   "b": "与虎谋皮",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "雨过天青",
+   "b": "雨过天晴",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "浴血奋战",
+   "b": "浴血苦战",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "寓意深远",
+   "b": "寓意深长",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "鹬蚌相争，渔翁得利",
+   "b": "鹬蚌相争",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "怨天载道",
+   "b": "怨声载道",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "月下花前",
+   "b": "花前月下",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "运筹帷幄之中，决胜千里之外",
+   "b": "运筹帷幄",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "在家靠父母，出门靠朋友",
+   "b": "在家靠父母，出外靠朋友",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "载歌且舞",
+   "b": "载歌载舞",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "造茧自缚",
+   "b": "吐丝自缚",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "造茧自缚",
+   "b": "作茧自缚",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "斩草除根",
+   "b": "剪草除根",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "崭露头角",
+   "b": "初露头角",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "战无不胜，攻无不克",
+   "b": "战无不胜，攻无不取",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "战无不胜",
+   "b": "战无不胜，攻无不克",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "战无不胜",
+   "b": "战无不胜，攻无不取",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "长风破浪",
+   "b": "乘风破浪",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "长年累月",
+   "b": "成年累月",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "长年累月",
+   "b": "积年累月",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "长年累月",
+   "b": "经年累月",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "长篇累牍",
+   "b": "连篇累牍",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "长生不死",
+   "b": "长生不老",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "长夜漫漫",
+   "b": "漫漫长夜",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "仗义疏财",
+   "b": "疏财仗义",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "照葫芦画瓢",
+   "b": "依葫芦画瓢",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "珍馐美味",
+   "b": "珍馐美馔",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "真情实意",
+   "b": "真心实意",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "振振有词",
+   "b": "振振有辞",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "峥嵘岁月",
+   "b": "岁月峥嵘",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "睁眼说瞎话",
+   "b": "睁着眼睛说瞎话",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "正言厉色",
+   "b": "正颜厉色",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "枝节横生",
+   "b": "横生枝节",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "知彼知己，百战不殆",
+   "b": "百战不殆",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "知彼知己，百战不殆",
+   "b": "知己知彼，百战不殆",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "知彼知己",
+   "b": "知彼知己，百战不殆",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "知己知彼，百战不殆",
+   "b": "百战不殆",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "知己知彼",
+   "b": "知彼知己",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "知己知彼",
+   "b": "知己知彼，百战不殆",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "直言无讳",
+   "b": "直言不讳",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "只鸡斗酒",
+   "b": "斗酒只鸡",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "只要功夫深，铁杵磨成针",
+   "b": "磨杵成针",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "只字不提",
+   "b": "一字不提",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "指鹿为马",
+   "b": "指鹿作马",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "指手画脚",
+   "b": "指手划脚",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "趾高气扬",
+   "b": "足高气强",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "趾高气扬",
+   "b": "足高气扬",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "栉风沐雨",
+   "b": "沐雨栉风",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "置之不问",
+   "b": "置之不理",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "众口同声",
+   "b": "异口同声",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "众盲摸象",
+   "b": "盲人摸象",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "众盲摸象",
+   "b": "瞎子摸象",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "众说纷纭",
+   "b": "众说纷揉",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "重睹天日",
+   "b": "重见天日",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "重峦叠嶂",
+   "b": "层峦叠嶂",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "重温旧业",
+   "b": "重操旧业",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "周而复始",
+   "b": "终而复始",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "竹篮打水",
+   "b": "竹篮打水，一场空",
+   "relation": "full_form",
+   "common": "b"
+  },
+  {
+   "a": "转败为胜",
+   "b": "反败为胜",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "追本溯源",
+   "b": "推本溯源",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "追根溯源",
+   "b": "追本溯源",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "追根溯源",
+   "b": "追根求源",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "追根问底",
+   "b": "盘根究底",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "追根问底",
+   "b": "盘根问底",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "追根问底",
+   "b": "询根问底",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "追根问底",
+   "b": "追根究底",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "拙嘴笨舌",
+   "b": "笨嘴拙舌",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "卓乎不群",
+   "b": "卓尔不群",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "字字珠玑",
+   "b": "字字珠玉",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "自愧不如",
+   "b": "自愧弗如",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "自命清高",
+   "b": "自视清高",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "自食其果",
+   "b": "自食恶果",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "自繇自在",
+   "b": "自由自在",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "总角之好",
+   "b": "总角之交",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "走马看花",
+   "b": "走马观花",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "足高气强",
+   "b": "足高气扬",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "罪恶滔天",
+   "b": "万恶滔天",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "左右为难",
+   "b": "左右两难",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "作鸟兽散",
+   "b": "如鸟兽散",
+   "relation": "same",
+   "common": "equal"
+  },
+  {
+   "a": "坐不垂堂",
+   "b": "家累千金，坐不垂堂",
+   "relation": "full_form",
+   "common": "a"
+  },
+  {
+   "a": "坐立不安",
+   "b": "坐立难安",
+   "relation": "same",
+   "common": "a"
+  },
+  {
+   "a": "坐失机宜",
+   "b": "坐失良机",
+   "relation": "same",
+   "common": "b"
+  },
+  {
+   "a": "做张做势",
+   "b": "做张做智",
+   "relation": "same",
+   "common": "a"
+  }
+ ],
+ "headlines": [
+  {
+   "full": "严以责己宽以待人",
+   "short": "宽以待人",
+   "votes": "3/4"
+  },
+  {
+   "full": "家累千金，坐不垂堂",
+   "short": "坐不垂堂",
+   "votes": "3/4"
+  },
+  {
+   "full": "看菜吃饭，量体裁衣",
+   "short": "量体裁衣",
+   "votes": "4/4"
+  },
+  {
+   "full": "瓜田不纳履，李下不整冠",
+   "short": "瓜田李下",
+   "votes": "4/4"
+  },
+  {
+   "full": "任凭风浪起，稳坐钓鱼台",
+   "short": "稳坐钓鱼台",
+   "votes": "4/4"
+  },
+  {
+   "full": "和尚打伞，无法无天",
+   "short": "无法无天",
+   "votes": "4/4"
+  },
+  {
+   "full": "有仇不报非君子，有冤不伸枉为人",
+   "short": "有仇不报非君子",
+   "votes": "4/4"
+  },
+  {
+   "full": "车到山前必有路，船到桥头自然直",
+   "short": "车到山前必有路",
+   "votes": "3/4"
+  },
+  {
+   "full": "运筹帷幄之中，决胜千里之外",
+   "short": "运筹帷幄",
+   "votes": "4/4"
+  },
+  {
+   "full": "头悬梁，锥刺股",
+   "short": "悬梁刺股",
+   "votes": "4/4"
+  },
+  {
+   "full": "为富不仁，为仁不富",
+   "short": "为富不仁",
+   "votes": "4/4"
+  },
+  {
+   "full": "曾经沧海难为水，除却巫山不是云",
+   "short": "曾经沧海",
+   "votes": "3/4"
+  },
+  {
+   "full": "话不投机半句多",
+   "short": "话不投机",
+   "votes": "3/4"
+  },
+  {
+   "full": "以眼还眼，以牙还牙",
+   "short": "以牙还牙",
+   "votes": "3/4"
+  },
+  {
+   "full": "病从口入，祸从口出",
+   "short": "祸从口出",
+   "votes": "3/4"
+  },
+  {
+   "full": "机不可失，时不再来",
+   "short": "机不可失",
+   "votes": "3/4"
+  },
+  {
+   "full": "风中烛，瓦上霜",
+   "short": "风中之烛",
+   "votes": "4/4"
+  },
+  {
+   "full": "疾风知劲草，烈火见真金",
+   "short": "疾风知劲草",
+   "votes": "4/4"
+  },
+  {
+   "full": "出其不意，攻其不备",
+   "short": "出其不意",
+   "votes": "3/4"
+  },
+  {
+   "full": "知己知彼，百战不殆",
+   "short": "知己知彼",
+   "votes": "3/4"
+  },
+  {
+   "full": "前车之覆，后车之鉴",
+   "short": "前车之鉴",
+   "votes": "4/4"
+  },
+  {
+   "full": "货比三家不吃亏",
+   "short": "货比三家",
+   "votes": "4/4"
+  },
+  {
+   "full": "饱食终日，无所用心",
+   "short": "饱食终日",
+   "votes": "3/4"
+  },
+  {
+   "full": "大勇若怯，大智若愚",
+   "short": "大智若愚",
+   "votes": "4/4"
+  },
+  {
+   "full": "染指于鼎",
+   "short": "染指",
+   "votes": "4/4"
+  }
+ ]
+}

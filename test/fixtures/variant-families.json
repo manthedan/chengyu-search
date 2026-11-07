@@ -1,0 +1,13 @@
+{
+  "version": "variants-test-fixture",
+  "provenance": "Test fixture for test/variant-grouping.test.js; headwords exist in the real corpus.",
+  "links": [
+    { "a": "盲人摸象", "b": "瞎子摸象", "relation": "same", "common": "a" },
+    { "a": "瞎子摸象", "b": "众盲摸象", "relation": "same", "common": "a" },
+    { "a": "阴差阳错", "b": "阴错阳差", "relation": "same", "common": "a" },
+    { "a": "塞翁失马", "b": "塞翁失马焉知非福", "relation": "full_form", "common": "a" },
+    { "a": "塞翁失马焉知非福", "b": "塞翁失马安知非福", "relation": "same", "common": "a" },
+    { "a": "百花齐放", "b": "百花齐放，百家争鸣", "relation": "full_form", "common": "a" },
+    { "a": "百家争鸣", "b": "百花齐放，百家争鸣", "relation": "full_form", "common": "a" }
+  ]
+}

@@ -17,6 +17,8 @@ export interface ChengyuEntry {
   readonly traditional?: string;
   readonly pinyin: string;
   readonly meaning: string;
+  readonly meaning_zh?: string;
+  readonly kind?: 'chengyu' | 'set_phrase' | 'official_political' | 'technical_or_proper';
   readonly literal?: string;
   readonly example?: string;
   readonly tags?: readonly string[];

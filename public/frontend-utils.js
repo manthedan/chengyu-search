@@ -26,6 +26,8 @@
         }
 
         return {
+            ...(typeof record.corpusVersion === 'string' ? { corpusVersion: record.corpusVersion } : {}),
+            ...(record.needsRefresh === true ? { needsRefresh: true } : {}),
             id: typeof record.id === 'string' && record.id.length > 0 ? record.id : '',
             chengyu,
             simplified: typeof record.simplified === 'string' ? record.simplified : chengyu,
@@ -125,6 +127,27 @@
         };
     }
 
+
+    // Dictionary meanings sometimes carry a CEDICT-style note in brackets:
+    // "one word says it all (idiom, from Analects); to cut a long story short".
+    // The note is pulled out of the meaning line and returned on its own
+    // ("from Analects", "usually derogatory"), so the gloss reads cleanly and
+    // the source can be shown as a quiet aside. A bare "(idiom)" is dropped.
+    function splitMeaningNote(meaning) {
+        const notes = [];
+        const text = String(meaning || '')
+            .replace(/\s*\(\s*idiom\b,?\s*([^()]*)\)/gi, (whole, rest) => {
+                const note = rest.trim().replace(/\.$/, '');
+                if (note) notes.push(note);
+                return '';
+            })
+            .replace(/\s+([;,.])/g, '$1')
+            .replace(/;\s*;/g, ';')
+            .replace(/^[;,\s]+|[;,\s]+$/g, '')
+            .trim();
+        return { text, note: notes.join('; ') };
+    }
+
     global.ChengyuFrontendUtils = {
         createEmptySearchState,
         normalizeBookmarkRecord,
@@ -135,6 +158,7 @@
         extractToneMarkedPinyinSyllables,
         containsChineseCharacter,
         buildCharacterPins,
-        splitExampleText
+        splitExampleText,
+        splitMeaningNote
     };
 })(window);

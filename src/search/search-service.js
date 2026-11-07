@@ -4,6 +4,7 @@ const {
     semanticSearchOnly,
     search: hybridSearch
 } = require('./search-logic.js');
+const { rankCollapsed } = require('./variant-grouping.js');
 
 const DEFAULT_RESULT_LIMIT = 10;
 const MAX_RESULT_WINDOW = 50;
@@ -69,7 +70,8 @@ async function getCachedRankedResults({
     requestedWindow,
     bypassCache = false,
     cacheMode,
-    computeResults
+    computeResults,
+    variantFamilies = null
 }) {
     if (!bypassCache) {
         const cachedEntry = cache.get(cacheKey);
@@ -85,7 +87,9 @@ async function getCachedRankedResults({
         recordCacheOutcome('ranked_results', 'bypass', cacheMode);
     }
 
-    const rankedResults = await computeResults(requestedWindow);
+    // Variant forms are collapsed before caching and pagination, so every page,
+    // count and continuation sees the same collapsed list.
+    const rankedResults = await rankCollapsed(variantFamilies, requestedWindow, computeResults);
 
     if (!bypassCache) {
         cache.set(cacheKey, createRankedResultCacheEntry(rankedResults, requestedWindow));
@@ -227,6 +231,7 @@ function createSearchExecutionService({
     loadHybridOverrides,
     generateQueryEmbedding,
     getCrossEncoderSearchOption,
+    getVariantFamilies = () => null,
     logInfo = () => {}
 }) {
     async function getKeywordRankedResults(query, {
@@ -236,6 +241,7 @@ function createSearchExecutionService({
         return getCachedRankedResults({
             cache: rankedResultCache,
             recordCacheOutcome,
+            variantFamilies: getVariantFamilies(),
             cacheKey: createSearchCacheKey('keyword', query),
             requestedWindow,
             bypassCache: bypassResultCache,
@@ -265,6 +271,7 @@ function createSearchExecutionService({
         return getCachedRankedResults({
             cache: rankedResultCache,
             recordCacheOutcome,
+            variantFamilies: getVariantFamilies(),
             cacheKey: createSearchCacheKey('semantic', query),
             requestedWindow,
             bypassCache: bypassResultCache,
@@ -294,6 +301,7 @@ function createSearchExecutionService({
         return getCachedRankedResults({
             cache: rankedResultCache,
             recordCacheOutcome,
+            variantFamilies: getVariantFamilies(),
             cacheKey: createSearchCacheKey('hybrid', query),
             requestedWindow,
             bypassCache: bypassResultCache,

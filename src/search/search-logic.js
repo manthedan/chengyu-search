@@ -5,8 +5,8 @@
  * ranked result objects sorted by descending internal score.
  */
 
-const Fuse = require('fuse.js');
-const { getTraditionalVariantMaps } = require('../data/cedict-variants.js');
+const { createFuzzyMatcher } = require('./fuzzy-matcher');
+const { normalizeChineseQuery, exactHeadwordMatches } = require('../data/chinese-query.js');
 
 // ---- Utilities ----
 
@@ -52,10 +52,8 @@ function normalizePinyin(text) {
   return (text || '')
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[0-9]/g, '')
-    .replace(/[^a-z\s]/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/[\u0300-\u036f0-9]/g, '') // drop tone marks and tone numbers
+    .replace(/[^a-z]+/g, ' ')
     .trim();
 }
 
@@ -63,19 +61,9 @@ function containsChinese(text) {
   return /[\u4e00-\u9fff]/.test(text);
 }
 
-function normalizeTraditionalChineseQuery(text) {
+function normalizeTraditionalChineseQuery(text, database = []) {
   const raw = String(text || '');
-  if (!containsChinese(raw)) return raw;
-
-  const { idiomMap, charMap } = getTraditionalVariantMaps();
-  const trimmed = raw.trim();
-
-  if (trimmed && idiomMap.has(trimmed)) {
-    const exactNormalized = idiomMap.get(trimmed);
-    return raw.replace(trimmed, exactNormalized);
-  }
-
-  return Array.from(raw).map(char => charMap.get(char) || char).join('');
+  return containsChinese(raw) ? normalizeChineseQuery(raw, database) : raw;
 }
 
 const STOPWORDS = new Set([
@@ -238,9 +226,18 @@ function stableStringify(value) {
 function getFuseIndexCache(CHENGYU) {
   if (fuseIndexCache && fuseIndexCache.ref === CHENGYU) return fuseIndexCache;
 
+  const exactPinyin = new Map();
+  const pinyinNorms = CHENGYU.map(c => {
+    const pinyin_norm = normalizePinyin(c.pinyin);
+    if (!exactPinyin.has(pinyin_norm)) exactPinyin.set(pinyin_norm, []);
+    exactPinyin.get(pinyin_norm).push(c); // Exact hits retain the corpus objects and order.
+    return { pinyin_norm };
+  });
   fuseIndexCache = {
     ref: CHENGYU,
-    pinyinData: CHENGYU.map(c => ({ ...c, pinyin_norm: normalizePinyin(c.pinyin) })),
+    pinyinNorms,
+    pinyinData: [], // fuzzy hits return { ...entry, pinyin_norm } copies, made on first hit
+    exactPinyin,
     pinyin: new Map(),
     keyword: new Map()
   };
@@ -261,7 +258,8 @@ function getPinyinExactMatches(query, CHENGYU) {
   const normalizedQuery = normalizePinyin(query);
   if (!normalizedQuery) return [];
 
-  return CHENGYU.filter(c => normalizePinyin(c.pinyin) === normalizedQuery).map(c => ({
+  const matches = getFuseIndexCache(CHENGYU).exactPinyin.get(normalizedQuery) || [];
+  return matches.map(c => ({
     id: getEntryId(c),
     chengyu: c.chengyu,
     pinyin_exact_score: 1,
@@ -372,36 +370,40 @@ function pinyinFuzzySearch(query, CHENGYU, config) {
 
   const normalizedQuery = normalizePinyin(query);
   const fuseSignature = stableStringify({ threshold: config.pinyinFuseThreshold || 0.2 });
-  const fuse = getCachedFuse(CHENGYU, 'pinyin', fuseSignature, indexes => new Fuse(indexes.pinyinData, {
+  const fuse = getCachedFuse(CHENGYU, 'pinyin', fuseSignature, indexes => createFuzzyMatcher(indexes.pinyinNorms, {
     threshold: config.pinyinFuseThreshold || 0.2,
-    includeScore: true,
     ignoreLocation: true,
     minMatchCharLength: 2,
     keys: [{ name: 'pinyin_norm', weight: 1 }]
   }));
 
-  return fuse.search(normalizedQuery).slice(0, config.pinyinTopK || 15).map(r => ({
-    id: getEntryId(r.item),
-    chengyu: r.item.chengyu,
-    keyword_score: (1 - r.score) * (config.pinyinFuzzyBoost || 1.15),
-    item: r.item
-  }));
+  const pinyinTopK = config.pinyinTopK || 15;
+  const { pinyinData } = getFuseIndexCache(CHENGYU);
+  return fuse.search(normalizedQuery, { limit: pinyinTopK }).map(({ refIndex, score, item: { pinyin_norm } }) => {
+    const item = pinyinData[refIndex] ||= { ...CHENGYU[refIndex], pinyin_norm };
+    return {
+      id: getEntryId(item),
+      chengyu: item.chengyu,
+      keyword_score: (1 - score) * (config.pinyinFuzzyBoost || 1.15),
+      item
+    };
+  });
 }
 
 // ---- Query Preprocessing ----
 // Agent can add: stopword removal, synonym expansion, pinyin tone stripping, etc.
 
-function preprocessSemanticQuery(query) {
+function preprocessSemanticQuery(query, database = []) {
   const trimmed = query.trim();
   if (!trimmed) return trimmed;
-  if (containsChinese(trimmed)) return normalizeTraditionalChineseQuery(trimmed);
+  if (containsChinese(trimmed)) return normalizeTraditionalChineseQuery(trimmed, database);
   return trimmed;
 }
 
-function preprocessQuery(query) {
+function preprocessQuery(query, database = []) {
   const trimmed = query.trim();
   if (!trimmed) return trimmed;
-  if (containsChinese(trimmed)) return normalizeTraditionalChineseQuery(trimmed);
+  if (containsChinese(trimmed)) return normalizeTraditionalChineseQuery(trimmed, database);
 
   const synonymMap = {
     hopeless: ['despair', 'helpless', 'desperate'],
@@ -442,11 +444,11 @@ function preprocessQuery(query) {
   return `${trimmed} ${expanded.join(' ')}`;
 }
 
-function getQueryVariants(query) {
+function getQueryVariants(query, database = []) {
   return {
     directQuery: query.trim(),
-    semanticQuery: preprocessSemanticQuery(query),
-    lexicalQuery: preprocessQuery(query)
+    semanticQuery: preprocessSemanticQuery(query, database),
+    lexicalQuery: preprocessQuery(query, database)
   };
 }
 
@@ -454,21 +456,22 @@ function getQueryVariants(query) {
 
 function keywordSearch(query, CHENGYU, config) {
   const isChinese = containsChinese(query);
+  if (isChinese) {
+    const exact = exactHeadwordMatches(query, CHENGYU);
+    if (exact.length) return exact.map(item => ({ id: getEntryId(item), chengyu: item.chengyu, keyword_score: 1, item }));
+  }
   
   const fuseOptions = {
     threshold: config.fuseThreshold || 0.25,
-    includeScore: true,
     minMatchCharLength: config.minMatchCharLength || 1,
     ignoreLocation: config.ignoreLocation !== false,
     keys: isChinese ? config.chineseKeys : config.englishKeys
   };
   const fuseSignature = stableStringify({ language: isChinese ? 'zh' : 'en', ...fuseOptions });
   
-  const fuse = getCachedFuse(CHENGYU, 'keyword', fuseSignature, () => new Fuse(CHENGYU, fuseOptions));
+  const fuse = getCachedFuse(CHENGYU, 'keyword', fuseSignature, () => createFuzzyMatcher(CHENGYU, fuseOptions));
   const normalizedQuery = isChinese ? query : normalizePinyin(query);
-  const fuseResults = fuse.search(normalizedQuery);
-
-  const keywordResults = fuseResults.slice(0, config.keywordTopK || 20).map(r => ({
+  const keywordResults = fuse.search(normalizedQuery, { limit: config.keywordTopK || 20 }).map(r => ({
     id: getEntryId(r.item),
     chengyu: r.item.chengyu,
     keyword_score: 1 - r.score,
@@ -946,16 +949,12 @@ function mergeAndRank(keywordResults, semanticResults, exactPinyinResults, confi
       };
     }
 
-    let score;
-    if (r.source === 'both') {
-      score = r.semantic_score * (config.semanticWeight || 0.72)
-        + r.keyword_score * (config.keywordWeight || 0.28)
-        + (config.overlapBonus ?? 0.12);
-    } else if (r.source === 'semantic') {
-      score = r.semantic_score;
-    } else {
-      score = r.keyword_score;
-    }
+    // Missing evidence contributes zero on the same weighted scale. Giving a
+    // single-channel candidate its unweighted score could promote it when
+    // corpus growth pushes it out of the other channel's candidate window.
+    const score = r.semantic_score * (config.semanticWeight ?? 0.72)
+      + r.keyword_score * (config.keywordWeight ?? 0.28)
+      + (r.source === 'both' ? (config.overlapBonus ?? 0.12) : 0);
     return { id: r.id, chengyu: r.chengyu, score, item: r.item };
   });
 
@@ -1024,7 +1023,7 @@ function keywordSearchOnly(query, CHENGYU, config = {}, options = {}) {
     keywordTopK: Math.max(effectiveConfig.keywordTopK || 20, resultLimit),
     pinyinTopK: Math.max(effectiveConfig.pinyinTopK || 15, resultLimit)
   };
-  const { directQuery, lexicalQuery } = getQueryVariants(query);
+  const { directQuery, lexicalQuery } = getQueryVariants(query, CHENGYU);
 
   const exactPinyinResults = [
     ...getPinyinExactMatches(directQuery, CHENGYU),
@@ -1051,7 +1050,7 @@ async function semanticSearchOnly(query, CHENGYU, CHENGYU_EMBEDDINGS, config = {
     ...effectiveConfig,
     semanticTopK: Math.max(effectiveConfig.semanticTopK || 20, resultLimit)
   };
-  const { semanticQuery, lexicalQuery } = getQueryVariants(query);
+  const { semanticQuery, lexicalQuery } = getQueryVariants(query, CHENGYU);
   const semanticResults = await semanticSearch(
     lexicalQuery,
     CHENGYU,
@@ -1082,13 +1081,17 @@ async function search(query, CHENGYU, CHENGYU_EMBEDDINGS, config, options = {}) 
     semanticTopK: Math.max(effectiveConfig.semanticTopK || 20, resultLimit * 2),
     pinyinTopK: Math.max(effectiveConfig.pinyinTopK || 15, resultLimit)
   };
-  const { directQuery, semanticQuery, lexicalQuery } = getQueryVariants(query);
+  const { directQuery, semanticQuery, lexicalQuery } = getQueryVariants(query, CHENGYU);
   
   const exactPinyinResults = [
     ...getPinyinExactMatches(directQuery, CHENGYU),
     ...(lexicalQuery !== directQuery ? getPinyinExactMatches(lexicalQuery, CHENGYU) : [])
   ];
   const keywordResults = keywordSearch(lexicalQuery, CHENGYU, hybridConfig);
+  // Chinese queries remain lexical lookups, with the existing public scores.
+  if (containsChinese(directQuery)) {
+    return rankKeywordOnly(keywordResults, exactPinyinResults, hybridConfig, { resultLimit });
+  }
   const semanticResults = await semanticSearch(
     lexicalQuery,
     CHENGYU,
@@ -1102,6 +1105,7 @@ async function search(query, CHENGYU, CHENGYU_EMBEDDINGS, config, options = {}) 
 
 module.exports = {
   search,
+  mergeAndRank,
   classifyQueryType,
   keywordSearchOnly,
   semanticSearchOnly,

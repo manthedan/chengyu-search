@@ -1,6 +1,11 @@
 // Chengyu Search API Server - backend-powered search
 const path = require('path');
-const { createSearchExecutionService } = require('./src/search/search-service.js');
+const fs = require('node:fs');
+const { createSearchExecutionService, normalizePagination } = require('./src/search/search-service.js');
+const { HostedEmbeddingClient } = require('./src/embeddings/hosted-client.js');
+const { loadQwenIndex } = require('./src/embeddings/qwen-index.js');
+const { withHostedSearch } = require('./src/search/hosted-search.js');
+const { configuredPrior, loadRankingPrior } = require('./src/search/ranking-prior.js');
 const searchConfig = require('./src/search/search-config.js');
 const {
     loadSearchConfigOverride: loadSearchConfigOverrideFromEnv,
@@ -8,6 +13,7 @@ const {
     loadHybridOverrides: loadHybridOverridesFromDisk
 } = require('./src/search/config-loader.js');
 const { loadChengyuCorpus } = require('./src/data/corpus-loader.js');
+const { loadVariantFamilies } = require('./src/search/variant-grouping.js');
 const { loadEmbeddingArtifact } = require('./src/embeddings/artifact-loader.js');
 const { LRUCache, TTLCache } = require('./src/shared/cache.js');
 const {
@@ -82,6 +88,7 @@ function sanitizeEmbeddingFileLabel(filePath) {
 // In-memory data storage
 let CHENGYU_DATABASE = [];
 let CHENGYU_BY_ID = new Map();
+let variantFamilies = null;
 let CHENGYU_EMBEDDINGS = null;
 let embeddingMetadata = {
     file: null,
@@ -100,6 +107,11 @@ let crossEncoderModel = null;
 let initialized = false;
 let initializationPromise = null;
 let activeServer = null;
+const hostedClient = new HostedEmbeddingClient();
+let hostedIndex = null;
+const rankingPriorRequested = configuredPrior();
+let rankingPrior = null;
+const skipMiniLM = process.env.SKIP_MINILM === '1';
 
 function createEmbeddingCacheKey(query) {
     return buildEmbeddingCacheKey(query, {
@@ -124,6 +136,11 @@ function getEmbeddingsFilePath() {
     return path.isAbsolute(configuredPath)
         ? configuredPath
         : path.join(__dirname, configuredPath);
+}
+
+function getVariantFamiliesFilePath() {
+    const configuredPath = process.env.VARIANT_FAMILIES_FILE || 'data/variant-families.json';
+    return path.resolve(__dirname, configuredPath);
 }
 
 function getEmbeddingModelId() {
@@ -323,21 +340,29 @@ const searchExecutionService = createSearchExecutionService({
     createHttpError,
     createPaginatedSearchResponse: options => buildPaginatedSearchResponse({
         ...options,
-        byId: CHENGYU_BY_ID
+        byId: CHENGYU_BY_ID,
+        variantFamilies
     }),
     loadFreshSearchConfig,
     loadHybridOverrides,
     generateQueryEmbedding,
     getCrossEncoderSearchOption,
+    getVariantFamilies: () => variantFamilies,
     logInfo
 });
 
-const {
-    executeKeywordSearch,
-    executeSemanticSearch,
-    executeHybridSearch,
-    executeAutoSearch
-} = searchExecutionService;
+const { executeKeywordSearch } = searchExecutionService;
+const hostedOptions = {
+    client: hostedClient, getIndex: () => hostedIndex, getDatabase: () => CHENGYU_DATABASE, getPrior: () => rankingPrior,
+    getVariantFamilies: () => variantFamilies,
+    isFallbackReady: () => embeddingModelReady && CHENGYU_EMBEDDINGS !== null,
+    executeLexicalFallback: searchExecutionService.executeHybridSearch,
+    normalizePagination, createHttpError,
+    createResponse: options => buildPaginatedSearchResponse({ ...options, byId: CHENGYU_BY_ID, variantFamilies })
+};
+const executeAutoSearch = withHostedSearch({ ...hostedOptions, execute: searchExecutionService.executeAutoSearch, mode: 'auto' });
+const executeSemanticSearch = withHostedSearch({ ...hostedOptions, execute: searchExecutionService.executeSemanticSearch, mode: 'semantic' });
+const executeHybridSearch = withHostedSearch({ ...hostedOptions, execute: searchExecutionService.executeHybridSearch, mode: 'hybrid' });
 
 function resetCaches() {
     embeddingCache.cache.clear();
@@ -359,12 +384,37 @@ async function initializeSearchState() {
         if (!dbLoaded) {
             throw new Error('Failed to load chengyu database');
         }
+        // Always printed (like the hosted line) so the deploy log shows whether grouping is on.
+        variantFamilies = loadVariantFamilies({ filePath: getVariantFamiliesFilePath(), database: CHENGYU_DATABASE, logInfo: console.log });
 
-        const embeddingsLoaded = await loadEmbeddings();
+        const embeddingsLoaded = skipMiniLM ? false : await loadEmbeddings();
         if (embeddingsLoaded) {
             await initializeEmbeddingModel();
         }
         await initializeCrossEncoderReranker();
+
+        if (hostedClient.enabled) {
+            try {
+                const template = process.env.HOSTED_EMBEDDINGS_TEMPLATE || 'qwen-bilingual-v1';
+                let options;
+                if (template === 'qwen-bilingual-situations-v1') {
+                    const recipe = require('./src/embeddings/situation-recipe');
+                    const artifact = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/ranking-v1-situations.json'), 'utf8'));
+                    options = { template, recipeHash: recipe.RECIPE_HASH, corpusDatabase: recipe.withSituations(CHENGYU_DATABASE, artifact) };
+                } else if (template !== 'qwen-bilingual-v1') throw Error('Unsupported hosted document template');
+                const hostedFile = process.env.HOSTED_EMBEDDINGS_FILE || 'embeddings-qwen-i8.bin';
+                hostedIndex = loadQwenIndex(path.resolve(__dirname, hostedFile), CHENGYU_DATABASE, options);
+                // Always printed (not QUIET_LOGS-gated) so the deploy log shows which document recipe is serving.
+                console.log(`Hosted embeddings: template=${hostedIndex.metadata.template} recipeHash=${String(hostedIndex.metadata.recipeHash).slice(0, 12)} file=${path.basename(hostedFile)}`);
+            } catch (err) {
+                const reason = err instanceof Error ? err.message : String(err);
+                console.error(`Hosted corpus validation failed (template=${process.env.HOSTED_EMBEDDINGS_TEMPLATE || 'qwen-bilingual-v1'}, file=${path.basename(process.env.HOSTED_EMBEDDINGS_FILE || 'embeddings-qwen-i8.bin')}): ${reason.slice(0, 200)}; using the existing fallback`);
+            }
+            if (rankingPriorRequested && hostedIndex) {
+                try { rankingPrior = loadRankingPrior(path.join(__dirname, 'data/ranking-v1-prior.json'), CHENGYU_DATABASE, hostedIndex.metadata.template); }
+                catch { console.error('Ranking prior validation failed; using dense scores'); }
+            }
+        }
 
         resetCaches();
         initialized = true;
@@ -379,7 +429,7 @@ async function initializeSearchState() {
 }
 
 function buildHealthPayload() {
-    return buildHealthPayloadFromState({
+    return { ...buildHealthPayloadFromState({
         databaseCount: CHENGYU_DATABASE.length,
         embeddingsLoaded: CHENGYU_EMBEDDINGS !== null,
         embeddingModelReady,
@@ -393,7 +443,11 @@ function buildHealthPayload() {
         getEmbeddingNormalize,
         getCrossEncoderModelId,
         hasSearchConfigOverride: () => Boolean(loadSearchConfigOverride())
-    });
+    }), hostedEmbeddings: { ...hostedClient.status(), artifactReady: hostedIndex !== null, miniLMFallback: embeddingModelReady,
+        template: hostedIndex?.metadata.template || null, recipeHash: hostedIndex?.metadata.recipeHash || null },
+        rankingPrior: { requested: rankingPriorRequested, ready: rankingPrior !== null, active: Boolean(hostedIndex && rankingPrior),
+            weights: rankingPrior?.weights || null, entriesHash: rankingPrior?.entriesHash || null },
+        variantGrouping: { active: variantFamilies !== null, version: variantFamilies?.version || null } };
 }
 
 // API Routes
@@ -432,6 +486,11 @@ function createApp() {
             createHttpError
         },
         searchRoutes: {
+            status: createSearchRouteHandler({
+                ...commonSearchRouteOptions,
+                endpoint: 'search_status', label: 'status', defaultError: 'Search status failed',
+                executeSearch: (query, options) => executeAutoSearch(query, { ...options, statusOnly: true })
+            }),
             auto: createSearchRouteHandler({
                 ...commonSearchRouteOptions,
                 endpoint: 'search_auto',
@@ -528,6 +587,7 @@ module.exports = {
     createApp,
     startServer,
     initializeSearchState,
+    hostedClient,
     normalizeEmbeddingCacheKey,
     createEmbeddingCacheKey
 };

@@ -1,0 +1,1334 @@
+[
+ {
+  "route": "labeled:english_meaning",
+  "query": "feeling hopeless"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "surrounded by enemies"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "very happy and excited"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "working hard without rest"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "doing something useless"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "arrogant and overconfident"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "feeling nostalgic"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "pretending to be something you're not"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "making a mistake and learning from it"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "two people in love"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "a plan that backfires"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "extremely angry"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "taking advantage of someone"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "unexpected good fortune"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "bittersweet feelings"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "unstoppable momentum"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "deception and trickery"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "courage in the face of danger"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "something extremely rare"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "wasting time"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "jealousy"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "unity and cooperation"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "accepting fate"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "a turning point"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "fleeting beauty"
+ },
+ {
+  "route": "labeled:thematic",
+  "query": "war and battle"
+ },
+ {
+  "route": "labeled:thematic",
+  "query": "nature and scenery"
+ },
+ {
+  "route": "labeled:thematic",
+  "query": "friendship"
+ },
+ {
+  "route": "labeled:thematic",
+  "query": "food and eating"
+ },
+ {
+  "route": "labeled:thematic",
+  "query": "money and wealth"
+ },
+ {
+  "route": "labeled:thematic",
+  "query": "family relationships"
+ },
+ {
+  "route": "labeled:thematic",
+  "query": "studying and learning"
+ },
+ {
+  "route": "labeled:thematic",
+  "query": "government and politics"
+ },
+ {
+  "route": "labeled:thematic",
+  "query": "animals"
+ },
+ {
+  "route": "labeled:thematic",
+  "query": "the moon"
+ },
+ {
+  "route": "labeled:pinyin",
+  "query": "si mian chu ge"
+ },
+ {
+  "route": "labeled:pinyin",
+  "query": "hua she tian zu"
+ },
+ {
+  "route": "labeled:pinyin",
+  "query": "yi shi er niao"
+ },
+ {
+  "route": "labeled:pinyin",
+  "query": "hu jia hu wei"
+ },
+ {
+  "route": "labeled:pinyin",
+  "query": "ban tu er fei"
+ },
+ {
+  "route": "labeled:pinyin",
+  "query": "shou zhu dai tu"
+ },
+ {
+  "route": "labeled:pinyin",
+  "query": "dui niu tan qin"
+ },
+ {
+  "route": "labeled:pinyin",
+  "query": "wo xin chang dan"
+ },
+ {
+  "route": "labeled:pinyin",
+  "query": "jing di zhi wa"
+ },
+ {
+  "route": "labeled:pinyin",
+  "query": "wang yang bu lao"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "adding legs to a snake"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "frog in a well"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "pulling up seedlings to help them grow"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "blind man touching an elephant"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "old horse knows the way"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "iron pestle ground to a needle"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "fox borrowing tiger's power"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "painting a tiger like a dog"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "waiting by a tree stump for a rabbit"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "playing the lute to a cow"
+ },
+ {
+  "route": "labeled:partial",
+  "query": "tiger"
+ },
+ {
+  "route": "labeled:partial",
+  "query": "dragon"
+ },
+ {
+  "route": "labeled:partial",
+  "query": "heart"
+ },
+ {
+  "route": "labeled:partial",
+  "query": "mountain"
+ },
+ {
+  "route": "labeled:partial",
+  "query": "water"
+ },
+ {
+  "route": "labeled:chinese_exact",
+  "query": "四面楚歌"
+ },
+ {
+  "route": "labeled:chinese_exact",
+  "query": "画蛇添足"
+ },
+ {
+  "route": "labeled:chinese_exact",
+  "query": "一石二鸟"
+ },
+ {
+  "route": "labeled:chinese_exact",
+  "query": "对牛弹琴"
+ },
+ {
+  "route": "labeled:chinese_exact",
+  "query": "守株待兔"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "sour grapes mentality"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "see the big picture"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "too many cooks"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "don't judge a book by its cover"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "practice makes perfect"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "reaping what you sow"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "mixed feelings all at once"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "brave enough to face death"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "pretending to be clueless to dodge the question"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "ruining it by overdoing it"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "too scared to move forward"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "fixing a mistake before it's too late"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "explaining something to someone who will not understand"
+ },
+ {
+  "route": "labeled:english_meaning",
+  "query": "having a very narrow point of view"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "covering your ears while stealing a bell"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "repairing the pen after losing sheep"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "drawing a cake to satisfy hunger"
+ },
+ {
+  "route": "labeled:literal",
+  "query": "mistaking a bow reflection for a snake"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "bing1 shi4 qian2 xian2"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "wei4 ran2 cheng2 feng1"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "gu1 fang1 zi4 shang3"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "qiu2 tian2 wen4 she4"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "qing2 zhen1 yi4 qie4"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "mei3 qi2 ming2 yue1"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "zhan3 lu4 tou2 jiao3"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "an1 tu3 zhong4 qian1"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "die2 die2 bu4 xiu1"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "biao1 xing2 da4 han4"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "qian2 fu3 hou4 yang3"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "yi1 bao3 yan3 fu2"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "zhi3 zui4 jin1 mi2"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "cheng2 nian2 lei3 yue4"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "guan1 men2 da4 ji2"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "gong1 bu4 ke3 mo4"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "wu2 ji4 ke3 shi1"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "wan4 jia1 deng1 huo3"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "qian2 suo3 wei4 wen2"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "si3 huo2 bu4 gu4"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "xi1 lai2 rang3 wang3"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "mei3 bu4 sheng4 shou1"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "xing4 zhi4 bo2 bo2"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "yi1 pan2 san3 sha1"
+ },
+ {
+  "route": "pinyin:toned",
+  "query": "shi2 ri4 wu2 duo1"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "qin shi nan an"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "wen gong wu he"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "yuan jia dui tou"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "chun qiu da meng"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "qi qi ai ai"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "wu suo bu bao"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "hua tian jiu di"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "ruan mo ying pao"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "dao xuan zhi ku"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "bi xia sheng hua"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "ming fu qi shi"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "bi kou bu yan"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "tai ping sheng shi"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "nong mo zhong cai"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "jian rong bing bao"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "gui gu jian jin"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "xi xiao yan kai"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "luo hua liu shui"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "jie yi shi huo"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "bo shi duo tong"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "mian mu yi xin"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "chun feng de yi"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "gui gen jie di"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "ji fei cheng shi"
+ },
+ {
+  "route": "pinyin:toneless",
+  "query": "jian shan tian xia"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "huatianjiudi"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "congjianruliu"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "huofuwuchang"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "baqiansuanhou"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "lajiadaikou"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "yangguangmingmei"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "pitougailian"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "jiankupusu"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "changshengbusi"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "fengyutongzhou"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "shibeigongban"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "yangruhukou"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "lezaiqizhong"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "mocegaoshen"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "youshiwukong"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "liaowushengqu"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "yifanwangchang"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "tingtianyouming"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "nianfuliqiang"
+ },
+ {
+  "route": "pinyin:joined",
+  "query": "zhaozhaoshibai"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "agn shou tian wai"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "huai bi qi zui"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "pign dan wu qi"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "za luan wu zhang"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "xuna qian zhuan kun"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "bna nong shi fei"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "jiu di chong yuo"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "yu qu gu yu"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "ni zhegn wo duo"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "tu qiong bi xian"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "zi xun si lu"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "chou qi chogn tian"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "shi rou wu du"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "chnag jin xin suan"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "wu xie ke ji"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "bu rong zhi bian"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "yi tnog bai tong"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "yi de bao yaun"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "qi l:u zhao ma"
+ },
+ {
+  "route": "pinyin:typo",
+  "query": "jia doa zhong luo"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "tian gong"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "yin hen"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "ren zei"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "xiang ji"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "gui you"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "yi chu"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "ping kong"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "pao tou"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "dao mao"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "chong zheng"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "fu ren"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "san jiao"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "hao wu"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "ri jin"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "chui mao"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "ye yi"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "jiu xin"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "xue qi"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "ni zheng"
+ },
+ {
+  "route": "pinyin:partial",
+  "query": "qing feng"
+ },
+ {
+  "route": "chinese:two",
+  "query": "一网"
+ },
+ {
+  "route": "chinese:two",
+  "query": "势不"
+ },
+ {
+  "route": "chinese:two",
+  "query": "博闻"
+ },
+ {
+  "route": "chinese:two",
+  "query": "沙盘"
+ },
+ {
+  "route": "chinese:two",
+  "query": "熏陶"
+ },
+ {
+  "route": "chinese:two",
+  "query": "鸡飞"
+ },
+ {
+  "route": "chinese:two",
+  "query": "争权"
+ },
+ {
+  "route": "chinese:two",
+  "query": "远走"
+ },
+ {
+  "route": "chinese:two",
+  "query": "人走"
+ },
+ {
+  "route": "chinese:two",
+  "query": "积少"
+ },
+ {
+  "route": "chinese:two",
+  "query": "大有"
+ },
+ {
+  "route": "chinese:two",
+  "query": "心宽"
+ },
+ {
+  "route": "chinese:two",
+  "query": "天公"
+ },
+ {
+  "route": "chinese:two",
+  "query": "改过"
+ },
+ {
+  "route": "chinese:two",
+  "query": "连滚"
+ },
+ {
+  "route": "chinese:three",
+  "query": "味扑鼻"
+ },
+ {
+  "route": "chinese:three",
+  "query": "菊傲霜"
+ },
+ {
+  "route": "chinese:three",
+  "query": "线风筝"
+ },
+ {
+  "route": "chinese:three",
+  "query": "目惊心"
+ },
+ {
+  "route": "chinese:three",
+  "query": "言不讳"
+ },
+ {
+  "route": "chinese:three",
+  "query": "快人心"
+ },
+ {
+  "route": "chinese:three",
+  "query": "问好歹"
+ },
+ {
+  "route": "chinese:three",
+  "query": "新取异"
+ },
+ {
+  "route": "chinese:three",
+  "query": "年半载"
+ },
+ {
+  "route": "chinese:three",
+  "query": "水楼台"
+ },
+ {
+  "route": "chinese:three",
+  "query": "往不咎"
+ },
+ {
+  "route": "chinese:three",
+  "query": "人痴福"
+ },
+ {
+  "route": "chinese:three",
+  "query": "恐不安"
+ },
+ {
+  "route": "chinese:three",
+  "query": "气勃勃"
+ },
+ {
+  "route": "chinese:three",
+  "query": "山誓海"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "呼之欲宽"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "将计无计"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "魂蜂守舍"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "拾人孤慧"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "积年累知"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "开锣喝北"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "有备近患"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "波谲云兴"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "始己未及"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "迷上知返"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "一蹴可首"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "鸣金收粼"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "打入冷点"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "如室似漆"
+ },
+ {
+  "route": "chinese:altered",
+  "query": "一大为怀"
+ },
+ {
+  "route": "english:word",
+  "query": "unrestrained"
+ },
+ {
+  "route": "english:word",
+  "query": "extension"
+ },
+ {
+  "route": "english:word",
+  "query": "without"
+ },
+ {
+  "route": "english:word",
+  "query": "skill"
+ },
+ {
+  "route": "english:word",
+  "query": "ordinary"
+ },
+ {
+  "route": "english:word",
+  "query": "kindness"
+ },
+ {
+  "route": "english:word",
+  "query": "scandal"
+ },
+ {
+  "route": "english:word",
+  "query": "fully"
+ },
+ {
+  "route": "english:word",
+  "query": "inch"
+ },
+ {
+  "route": "english:word",
+  "query": "dead"
+ },
+ {
+  "route": "english:word",
+  "query": "conform"
+ },
+ {
+  "route": "english:word",
+  "query": "generous"
+ },
+ {
+  "route": "english:word",
+  "query": "pursue"
+ },
+ {
+  "route": "english:word",
+  "query": "word"
+ },
+ {
+  "route": "english:word",
+  "query": "evil"
+ },
+ {
+  "route": "english:word",
+  "query": "operations"
+ },
+ {
+  "route": "english:word",
+  "query": "many"
+ },
+ {
+  "route": "english:word",
+  "query": "sources"
+ },
+ {
+  "route": "english:word",
+  "query": "expect"
+ },
+ {
+  "route": "english:word",
+  "query": "gain"
+ },
+ {
+  "route": "english:word",
+  "query": "courageous"
+ },
+ {
+  "route": "english:word",
+  "query": "money"
+ },
+ {
+  "route": "english:word",
+  "query": "rear"
+ },
+ {
+  "route": "english:word",
+  "query": "come"
+ },
+ {
+  "route": "english:word",
+  "query": "from"
+ },
+ {
+  "route": "english:word",
+  "query": "impetuously"
+ },
+ {
+  "route": "english:word",
+  "query": "joyous"
+ },
+ {
+  "route": "english:word",
+  "query": "enough"
+ },
+ {
+  "route": "english:word",
+  "query": "self"
+ },
+ {
+  "route": "english:word",
+  "query": "affection"
+ },
+ {
+  "route": "english:phrase",
+  "query": "in one's remaining"
+ },
+ {
+  "route": "english:phrase",
+  "query": "speak harshly but"
+ },
+ {
+  "route": "english:phrase",
+  "query": "impossible to"
+ },
+ {
+  "route": "english:phrase",
+  "query": "secretive to try to"
+ },
+ {
+  "route": "english:phrase",
+  "query": "not receiving anything"
+ },
+ {
+  "route": "english:phrase",
+  "query": "speechless by something perfect"
+ },
+ {
+  "route": "english:phrase",
+  "query": "critical situation dire straits"
+ },
+ {
+  "route": "english:phrase",
+  "query": "poles apart"
+ },
+ {
+  "route": "english:phrase",
+  "query": "educated and"
+ },
+ {
+  "route": "english:phrase",
+  "query": "to use one's best"
+ },
+ {
+  "route": "english:phrase",
+  "query": "top priority job a"
+ },
+ {
+  "route": "english:phrase",
+  "query": "out of ten"
+ },
+ {
+  "route": "english:phrase",
+  "query": "to flutter"
+ },
+ {
+  "route": "english:phrase",
+  "query": "take appropriate"
+ },
+ {
+  "route": "english:phrase",
+  "query": "in secret taking information"
+ },
+ {
+  "route": "english:phrase",
+  "query": "issue to be"
+ },
+ {
+  "route": "english:phrase",
+  "query": "copying others one"
+ },
+ {
+  "route": "english:phrase",
+  "query": "there is a different"
+ },
+ {
+  "route": "english:phrase",
+  "query": "one day a"
+ },
+ {
+  "route": "english:phrase",
+  "query": "personal credit"
+ },
+ {
+  "route": "english:phrase",
+  "query": "walk with spirited and"
+ },
+ {
+  "route": "english:phrase",
+  "query": "ages for"
+ },
+ {
+  "route": "english:phrase",
+  "query": "to walk alone"
+ },
+ {
+  "route": "english:phrase",
+  "query": "main force and strike"
+ },
+ {
+  "route": "english:phrase",
+  "query": "to dress"
+ },
+ {
+  "route": "english:phrase",
+  "query": "to control oneself to"
+ },
+ {
+  "route": "english:phrase",
+  "query": "your cake"
+ },
+ {
+  "route": "english:phrase",
+  "query": "experienced in the ways"
+ },
+ {
+  "route": "english:phrase",
+  "query": "to invite"
+ },
+ {
+  "route": "english:phrase",
+  "query": "to turn"
+ },
+ {
+  "route": "english:typo",
+  "query": "strnage"
+ },
+ {
+  "route": "english:typo",
+  "query": "wihle"
+ },
+ {
+  "route": "english:typo",
+  "query": "locla"
+ },
+ {
+  "route": "english:typo",
+  "query": "sensationailze"
+ },
+ {
+  "route": "english:typo",
+  "query": "meoln"
+ },
+ {
+  "route": "english:typo",
+  "query": "uniwlling"
+ },
+ {
+  "route": "english:typo",
+  "query": "relfected"
+ },
+ {
+  "route": "english:typo",
+  "query": "engagign"
+ },
+ {
+  "route": "english:typo",
+  "query": "sruprising"
+ },
+ {
+  "route": "english:typo",
+  "query": "fuond"
+ },
+ {
+  "route": "english:typo",
+  "query": "hueg"
+ },
+ {
+  "route": "english:typo",
+  "query": "persume"
+ },
+ {
+  "route": "english:typo",
+  "query": "eivl"
+ },
+ {
+  "route": "english:typo",
+  "query": "yonug"
+ },
+ {
+  "route": "english:typo",
+  "query": "effetcive"
+ },
+ {
+  "route": "english:typo",
+  "query": "flowign"
+ },
+ {
+  "route": "english:typo",
+  "query": "roep"
+ },
+ {
+  "route": "english:typo",
+  "query": "saor"
+ },
+ {
+  "route": "english:typo",
+  "query": "cnet"
+ },
+ {
+  "route": "english:typo",
+  "query": "facst"
+ },
+ {
+  "route": "english:long",
+  "query": "adding something unnecessary and ruining it"
+ },
+ {
+  "route": "english:long",
+  "query": "easier said than done"
+ },
+ {
+  "route": "english:long",
+  "query": "It was already done, then I added something extra and ruined it"
+ },
+ {
+  "route": "english:long",
+  "query": "Pretending to be dumb to avoid answering"
+ },
+ {
+  "route": "english:long",
+  "query": "A clever and quick-witted child"
+ },
+ {
+  "route": "english:long",
+  "query": "Hesitant and unable to move forward"
+ },
+ {
+  "route": "english:long",
+  "query": "It sounded easier than it was"
+ },
+ {
+  "route": "english:long",
+  "query": "I added one more thing and ruined it"
+ },
+ {
+  "route": "english:long",
+  "query": "Just waiting around instead of taking initiative"
+ },
+ {
+  "route": "english:long",
+  "query": "She keeps contradicting herself"
+ },
+ {
+  "route": "english:long",
+  "query": "Getting rejected might be a blessing in disguise"
+ },
+ {
+  "route": "english:long",
+  "query": "my effort is wasted on an audience that doesn't get it"
+ },
+ {
+  "route": "english:long",
+  "query": "love"
+ },
+ {
+  "route": "english:long",
+  "query": "fart"
+ },
+ {
+  "route": "english:long",
+  "query": "making things worse"
+ }
+]

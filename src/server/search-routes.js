@@ -29,7 +29,7 @@ function createSearchRouteHandler({
 }) {
     return async function searchRouteHandler(req, res) {
         const startTimeMs = Date.now();
-        const { query, limit, offset } = req.body;
+        const { query, limit, offset, hostedRequestId } = req.body;
         const bypassResultCache = shouldBypassBenchmarkCache(req, 'x-benchmark-bypass-cache');
         const bypassEmbeddingCache = supportsEmbeddingBypass
             ? shouldBypassBenchmarkCache(req, 'x-benchmark-bypass-embedding-cache')
@@ -55,6 +55,7 @@ function createSearchRouteHandler({
             const response = await executeSearch(query, {
                 offset,
                 limit,
+                hostedRequestId,
                 bypassResultCache,
                 bypassEmbeddingCache
             });

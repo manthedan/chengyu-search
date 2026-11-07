@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+const fs = require('node:fs');
+const path = require('node:path');
+const {createHash} = require('node:crypto');
+const {evaluateGate} = require('./relevance-gate');
 const {
     DEFAULT_PRIMARY_TYPES,
     benchmarkMode,
@@ -18,7 +22,8 @@ async function main() {
     const outputPath = getBenchmarkOutputPath(args, 'relevance', mode);
     const port = Number(args.port || (useExisting ? 3000 : 0));
     const primaryTypes = parseList(args.primary, DEFAULT_PRIMARY_TYPES);
-    const includePerQuery = Boolean(args['include-per-query']);
+    const includePerQuery = Boolean(args['include-per-query'] || args.gate);
+    if (args.gate && (mode !== 'auto' || args.primary)) throw Error('The release gate uses production auto routing and the frozen primary types');
     const failOnErrors = Boolean(args['fail-on-errors']);
     const minOverall = args['min-overall'] === undefined ? null : Number(args['min-overall']);
     const minPrimary = args['min-primary'] === undefined ? null : Number(args['min-primary']);
@@ -51,6 +56,30 @@ async function main() {
     }
     if (outputPath) {
         console.error(`Saved artifact: ${outputPath}`);
+    }
+
+    if (args.gate) {
+        const bytes = name => fs.readFileSync(path.join(__dirname, '../evaluation/datasets', name));
+        const originalBytes = bytes('relevance.json');
+        const supplementBytes = bytes('relevance-supplement.json');
+        const baseline = JSON.parse(bytes('relevance-baseline.json'));
+        const supplement = JSON.parse(supplementBytes);
+        const claudeBytes = bytes('relevance-supplement-claude.json');
+        const claudeSupplement = JSON.parse(claudeBytes);
+        const hash = value => createHash('sha256').update(value).digest('hex');
+        if (hash(originalBytes) !== baseline.original_sha256 || hash(originalBytes) !== supplement.provenance.original_sha256 || hash(supplementBytes) !== baseline.supplement_sha256
+            || hash(originalBytes) !== claudeSupplement.provenance.original_sha256 || hash(claudeBytes) !== baseline.claude_supplement_sha256 || hash(JSON.stringify(baseline.rows)) !== baseline.rankings_sha256) {
+            throw Error('Release gate provenance mismatch: derive the live baseline again under the identical combined labels');
+        }
+        const gate = evaluateGate({original:JSON.parse(originalBytes), supplement, claudeSupplement, baseline, rows:result.per_query, errors:result.errors});
+        console.error(`Original-only reference: overall=${gate.original_only.overall.toFixed(6)} primary=${gate.original_only.primary.toFixed(6)}`);
+        console.error(`Combined labels: overall=${gate.combined.overall.toFixed(6)} primary=${gate.combined.primary.toFixed(6)}`);
+        console.error(`Live ${baseline.ref.slice(0,7)} combined baseline: overall=${gate.live_combined.overall.toFixed(6)} primary=${gate.live_combined.primary.toFixed(6)}`);
+        console.error(`Top-5 label coverage: candidate ${gate.combined.coverage.labeled}/${gate.combined.coverage.slots}; live ${gate.live_combined.coverage.labeled}/${gate.live_combined.coverage.slots}; required 100%`);
+        console.log(JSON.stringify({release_gate:gate}));
+        writeJsonArtifact(outputPath, {...result, release_gate:gate});
+        if (!gate.passed) throw Error(gate.failures.join('\n'));
+        console.error('Release gate PASS: no worse than live under identical combined labels');
     }
 
     if (failOnErrors && result.errors.length > 0) {

@@ -1,0 +1,59 @@
+{
+  "version": "claude-supplement-v2",
+  "provenance": {
+    "judge_model": "claude-opus-5-5",
+    "graders": 2,
+    "aggregation": "lower of the two grades",
+    "rubric": "experiments/variants-v1/gate-rubric.txt (same as experiments/claude-regrade-v1/rubric.txt)",
+    "rubric_sha256": "7d117ca9e5594a457ad165dbffa03c49aa3aa3511ff4b77c6505f1933706d24b",
+    "blinding": "each new pair shuffled among 10 already-labelled anchor pairs per round; graders agreed with 9 of 10 anchors (round 1) and 8 of 10 (round 2), and with each other on 11 of 11 (round 2)",
+    "batch": "experiments/variants-v1/gate-labels (round 1), experiments/variants-v1/gate-labels-2 (round 2)",
+    "reason": "pairs the DeepSeek supplement never saw, surfaced by variant grouping (2026-11-06); the DeepSeek judge needs a key not available here",
+    "original_sha256": "2bfe3d67cfafd6e51624c7d92dcf7f979ce83f1cff7dc6495e527913859e37bc",
+    "gain_mapping": {
+      "0": 0,
+      "1": 1.5,
+      "2": 3
+    },
+    "date": "2026-11-06",
+    "version_note": "round 2 (2026-11-06) added one pair surfaced by showing a full saying as its short form"
+  },
+  "labels": [
+    {
+      "query_id": "benchmark-49",
+      "query": "old horse knows the way",
+      "chengyu": "温故知新",
+      "grade": 0,
+      "relevance": 0,
+      "reason": "The query is 老马识途 (experience guides); 温故知新 is about reviewing the old to learn new things.",
+      "grades": [
+        0,
+        0
+      ]
+    },
+    {
+      "query_id": "benchmark-68",
+      "query": "don't judge a book by its cover",
+      "chengyu": "盖棺定论",
+      "grade": 0,
+      "relevance": 0,
+      "reason": "盖棺定论 is about final judgment after death; it only shares the word 'judge'.",
+      "grades": [
+        0,
+        0
+      ]
+    },
+    {
+      "query_id": "benchmark-25",
+      "query": "war and battle",
+      "chengyu": "战无不胜",
+      "grade": 2,
+      "relevance": 3,
+      "reason": "A natural battle idiom meaning victorious in every fight.",
+      "grades": [
+        2,
+        2
+      ]
+    }
+  ]
+}

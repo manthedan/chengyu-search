@@ -18,6 +18,9 @@ That includes, at minimum, files such as:
 - `cedict-all-idioms.json`
 - `embeddings-local.json`
 - `embeddings-local.bin`
+- `embeddings-qwen-i8.bin` and `embeddings-qwen-situations-i8.bin`
+- `data/ranking-v1-situations.json` and `data/ranking-v1-prior.json`
+- `data/variant-families.json`
 - `public/generated/dictionary-subset.json`
 - `public/generated/example-annotations.json`
 - derivative benchmark/runtime artifacts that substantially encode the idiom corpus
@@ -33,6 +36,8 @@ This project has modified and enriched the source material, including things lik
 - added example sentences
 - added tags / formality metadata
 - generated embedding artifacts from the curated idiom records
+- generated usage situations (`data/ranking-v1-situations.json`): four short scenes per idiom, written by a language model (DeepSeek) from the corpus records and CC-CEDICT senses, used only to build the search index
+- a reviewed map of variant forms (`data/variant-families.json`), labelled by language-model graders from candidate pairs found in the corpus and CC-CEDICT
 
 Those modifications are distributed together with the derived data and should be treated consistently with the repository's CC-CEDICT-derived data notice.
 

@@ -11,6 +11,7 @@
 /** @type {Set<string>} */
 const SEARCH_RATE_LIMIT_PATHS = new Set([
     '/api/search',
+    '/api/search/status',
     '/api/search/keyword',
     '/api/search/semantic',
     '/api/search/hybrid'
@@ -43,6 +44,7 @@ function createSecurityHeadersMiddleware({ buildHstsHeader }) {
  */
 function getEndpointMetricKeyForPath(requestPath) {
     if (requestPath === '/api/search') return 'search_auto';
+    if (requestPath === '/api/search/status') return 'search_status';
     if (requestPath === '/api/search/keyword') return 'search_keyword';
     if (requestPath === '/api/search/semantic') return 'search_semantic';
     if (requestPath === '/api/search/hybrid') return 'search_hybrid';

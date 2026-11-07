@@ -1,0 +1,67 @@
+{
+  "generatedAt": "2026-11-05T23:17:38.243Z",
+  "runtime": {
+    "unit": "ms",
+    "passes": 2,
+    "all": {
+      "n": 333,
+      "p50": 278.904,
+      "p95": 1455.329,
+      "max": 2807.569,
+      "mean": 377.672
+    },
+    "totalMs": 125765,
+    "byGroup": {
+      "labeled": {
+        "n": 83,
+        "p50": 430.775,
+        "p95": 1850.188,
+        "max": 2807.569,
+        "mean": 640.328
+      },
+      "pinyin": {
+        "n": 110,
+        "p50": 306.334,
+        "p95": 598.643,
+        "max": 971.443,
+        "mean": 323.207
+      },
+      "chinese": {
+        "n": 45,
+        "p50": 22.927,
+        "p95": 29.052,
+        "max": 31.84,
+        "mean": 22.357
+      },
+      "english": {
+        "n": 95,
+        "p50": 207.43,
+        "p95": 1455.329,
+        "max": 2235.779,
+        "mean": 379.565
+      }
+    }
+  },
+  "cold": {
+    "firstQueryMs": {
+      "english": 453.8,
+      "pinyin": 291.8,
+      "chinese": 37.9
+    },
+    "matcherRequireMs": 5.1,
+    "indexHeapMb": 17.2
+  },
+  "footprint": {
+    "fuzzyCodeBytes": 68463,
+    "fuzzyModules": [
+      "src/search/fuzzy-matcher.js",
+      "node_modules/fuse.js/dist/fuse.cjs"
+    ],
+    "productionDependencies": [
+      "@xenova/transformers",
+      "cors",
+      "express",
+      "fuse.js"
+    ]
+  }
+}

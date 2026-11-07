@@ -1,0 +1,27 @@
+{
+  "format": "ZHNORM01 / little-endian uint32 arrays + UTF-8 targets",
+  "version": 1,
+  "reference_commit": "158eed01aabbaae9dab0a15a3d9f9d88442c5969",
+  "source_sha256": "2cb4d3d18958ba4e3fe5aedd0df38ef6f49213cc1800909b145b4132c8f2b129",
+  "artifact_sha256": "255d1b59c3c97cfcf825663897cc149fe195484698bdbd21129da14e0aec74bc",
+  "states": 37735,
+  "edges": 133470,
+  "character_records": 3895,
+  "exclusive_characters": 3876,
+  "fallback_conversions": 12,
+  "single_character_identities": 17,
+  "conversion_phrases": 2381,
+  "additional_boundary_identities": 111158,
+  "boundary_aliases": 257,
+  "original_spelling_phrases": 1605,
+  "nonidentity_target_strings": 2030,
+  "bytes": 1593432,
+  "compiler_sha256": "018995d28f797506ef87558a41597bb0dbc10a4a14dfd8f064545c326acb34b1",
+  "serving_files": [
+    "normalize.js",
+    "compact-table.js",
+    "normalizer-data.bin"
+  ],
+  "policy": "Same direction-only character/explicit phrase rules and complete boundary language as round 4; suffix states shared; ordinary characters and non-mapped single identities implicit. No inferred contextual rules.",
+  "licenses": "OpenCC Apache-2.0; CC-CEDICT CC BY-SA 4.0; source details in cedict-residual-variants.json"
+}

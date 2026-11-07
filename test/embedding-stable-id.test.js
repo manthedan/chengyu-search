@@ -124,7 +124,7 @@ describe('stable Chengyu embedding identity', () => {
         assert.equal(duplicateRows.length, 2, 'fixture should include duplicate display headwords');
         assert.equal(new Set(duplicateRows.map(entry => entry.id)).size, 2, 'duplicate display rows need unique public IDs');
         assert.ok(duplicateRows.every(entry => entry.chengyu === '难兄难弟'), 'display headword must be preserved');
-        assert.ok(duplicateRows.every(entry => buildStableChengyuId(entry) === entry.id), 'stable ID should be deterministic from entry content');
+        assert.ok(duplicateRows.every(entry => buildStableChengyuId(entry) === entry.id), 'stable ID should match the persisted sense identity');
     });
 
     it('validates and returns an ID-keyed embedding map regardless of artifact entry order', () => {

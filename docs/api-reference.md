@@ -131,21 +131,60 @@ All search endpoints return this top-level structure:
 - `nextOffset`: offset to use for the next page, or `null`
 - `results`: result page payload
 
+Descriptions that go to hosted description search (see `docs/search-architecture.md`, section 6.4) also carry:
+
+- `status`: `complete`; `pending` while the query embedding is still being computed; or `unavailable`
+- `embeddingSource`: `hosted-qwen` when the hosted index answered; `minilm-fallback` or `lexical-fallback` when local search answered instead; `pending` or `unavailable` otherwise
+- `hostedRequestId`: present when the hosted answer is still on its way. Send the same request again with this field added, and the server answers from the finished embedding. The site does this automatically, upgrading fallback results in place.
+- `hostedFallbackReason` and `message`: why the hosted path was not used, and a short user-facing note
+- `matchStrength`: `normal` or `weak`. `weak` means the best result stands less than 3.85 standard deviations above the corpus mean for that query. It flags about 5% of real queries and about half of keyboard-mash nonsense, so it is a soft hint, not a cutoff.
+
 ### Result fields
 
+- `id`: stable public ID for the entry (bookmarks use it)
 - `chengyu`: canonical idiom identifier used by the current corpus, usually simplified
 - `simplified`: simplified headword for display/export
 - `traditional`: traditional headword for display/export
 - `pinyin`
 - `literal`
 - `meaning`
+- `meaning_zh`: Chinese gloss, when available
+- `kind`: `chengyu`, `set_phrase`, `official_political` or `technical_or_proper`
 - `usage`
 - `example`
 - `tags`
 - `formality`
 - `relevance_score`
 
+- `variants`: other forms of the same idiom (see below); an empty array when there are none or grouping is off
+
 `relevance_score` is a display-oriented 0–100 score derived from internal ranking output.
+
+### Variant grouping
+
+Many idioms exist in several forms: 盲人摸象 / 瞎子摸象 / 众盲摸象, or 塞翁失马 and its full saying 塞翁失马焉知非福. The server folds them together, so a page of results never shows two forms of one idiom:
+
+- When a result is related to one ranked above it, it is dropped before pagination. The ranker is asked for a larger window so pages stay full.
+- On meaning (semantic) searches, a kept result is shown in its family's usual form, keeping its rank and score. For some full sayings the usual form is the short form (悬梁刺股 for 头悬梁，锥刺股). A form the user typed exactly, in characters or pinyin, is always shown as typed.
+- Every result lists the rest of its family in `variants`:
+
+```json
+{
+  "simplified": "盲人摸象",
+  "traditional": "盲人摸象",
+  "pinyin": "mang2 ren2 mo1 xiang4",
+  "publicId": "…",
+  "relation": "same",
+  "preferred": true,
+  "common": true
+}
+```
+
+- `relation`: `same` (one idiom written another way) or `full_form` (a short form and the saying it opens or comes from). A `full_form` variant shorter than the result is its short form; a longer one is its full saying.
+- `preferred`: the form a meaning search would show for this family.
+- `common`: the usual spelling within its own group of `same` forms, so a client can list one short form or full saying without its rarer spellings.
+
+The families come from `data/variant-families.json`, a reviewed map of linked headwords. No entry is removed from the corpus, so IDs and bookmarks are unaffected.
 
 ---
 
@@ -177,7 +216,7 @@ Development and explicitly verbose environments may return:
   "searchConfigOverride": false,
   "autoRouting": true,
   "defaultRoute": "auto",
-  "chengyuCount": 5925
+  "chengyuCount": 7348
 }
 ```
 

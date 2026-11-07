@@ -9,7 +9,7 @@
 A hybrid search engine for Chinese idioms (成语 / chengyu).
 Describe a situation in English, Chinese, or pinyin and find a fitting idiom fast.
 
-Search over 5,900+ chengyu with examples!
+Search over 7,300+ chengyu with examples!
 
 Highlights:
 
@@ -34,8 +34,10 @@ Highlights:
 - Plain HTML/CSS/JS
 
 ### Search stack
-- **Keyword retrieval**: Fuse.js
+- **Keyword retrieval**: `src/search/fuzzy-matcher.js`, an exact, faster reimplementation of Fuse.js 7.1 scoring
+- **Description search**: hosted Qwen query embeddings against a checked-in idiom index (`embeddings-qwen-i8.bin`), with a local MiniLM fallback
 - **Semantic reranking / query embeddings**: `@xenova/transformers`
+- **Variant grouping**: forms of one idiom (盲人摸象 / 瞎子摸象, 塞翁失马 / 塞翁失马焉知非福) are folded into one result from a reviewed map, `data/variant-families.json`
 - **Local checked-in idiom embeddings**: compact `embeddings-local.bin` artifact (`embeddings-local.json` remains as a readable source/fallback)
 - **Evaluation**: labeled relevance set in `evaluation/datasets/relevance.json` plus benchmark tooling in `benchmark/`
 

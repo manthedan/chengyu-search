@@ -9,8 +9,11 @@ The runtime is now split by boundary:
 - `src/server/*` — HTTP route helpers, response shaping, runtime metrics, security/rate-limit middleware, and config helpers
 - `src/search/search-service.js` — cache-aware search execution, pagination, auto-routing, and fallback behavior
 - `src/search/search-logic.js` — query classification, retrieval, scoring, ranking, and fusion primitives
+- `src/search/fuzzy-matcher.js` — the keyword engine: an exact, much faster reimplementation of the Fuse.js scoring the site used to run
+- `src/search/hosted-search.js` — description search through hosted Qwen embeddings, with fallbacks
+- `src/search/variant-grouping.js` — folds forms of one idiom into one result, from `data/variant-families.json`
 - `src/search/search-config.js` and `src/search/hybrid-config.json` — promoted ranking configuration
-- `src/embeddings/*` — embedding artifact loading/validation, binary format, query cache keys, and Transformers.js provider
+- `src/embeddings/*` — embedding artifact loading/validation, binary formats, query cache keys, the Transformers.js provider (MiniLM), and the hosted Qwen client, recipe and int8 index
 - `src/data/*` — corpus loading, stable IDs, and CEDICT variant helpers
 - `evaluation/datasets/relevance.json` — labeled relevance set used by benchmarks
 
@@ -23,7 +26,7 @@ This document explains how search works today, not every historical experiment.
 At a high level, the app uses three search modes:
 
 1. **Keyword**
-   - Fast lexical retrieval using Fuse.js
+   - Fast lexical retrieval (`src/search/fuzzy-matcher.js`, an exact, faster reimplementation of the Fuse.js 7.1 scoring the site used to run)
    - Handles Chinese, English, and pinyin lookups
 2. **Semantic**
    - English-oriented semantic retrieval
@@ -33,6 +36,10 @@ At a high level, the app uses three search modes:
    - Best general-purpose retrieval mode for multilingual traffic
 
 The browser UI calls the **auto-routed** endpoint (`POST /api/search`), and the backend chooses the mode.
+
+In front of these modes sits **description search** (section 6.4). When hosted embeddings are configured, a query that reads as a description (not pinyin, not an idiom's own headword) is embedded by Qwen3-Embedding-0.6B and matched against a checked-in index of every idiom. That is how most English and Chinese descriptions are answered in production. The three modes above serve exact lookups, pinyin and short Chinese queries, and act as the fallback when the hosted service is unavailable.
+
+Every route ends with **variant grouping** (section 8), which folds forms of one idiom (盲人摸象 / 瞎子摸象) into one result.
 
 ## 2. Data loaded at startup
 
@@ -49,6 +56,14 @@ The current default embedding model is:
 The current promoted baseline embedding artifact was generated from the template:
 
 - `rich`
+
+When hosted embeddings are enabled (`HOSTED_EMBEDDINGS=on` plus Cloudflare credentials), the server also loads:
+
+- **the Qwen idiom index**, `embeddings-qwen-i8.bin` by default (`HOSTED_EMBEDDINGS_FILE`), validated against the corpus and the document recipe (section 6.4)
+
+It always tries to load:
+
+- **the variant map**, `data/variant-families.json` (section 8)
 
 ### Embedding artifact format
 
@@ -126,11 +141,20 @@ Chinese queries are not passed through English synonym expansion.
 
 ## 5. Keyword search
 
-Keyword search is implemented with **Fuse.js** plus extra pinyin logic.
+Keyword search runs on the site's own engine, `src/search/fuzzy-matcher.js`, plus extra pinyin logic.
+
+The site used to run Fuse.js 7.1. The engine is an exact reimplementation of the Fuse profiles the site used: it returns the same matches, scores and order, and it is about 200 times faster on warm queries (about 279 ms to about 1.5 ms at p50, and 1,455 ms to 6.8 ms at p95). How it stays exact:
+
+- **Same distance:** with `ignoreLocation`, Fuse's Bitap search accepts a text at its minimum substring edit distance. The engine computes that distance directly with Myers' bit-parallel algorithm and uses `includes()` for zero-edit matches.
+- **Same chunking and scores:** queries are split into the same 32-character chunks (with an overlapping final chunk), each chunk scores `max(0.001, errors / length)`, and field scores combine with the same weights and normalization.
+- **Conservative filters:** before any distance is computed, character-signature and trigram filters discard texts that cannot match within the threshold. A filter may let an extra candidate through but never drops a real match.
+- **Frozen by tests:** `test/fuzzy-parity.test.js` and `test/fuzzy-e2e.test.js` compare the engine with recorded Fuse output, so any intended ranking change must regenerate those oracles.
+
+Fuse.js remains only as a development dependency, for those parity tests and for regenerating their oracles. The weightings below are the engine's profiles, unchanged from the Fuse configuration.
 
 ### 5.1 Chinese / mixed queries
 
-For queries containing Chinese characters, Fuse uses a Chinese-oriented field weighting:
+For queries containing Chinese characters, the engine uses a Chinese-oriented field weighting:
 
 - `chengyu`: `0.5`
 - `pinyin`: `0.3`
@@ -141,7 +165,7 @@ This makes exact and partial Hanzi matches dominate.
 
 ### 5.2 English queries
 
-For English-like queries, Fuse uses English-facing fields:
+For English-like queries, the engine uses English-facing fields:
 
 - `meaning`: `0.38`
 - `literal`: `0.28`
@@ -158,14 +182,16 @@ Pinyin retrieval has two layers:
 1. **exact normalized pinyin matching**
    - handles numbered and accented pinyin
    - e.g. `gou3 pi4` and `gǒu pì`
-2. **Fuse-based pinyin fuzzy search**
+2. **fuzzy pinyin search** (the same engine)
    - runs against normalized pinyin strings
 
 Exact pinyin matches receive a large ranking boost in keyword and hybrid ranking.
 
 ## 6. Semantic search
 
-Semantic search in this app is not “embedding-only.” It is a **blend of**:
+Descriptions normally go to hosted Qwen search first (6.4). The blended semantic mode below runs on the server itself: it answers the semantic route when hosted search is off or unavailable, and it feeds hybrid mode.
+
+The local semantic mode is not “embedding-only.” It is a **blend of**:
 
 1. a lexical-semantic token scorer
 2. cosine similarity between query embedding and idiom embedding
@@ -222,6 +248,44 @@ Current type-specific overrides:
 
 These values were chosen by holdout benchmarking after promoting the `rich` embedding baseline.
 
+### 6.4 Hosted description search (Qwen)
+
+`src/search/hosted-search.js` wraps the auto, semantic and hybrid routes. It is how production answers descriptions.
+
+**When it applies.** It is used when hosted embeddings are configured and the query reads as a description: not pinyin, not an idiom's exact headword, and, for Chinese, longer than four characters after normalization. Everything else goes to the routes above.
+
+**The model.** Queries are embedded by Qwen3-Embedding-0.6B (`@cf/qwen/qwen3-embedding-0.6b` on Cloudflare Workers AI; 1024 dimensions, unit vectors). Each query is sent with one fixed instruction:
+
+```text
+Instruct: Given a description of a situation, retrieve Chinese idioms whose meanings fit the situation.
+Query: <the query; Chinese text is compact-normalized>
+```
+
+**The index.** Every idiom was embedded once, offline, from a bilingual document and stored in an int8 index (`src/embeddings/qwen-index.js`, format `qwen-row-unit-int8-v1`: one scale per row, about 8 MB for 7,348 idioms). A search embeds only the query, scores all rows by dot product, and keeps the top window. Two document recipes exist, and the index records which one it was built from:
+
+- **`qwen-bilingual-v1`** (default, `src/embeddings/hosted-recipe.js`): headword, English meaning, literal gloss, topic tags, and the Chinese gloss.
+- **`qwen-bilingual-situations-v1`** (`src/embeddings/situation-recipe.js`): the same document plus four short usage scenes (two Chinese, two English) describing everyday moments where the idiom fits. People search by describing situations, so these documents match much better: on the release gate this recipe scored 0.725 overall and 0.787 primary NDCG@5, against 0.625 and 0.584 for the previous live configuration. It is selected with `HOSTED_EMBEDDINGS_TEMPLATE=qwen-bilingual-situations-v1` and its own index file, and it needs the generated scenes in `data/ranking-v1-situations.json`.
+
+At startup the index is checked against the corpus hash, the recipe hash (which also covers the Chinese normalizer) and the idiom ID at every row. If any check fails, hosted search is off and the server says why in its log.
+
+**Latency and the pending protocol.** Query vectors are cached (LRU) and concurrent identical queries share one request. The server waits up to `HOSTED_EMBEDDING_WAIT_MS` (1.5 s by default). If the embedding hasn't arrived by then:
+
+- English descriptions get the local fallback results right away.
+- The response also carries a `hostedRequestId`. The page re-sends the query with that ID, and the server answers from the finished embedding without paying for it twice.
+- Chinese descriptions have no useful lexical fallback, so they return `status: "pending"` until the hosted answer is ready.
+
+**Limits and failure.**
+
+- **Spending cap:** a daily cap on Workers AI usage (`HOSTED_DAILY_NEURONS`), kept in a ledger file that survives restarts.
+- **Concurrency:** a cap on concurrent requests.
+- **Circuit breaker:** opens after repeated failures.
+
+If the hosted path is unavailable, English descriptions fall back to the local semantic blend (`embeddingSource: "minilm-fallback"`) or to lexical search (`"lexical-fallback"`). Chinese descriptions return a short "temporarily unavailable" message.
+
+**Match strength.** Each hosted response carries `matchStrength`, which is `weak` when the best idiom stands less than 3.85 standard deviations above the corpus mean for that query. It flags about 5% of real queries and about half of keyboard-mash nonsense, so the page words it softly ("looser matches") rather than hiding results.
+
+**Ranking prior.** An optional prior (`RANKING_PRIOR=on`, `data/ranking-v1-prior.json`) can nudge scores by idiom-level features. It is off in the recommended production configuration.
+
 ## 7. Hybrid search
 
 Hybrid search calls both keyword and semantic retrieval, then merges them.
@@ -258,6 +322,16 @@ All search endpoints return a normalized response shape with:
 - a UI-friendly `relevance_score` in the `0–100` range
 
 That `relevance_score` is not the raw benchmark NDCG score. It is a clamped display score derived from internal ranking output.
+
+### Variant grouping
+
+`src/search/variant-grouping.js` folds forms of one idiom together on every route, after ranking and before caching and pagination.
+
+- **The map.** `data/variant-families.json` holds graded links between corpus headwords. A `same` link joins two spellings of one idiom; these links are transitive, so they form clusters. A `full_form` link joins a short form's cluster to its full saying's cluster, and it reaches one hop only: 百花齐放 and 百家争鸣 each link to their couplet but not to each other. Each `same` link records which form is more common. An optional `headlines` list names the full sayings that a meaning search shows as their short form.
+- **Collapse.** Walking the ranked list in order, a result is dropped when a result kept earlier is related to it. If too few results survive, the ranker is asked for a doubled window, up to the 50-result cap.
+- **Display.** On semantic responses a kept result is shown in its family's usual form (the cluster's most common member, or the short form a headline names), keeping its rank and score. A form the user typed exactly is never swapped.
+- **Payload.** Each result lists its family in `variants`; see `docs/api-reference.md`.
+- **Switches.** `VARIANT_GROUPING=0` turns grouping off. A missing or invalid map also turns it off, with one log line saying why; the server never fails to start over it.
 
 The browser UI keeps the hot path at 10 results and only requests later pages if the user clicks **Load more results**.
 
@@ -336,6 +410,16 @@ This is not a full production observability stack, but it is enough to confirm t
 - `SEARCH_CONFIG_OVERRIDE_JSON`
 - `SEARCH_CONFIG_OVERRIDE_FILE`
 - `QUIET_LOGS`
+- `VARIANT_GROUPING` (on unless `0`, `false`, `no` or `off`)
+- Hosted description search:
+  - `HOSTED_EMBEDDINGS=on`, together with `CF_ACCOUNT_ID` and `CF_API_TOKEN` (Cloudflare Workers AI credentials, which belong in the host's secret store)
+  - `HOSTED_EMBEDDINGS_FILE` and `HOSTED_EMBEDDINGS_TEMPLATE`: the index file and its document recipe
+  - `HOSTED_EMBEDDING_WAIT_MS`, `HOSTED_EMBEDDING_TIMEOUT_MS`, `HOSTED_EMBEDDING_CACHE_SIZE` and `HOSTED_MAX_INFLIGHT`
+  - `HOSTED_DAILY_NEURONS` and `HOSTED_NEURON_LEDGER`: the spending cap and the file that records it
+  - `HOSTED_BREAKER_FAILURES` and `HOSTED_BREAKER_COOLDOWN_MS`: the circuit breaker
+  - `RANKING_PRIOR`
+- `SKIP_MINILM`: don't load the local MiniLM model
+- `VARIANT_FAMILIES_FILE` (default `data/variant-families.json`)
 
 ### Search config files
 
@@ -352,18 +436,25 @@ The current architecture reflects these choices:
 - **semantic-by-default** for English-language description traffic
 - **hybrid-by-default** for pinyin and Chinese traffic
 - **corpus-signal auto-routing heuristics** for audited lexical English queries
-- promoted embedding baseline: **MiniLM + rich**
+- hosted **Qwen3-Embedding-0.6B** for descriptions, with the situations document recipe in production (passed the release gate: 0.725 overall / 0.787 primary NDCG@5, against 0.625 / 0.584 before)
+- local fallback embedding baseline: **MiniLM + rich**
 - promoted semantic blend weights tuned against holdout results
+- a keyword engine that reproduces Fuse.js exactly at a fraction of the cost, so ranking changes and speed work never mix
+- **variant grouping**: on the 82-query release gate, production's top 5 held 25 repeated forms of an idiom already shown. Grouping removes all of them, and novelty NDCG@5 on the affected queries rises from 0.868 to 0.945. The release gate passes.
 - paginated access to deeper results without sacrificing the default 10-result hot path
+
+Every ranking change is checked by the release gate, `npm run benchmark:relevance -- --gate`. It scores NDCG@5 on 82 labelled queries and requires every top-5 result to have a label. Labels come from `evaluation/datasets/relevance.json`, plus LLM-graded supplements in `relevance-supplement.json` and `relevance-supplement-claude.json`.
 
 ## 13. Known limitations
 
 The current design still has a few important limitations:
 
-- semantic search is English-oriented and intentionally weak on Hanzi queries
+- the local semantic blend (the fallback) is English-oriented and weak on Hanzi queries; Chinese descriptions depend on the hosted path
+- description search depends on a hosted embedding API, with a daily spending cap; when it is unavailable, English falls back to local search and Chinese descriptions return a message
 - query classification is heuristic, not model-based
 - caches are in-memory only
-- there is no external ANN index; semantic retrieval is still full-scan over the in-memory corpus
+- there is no external ANN index; both local and hosted retrieval are full scans over the corpus (7,348 rows, which is fast at this size)
+- polarity and literal-mention cases are known weak spots, such as a hopeless query ranking an idiom of perseverance first
 - benchmark quality depends on the coverage of the labeled test set
 - there is no reranker stage yet beyond the current hybrid blending logic
 
@@ -381,7 +472,7 @@ This runs `scripts/build-dictionary.js`, which:
 
 1. Downloads CC-CEDICT (if not present) from MDBG
 2. Builds a trie from all CEDICT entries plus chengyu headwords not in CEDICT
-3. Segments all 5,925 example sentences using dictionary-constrained DP segmentation
+3. Segments all 7,348 example sentences using dictionary-constrained DP segmentation
 4. Segments each chengyu headword into sub-words where possible (e.g. 聪明伶俐 splits as 聪明 + 伶俐)
 5. Generates two static artifacts:
    - `public/generated/dictionary-subset.json` - only the dictionary entries referenced by the corpus
@@ -398,10 +489,19 @@ The browser loads both JSON files at startup. Example sentences render as clicka
 
 The benchmark harness now supports two particularly promising next steps:
 
-1. **additional embedding bakeoffs**
-   - better embedding models
-   - better document templates
-2. **reranking on a short candidate list**
+1. **better document text for the Qwen index** (the situations recipe was the largest gain so far)
+2. **exposing calibrated confidence** (a per-result standardized score and a `strong` level) so the page can signal exact or very confident answers
+3. **reranking on a short candidate list**
    - especially for difficult English semantic queries
 
 For the current codebase, those are likely better ROI than jumping straight to a larger LLM-centric architecture.
+
+### Chinese headword lookup and query normalization
+
+Chinese lookup first recognizes complete simplified/traditional headwords from the loaded serving records, retaining every distinct sense ID. The compact normalizer under `src/data/chinese-normalizer/` handles other Chinese query text. Its binary dictionary is compiled at build time and loaded lazily; serving does not import the experimental compiler or full normalization dictionaries. A corpus headword can override a general script conversion so the spelling displayed on a card always resolves back to that record.
+
+### Persistent public IDs and saved bookmarks
+
+A serving record's stored `id` is its immutable primary key. Meaning, literal translation, example, tags and formality repairs must retain it. Newly allocated IDs can use the headword/pronunciation seed; records sharing both must receive explicit distinct sense IDs. Embeddings still bind IDs to the exact current template text through their corpus hash, so stable IDs do not make stale vectors valid.
+
+The public bookmark migration asset maps historical content-derived IDs to current persistent IDs before initial rendering. It merges only identical destination IDs, preserving separate senses even when their headwords and pinyin match. A corpus-version marker requests fresh metadata once per corpus update; refresh selects the exact saved ID and leaves unknown or ambiguous records intact. The private gated apply tool pins serving IDs in its identity ledger and updates this public alias/version asset. Neither the private ledger nor audit provenance ships in the public export.

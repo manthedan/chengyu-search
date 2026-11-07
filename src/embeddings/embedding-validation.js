@@ -5,12 +5,12 @@ const crypto = require('crypto');
 /**
  * @typedef {import('../search/types').ChengyuEntry} ChengyuEntry
  * @typedef {ChengyuEntry & { embedding?: number[], embeddingId?: string, publicId?: string, text?: string }} EmbeddingEntry
- * @typedef {{ id: string, chengyu?: string, embedding: number[] | Float32Array, text?: string }} EmbeddingArtifactRow
- * @typedef {{ version?: number, model?: string, modelKey?: string, template?: string, pooling?: string, normalize?: boolean, dimensions?: number, corpusHash?: string, generatedAt?: string, entryCount?: number, embeddings?: EmbeddingArtifactRow[] }} EmbeddingArtifactObject
+ * @typedef {{ id: string, chengyu?: string, embedding: number[] | Float32Array | Int8Array, text?: string }} EmbeddingArtifactRow
+ * @typedef {{ version?: number, model?: string, modelKey?: string, template?: string, pooling?: string, normalize?: boolean, dimensions?: number, corpusHash?: string, recipeHash?: string, generatedAt?: string, entryCount?: number, embeddings?: EmbeddingArtifactRow[] }} EmbeddingArtifactObject
  * @typedef {EmbeddingArtifactObject | EmbeddingArtifactRow[]} EmbeddingArtifact
- * @typedef {{ expectedModel?: string, expectedPooling?: string, expectedNormalize?: boolean, expectedTemplate?: string, expectedCorpusHash?: string, expectedDimensions?: number, allowLegacyIds?: boolean }} ValidationOptions
+ * @typedef {{ expectedModel?: string, expectedPooling?: string, expectedNormalize?: boolean, expectedTemplate?: string, expectedCorpusHash?: string, expectedDimensions?: number, expectedRecipeHash?: string, allowLegacyIds?: boolean }} ValidationOptions
  * @typedef {{ ok: boolean, diagnostics: string[], embeddingsById: Map<string, number[] | Float32Array>, dimensions?: number | null, entryCount?: number | undefined }} ValidationResult
- * @typedef {{ chengyu?: string, pinyin?: string, literal?: string, meaning?: string, example?: string, tags?: readonly string[], formality?: string }} TemplateEntry
+ * @typedef {{ chengyu?: string, pinyin?: string, literal?: string, meaning?: string, meaning_zh?: string, example?: string, tags?: readonly string[], formality?: string, usage_situations?: readonly string[] }} TemplateEntry
  */
 
 /** @type {Record<string, (entry: TemplateEntry) => string>} */
@@ -99,6 +99,11 @@ function normalizeTemplateValue(value) {
  * @returns {string}
  */
 function buildEmbeddingTemplateText(templateKey, entry = {}) {
+  // Qwen's parity recipe preserves English whitespace and uses a separate
+  // compact Chinese normalization step. Do not apply the legacy templates'
+  // whitespace rewriting to its exact API request text.
+  if (templateKey === 'qwen-bilingual-v1') return require('./hosted-recipe').documentText(entry);
+  if (templateKey === 'qwen-bilingual-situations-v1') return require('./situation-recipe').documentText(entry);
   const template = EMBEDDING_TEMPLATES[templateKey];
   if (!template) {
     throw new Error(`Unknown embedding template "${templateKey}"`);
@@ -298,6 +303,21 @@ function validateEmbeddingArtifact(artifact, database = [], options = {}) {
   validateScalarMetadata(artifact, diagnostics, 'normalize', options.expectedNormalize, 'normalize');
   validateScalarMetadata(artifact, diagnostics, 'template', options.expectedTemplate, 'template');
   validateScalarMetadata(artifact, diagnostics, 'corpusHash', options.expectedCorpusHash, 'corpus hash');
+  if (options.expectedRecipeHash) {
+    validateScalarMetadata(artifact, diagnostics, 'recipeHash', options.expectedRecipeHash, 'recipe hash');
+    const provenance = /** @type {{ source?: unknown, neurons?: unknown, generatedAt?: unknown, vectorHash?: unknown, localRevision?: unknown, parityHash?: unknown, parityMinCosine?: unknown, device?: unknown, threads?: unknown }} */ (artifact);
+    const localParity = options.expectedTemplate === 'qwen-bilingual-situations-v1'
+        && provenance.source === 'local-qwen-parity-v1'
+        && provenance.localRevision === '97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3'
+        && typeof provenance.parityHash === 'string' && /^[a-f\d]{64}$/.test(provenance.parityHash)
+        && typeof provenance.parityMinCosine === 'number' && provenance.parityMinCosine >= .99999
+        && provenance.device === 'cpu' && typeof provenance.threads === 'number' && provenance.threads >= 1 && provenance.threads <= 4;
+    if ((!localParity && provenance.source !== 'workers-ai-api') || typeof provenance.neurons !== 'number' || !Number.isFinite(provenance.neurons) || provenance.neurons <= 0
+        || typeof provenance.generatedAt !== 'string' || !Number.isFinite(Date.parse(provenance.generatedAt))
+        || typeof provenance.vectorHash !== 'string' || !/^[a-f\d]{64}$/.test(provenance.vectorHash)) {
+      diagnostics.push('Hosted embedding artifact requires API or verified local parity source, neurons, build date and vector hash provenance');
+    }
+  }
 
   const canUseLegacyArtifactIds = options.allowLegacyIds === true
     && embeddingEntries.length === database.length
@@ -350,7 +370,7 @@ function validateEmbeddingArtifact(artifact, database = [], options = {}) {
     }
 
     const vector = entry?.embedding;
-    if (!Array.isArray(vector)) {
+    if (!Array.isArray(vector) && !(vector instanceof Float32Array) && !(vector instanceof Int8Array)) {
       diagnostics.push(`${idLabel} embedding must be an array`);
       return;
     }

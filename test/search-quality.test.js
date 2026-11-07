@@ -87,6 +87,27 @@ after(async () => {
     });
 });
 
+describe('Landing example cards', () => {
+    // Each card shows its query verbatim and promises its idiom. This audits
+    // the ranking a visitor gets without hosted embeddings (the fallback);
+    // audit the hosted ranking with: npm run audit:examples -- --url <server>
+    const { auditExamples } = require('../scripts/audit-example-queries');
+    const { loadExampleQueries } = require('../scripts/build-landing-shell');
+
+    it('every example card returns its idiom as the #1 result', async () => {
+        if (!embeddingsReady) return;
+        const results = await auditExamples(BASE_URL);
+        assert.strictEqual(results.length, loadExampleQueries().length);
+        for (const result of results) {
+            assert.strictEqual(result.rank, 1, `"${result.query}" should return ${result.simplified} first (got #${result.rank || '-'}: ${result.top.join(' ')})`);
+        }
+    });
+
+    it('the 画蛇添足 card leads the examples', () => {
+        assert.strictEqual(loadExampleQueries()[0].simplified, '画蛇添足');
+    });
+});
+
 describe('English Keyword Search Quality', () => {
     it('should rank 狗屁不通 highly for "fart" query', async () => {
         const data = await searchKeyword('fart');

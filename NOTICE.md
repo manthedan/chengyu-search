@@ -13,3 +13,5 @@ This repository contains modifications and enrichment on top of that source mate
 The repository's original code is licensed separately under MIT. See:
 - `LICENSE`
 - `DATA_LICENSE.md`
+
+The compiled Chinese query-normalization data also incorporates **OpenCC 1.4.2** dictionary data (https://github.com/BYVoid/OpenCC), licensed under Apache License 2.0. The compiled representation adds CC-CEDICT identities and script mappings and shares suffix states; its source/artifact hashes and source-license declarations are recorded in `src/data/chinese-normalizer/normalizer-data.manifest.json`. The Apache license is included in `src/data/chinese-normalizer/OPENCC-LICENSE.txt`. CC-CEDICT-derived portions retain the CC BY-SA attribution above.

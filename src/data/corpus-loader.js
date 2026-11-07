@@ -33,7 +33,7 @@ function enrichChengyuEntryWithVariants(entry) {
     return {
         ...entry,
         simplified,
-        traditional: cedictEntry?.traditional || simplified
+        traditional: entry.traditional || cedictEntry?.traditional || simplified
     };
 }
 

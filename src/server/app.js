@@ -37,6 +37,7 @@ function createApp({
     installHealthRoutes(app, healthRoutes);
 
     app.post('/api/search', searchRoutes.auto);
+    if (searchRoutes.status) app.post('/api/search/status', searchRoutes.status);
     app.post('/api/search/keyword', searchRoutes.keyword);
     app.post('/api/search/semantic', searchRoutes.semantic);
     app.post('/api/search/hybrid', searchRoutes.hybrid);

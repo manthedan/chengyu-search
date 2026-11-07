@@ -1,0 +1,1422 @@
+{
+  "version": 1,
+  "ref": "970559f908bd1d9a282bcd5bfd39c5198a0dfd89",
+  "source": "GitLab main live version specified by the user",
+  "original_sha256": "2bfe3d67cfafd6e51624c7d92dcf7f979ce83f1cff7dc6495e527913859e37bc",
+  "supplement_sha256": "195987e76dcf54ebf3f7cc972c0ce7604e8688d37eaed16d1dff80fcb6da51d2",
+  "claude_supplement_sha256": "813f908f3d91d8ad1b90ca8dec16f2a22479536a4ebd245c40e6bceb23e0d6eb",
+  "rankings_sha256": "a794a9881db3a801e260e6b3456285b3b9bd33a94177f7b377cb12278d33e558",
+  "policy": {
+    "metric": "linear-gain NDCG@5; production auto endpoint; mean over all 82 labeled queries and over 48 english_meaning/thematic primary queries",
+    "min_top5_coverage": 1,
+    "float_tolerance": 1e-12,
+    "tolerance_reason": "Absolute tolerance on unrounded double-precision means; no relevance slack",
+    "threshold_rule": "Candidate overall AND primary must be no worse than this live revision under exactly the same original + supplement labels"
+  },
+  "derivation": {
+    "command": "CUDA_VISIBLE_DEVICES= QUIET_LOGS=1 node experiments/corpus-v2/fix-round-2/retrieve.js <archive-of-970559f-with-node_modules> experiments/corpus-v2/fix-round-2/live-run.json && node experiments/corpus-v2/fix-round-2/build-labels.js",
+    "run_sha256": "a815e783b0f0668d94d18b12596848f901c3de234390d95966e80f388b4c7117",
+    "original_run_reproduction": "Every top-10 headword for every query exactly matches the independent release-gate investigation before run",
+    "scoring": "benchmark/scoring.js; benchmark/relevance-gate.js; original labels preserved; additions gain map fixed before judging",
+    "release_v2": "Same frozen live rankings rescored under the original + extended supplement; no original label or live result changed. See experiments/release-v2/publish-gate-labels.js.",
+    "ranking_v1": "Same frozen live rankings rescored under original plus supplemental labels; no original labels or live rankings changed.",
+    "ranking_v1_recommended_gate": "Same frozen live rankings rescored with ten additional frozen-Pro supplemental labels; original labels, existing supplement labels and live rankings unchanged."
+  },
+  "scores": {
+    "overall": 0.625456953859071,
+    "primary": 0.5842079887239519
+  },
+  "combined_summary": {
+    "avg_ndcg": 0.584208,
+    "primary_avg_ndcg": 0.584208,
+    "overall_avg_ndcg": 0.625457,
+    "semantic_routed_types": [
+      "english_meaning",
+      "thematic",
+      "literal"
+    ],
+    "semantic_routed_avg_ndcg": 0.604836,
+    "semantic_routed_query_count": 62,
+    "primary_query_count": 48,
+    "total_query_count": 82,
+    "by_type": {
+      "english_meaning": 0.5363,
+      "thematic": 0.7662,
+      "pinyin": 0.5078,
+      "literal": 0.6756,
+      "partial": 0.742,
+      "chinese_exact": 1
+    }
+  },
+  "original_only_reference": {
+    "overall": 0.45754672218978115,
+    "primary": 0.30777351252136814,
+    "summary": {
+      "avg_ndcg": 0.307774,
+      "primary_avg_ndcg": 0.307774,
+      "overall_avg_ndcg": 0.457547,
+      "semantic_routed_types": [
+        "english_meaning",
+        "thematic",
+        "literal"
+      ],
+      "semantic_routed_avg_ndcg": 0.398185,
+      "semantic_routed_query_count": 62,
+      "primary_query_count": 48,
+      "total_query_count": 82,
+      "by_type": {
+        "english_meaning": 0.3087,
+        "thematic": 0.3043,
+        "pinyin": 0.5078,
+        "literal": 0.7082,
+        "partial": 0.5508,
+        "chinese_exact": 1
+      }
+    }
+  },
+  "coverage": {
+    "labeled": 387,
+    "slots": 387,
+    "fraction": 1,
+    "missing": []
+  },
+  "rows": [
+    {
+      "query_id": "benchmark-0",
+      "query": "feeling hopeless",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "绝处逢生",
+        "病入膏肓",
+        "自惭形秽",
+        "否极泰来",
+        "惆怅若失",
+        "自愧不如",
+        "徒呼负负",
+        "自愧弗如",
+        "离情别绪",
+        "进退失据"
+      ]
+    },
+    {
+      "query_id": "benchmark-1",
+      "query": "surrounded by enemies",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "四面楚歌",
+        "险象环生",
+        "高朋满座",
+        "烟熏火燎",
+        "草木皆兵",
+        "化险为夷"
+      ]
+    },
+    {
+      "query_id": "benchmark-2",
+      "query": "very happy and excited",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "欢欣鼓舞",
+        "喜闻乐见",
+        "心悦诚服",
+        "冲昏头脑",
+        "见猎心喜",
+        "喜从天降",
+        "欣喜若狂",
+        "为善最乐",
+        "大喜过望",
+        "食指大动"
+      ]
+    },
+    {
+      "query_id": "benchmark-3",
+      "query": "working hard without rest",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "不眠不休",
+        "积劳成疾",
+        "任劳任怨",
+        "不劳而获",
+        "皇天不负苦心人",
+        "劳逸结合",
+        "刻苦耐劳",
+        "埋头苦干",
+        "夙夜匪懈",
+        "俾夜作昼"
+      ]
+    },
+    {
+      "query_id": "benchmark-4",
+      "query": "doing something useless",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "偶一为之",
+        "知其不可而为之",
+        "有所作为",
+        "业荒于嬉",
+        "尸位素餐",
+        "无所事事",
+        "兵贵神速",
+        "乐此不疲",
+        "不劳而获",
+        "无中生有"
+      ]
+    },
+    {
+      "query_id": "benchmark-5",
+      "query": "arrogant and overconfident",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "傲慢无礼",
+        "骄者必败",
+        "颐指气使",
+        "自视甚高",
+        "骄兵必败",
+        "自视清高",
+        "趾高气扬",
+        "足高气强",
+        "嚣张气焰",
+        "足高气扬"
+      ]
+    },
+    {
+      "query_id": "benchmark-6",
+      "query": "feeling nostalgic",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "惆怅若失",
+        "朝思暮想",
+        "离情别绪",
+        "莼鲈之思",
+        "触景生情",
+        "魂牵梦萦",
+        "怦然心动",
+        "重温旧梦",
+        "自惭形秽",
+        "老大徒伤悲"
+      ]
+    },
+    {
+      "query_id": "benchmark-7",
+      "query": "pretending to be something you're not",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "弄假成真",
+        "以假乱真",
+        "放着明白装糊涂",
+        "若要人不知，除非己莫为",
+        "求人不如求己",
+        "说你胖你就喘",
+        "皇天不负苦心人",
+        "不怕贼偷就怕贼惦记",
+        "己所不欲，勿施于人",
+        "人不可貌相"
+      ]
+    },
+    {
+      "query_id": "benchmark-8",
+      "query": "making a mistake and learning from it",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "将错就错",
+        "过而能改，善莫大焉",
+        "后车之鉴",
+        "前车之覆，后车之鉴",
+        "大错特错",
+        "铸成大错",
+        "熟能生巧",
+        "失之毫厘，谬以千里",
+        "现学现用",
+        "才疏学浅"
+      ]
+    },
+    {
+      "query_id": "benchmark-9",
+      "query": "two people in love",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "有情人终成眷属",
+        "风花雪月",
+        "脚踏两条船",
+        "男欢女爱",
+        "爱民如子",
+        "金童玉女",
+        "移情别恋",
+        "新婚燕尔",
+        "采兰赠芍",
+        "爱屋及乌"
+      ]
+    },
+    {
+      "query_id": "benchmark-10",
+      "query": "a plan that backfires",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "幡然改图",
+        "深谋远虑",
+        "人算不如天算",
+        "谋事在人，成事在天",
+        "权宜之策",
+        "如法泡制",
+        "处心积虑",
+        "一年之计在于春",
+        "出谋划策",
+        "不孚众望"
+      ]
+    },
+    {
+      "query_id": "benchmark-11",
+      "query": "extremely angry",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "气冲牛斗",
+        "勃然大怒",
+        "怒不可遏",
+        "发指眦裂",
+        "脸红筋暴",
+        "咆哮如雷",
+        "恼羞成怒",
+        "怨气冲天",
+        "怒发冲冠",
+        "怒气冲冲"
+      ]
+    },
+    {
+      "query_id": "benchmark-12",
+      "query": "taking advantage of someone",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "趁人之危",
+        "趁火打劫",
+        "谋财害命",
+        "吃人血馒头",
+        "授人以柄",
+        "可乘之机",
+        "因利乘便",
+        "损人利己",
+        "任人宰割",
+        "假手于人"
+      ]
+    },
+    {
+      "query_id": "benchmark-13",
+      "query": "unexpected good fortune",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "逢凶化吉",
+        "龙凤呈祥",
+        "天有不测风云，人有旦夕祸福",
+        "凶多吉少",
+        "塞翁失马焉知非福",
+        "洪福齐天",
+        "塞翁失马安知非福",
+        "因祸得福",
+        "从天而降",
+        "阴差阳错"
+      ]
+    },
+    {
+      "query_id": "benchmark-14",
+      "query": "bittersweet feelings",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "乐极生悲",
+        "苦中作乐",
+        "新愁旧恨",
+        "多愁善感",
+        "温情脉脉",
+        "触景伤情",
+        "喜怒哀乐",
+        "离情别绪",
+        "否极泰来",
+        "情随事迁"
+      ]
+    },
+    {
+      "query_id": "benchmark-15",
+      "query": "unstoppable momentum",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "势如破竹",
+        "势不可当",
+        "如火如荼",
+        "势成骑虎",
+        "破竹之势",
+        "势在必行",
+        "万马奔腾",
+        "旗开得胜",
+        "万夫不当",
+        "连战连胜"
+      ]
+    },
+    {
+      "query_id": "benchmark-16",
+      "query": "deception and trickery",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "弄虚作假",
+        "尔虞我诈",
+        "项庄舞剑，意在沛公",
+        "项庄舞剑",
+        "坑蒙拐骗",
+        "以假乱真",
+        "招摇撞骗",
+        "积非成是",
+        "赔了夫人又折兵",
+        "邪门歪道"
+      ]
+    },
+    {
+      "query_id": "benchmark-17",
+      "query": "courage in the face of danger",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "明知山有虎，偏向虎山行",
+        "险象环生",
+        "危机四伏",
+        "铤而走险",
+        "勇气可嘉",
+        "化险为夷",
+        "暴虎冯河",
+        "厝火积薪",
+        "居安思危",
+        "冒大不韪"
+      ]
+    },
+    {
+      "query_id": "benchmark-18",
+      "query": "something extremely rare",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "铁树开花",
+        "奇珍异宝",
+        "稀奇古怪",
+        "俯拾皆是",
+        "奇葩异卉",
+        "数见不鲜",
+        "奇花异卉",
+        "靡不有初，鲜克有终",
+        "字字珠玑",
+        "寥寥可数"
+      ]
+    },
+    {
+      "query_id": "benchmark-19",
+      "query": "wasting time",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "岁月流逝",
+        "一时半刻",
+        "时不再来",
+        "历久弥坚",
+        "寸金难买寸光阴",
+        "时不我待",
+        "时日无多",
+        "日无暇晷",
+        "久仰大名",
+        "渤澥桑田"
+      ]
+    },
+    {
+      "query_id": "benchmark-20",
+      "query": "jealousy",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "妒能害贤",
+        "醋海生波",
+        "嫉贤妒能",
+        "怀璧其罪",
+        "嫉恶如仇",
+        "丧心病狂",
+        "外宽内忌",
+        "天妒英才",
+        "裙带关系",
+        "形影相随"
+      ]
+    },
+    {
+      "query_id": "benchmark-21",
+      "query": "unity and cooperation",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "吴越同舟",
+        "同心协力",
+        "同舟共济",
+        "全党全军",
+        "齐心协力",
+        "同心同德",
+        "群策群力",
+        "戮力同心",
+        "同仇敌忾",
+        "求同存异"
+      ]
+    },
+    {
+      "query_id": "benchmark-22",
+      "query": "accepting fate",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "听天由命",
+        "前缘未了",
+        "劫数难逃",
+        "生死有命",
+        "有缘无分",
+        "命中注定",
+        "时运不济",
+        "听天安命",
+        "不可避免",
+        "祸福无常"
+      ]
+    },
+    {
+      "query_id": "benchmark-23",
+      "query": "a turning point",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "峰回路转",
+        "迂回曲折",
+        "急转直下",
+        "七弯八拐",
+        "点石成金",
+        "势成骑虎",
+        "翻手为云覆手变雨",
+        "曲里拐弯",
+        "法轮常转",
+        "点铁成金"
+      ]
+    },
+    {
+      "query_id": "benchmark-24",
+      "query": "fleeting beauty",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "转瞬即逝",
+        "国色天香",
+        "过眼烟云",
+        "美不胜收",
+        "容华绝代",
+        "绝世佳人",
+        "梨花带雨",
+        "电光朝露",
+        "浮光掠影",
+        "闭月羞花"
+      ]
+    },
+    {
+      "query_id": "benchmark-25",
+      "query": "war and battle",
+      "type": "thematic",
+      "actual_top_results": [
+        "龙争虎斗",
+        "东征西怨",
+        "硝烟滚滚",
+        "东征西讨",
+        "炮火连天",
+        "难解难分",
+        "有征无战",
+        "南征北战",
+        "置之死地而后生",
+        "烽火四起"
+      ]
+    },
+    {
+      "query_id": "benchmark-26",
+      "query": "nature and scenery",
+      "type": "thematic",
+      "actual_top_results": [
+        "湖光山色",
+        "青山绿水",
+        "山峦重叠",
+        "山明水秀",
+        "漫山遍野",
+        "重峦叠嶂",
+        "风光旖旎",
+        "山清水秀",
+        "崇山峻岭",
+        "牛山濯濯"
+      ]
+    },
+    {
+      "query_id": "benchmark-27",
+      "query": "friendship",
+      "type": "thematic",
+      "actual_top_results": [
+        "金兰之交",
+        "情逾骨肉",
+        "情同手足",
+        "抵足而眠",
+        "抵足而卧",
+        "君子之交淡如水",
+        "亲如手足",
+        "情同骨肉",
+        "患难之交",
+        "患难见真情"
+      ]
+    },
+    {
+      "query_id": "benchmark-28",
+      "query": "food and eating",
+      "type": "thematic",
+      "actual_top_results": [
+        "吃干抹净",
+        "食指大动",
+        "废寝忘食",
+        "食不知味",
+        "大快朵颐",
+        "饱食终日，无所用心",
+        "吃饭皇帝大",
+        "饫甘餍肥",
+        "食不厌精，脍不厌细",
+        "宵衣旰食"
+      ]
+    },
+    {
+      "query_id": "benchmark-29",
+      "query": "money and wealth",
+      "type": "thematic",
+      "actual_top_results": [
+        "财源滚滚",
+        "招财进宝",
+        "招财",
+        "有钱有势",
+        "挥金如土",
+        "为富不仁，为仁不富",
+        "富可敌国",
+        "金钱万能",
+        "闷声发大财",
+        "家累千金，坐不垂堂"
+      ]
+    },
+    {
+      "query_id": "benchmark-30",
+      "query": "family relationships",
+      "type": "thematic",
+      "actual_top_results": [
+        "一家人不说两家话",
+        "疏不见亲",
+        "亲如一家",
+        "携家带口",
+        "携家带眷",
+        "家和万事兴",
+        "家家有本难念的经",
+        "妻离子散",
+        "不是一家人不进一家门",
+        "在家靠父母，出外靠朋友"
+      ]
+    },
+    {
+      "query_id": "benchmark-31",
+      "query": "studying and learning",
+      "type": "thematic",
+      "actual_top_results": [
+        "学而不厌",
+        "学海泛舟",
+        "学而不厌，诲人不倦",
+        "现学现用",
+        "好好学习，天天向上",
+        "活到老，学到老",
+        "学无止境",
+        "牛角挂书",
+        "寒窗",
+        "品学兼优"
+      ]
+    },
+    {
+      "query_id": "benchmark-32",
+      "query": "government and politics",
+      "type": "thematic",
+      "actual_top_results": [
+        "政通人和",
+        "铁打的衙门，流水的官",
+        "官逼民反",
+        "垂帘听政",
+        "卖官鬻爵",
+        "奸官污吏",
+        "治大国若烹小鲜",
+        "贪官污吏",
+        "官运亨通",
+        "病民蛊国"
+      ]
+    },
+    {
+      "query_id": "benchmark-33",
+      "query": "animals",
+      "type": "thematic",
+      "actual_top_results": [
+        "飞禽走兽",
+        "如鸟兽散",
+        "昂首挺胸",
+        "困兽犹斗",
+        "君子远庖厨",
+        "狼虫虎豹",
+        "令人发指",
+        "绝无仅有",
+        "奇形怪状",
+        "衣冠禽兽"
+      ]
+    },
+    {
+      "query_id": "benchmark-34",
+      "query": "the moon",
+      "type": "thematic",
+      "actual_top_results": [
+        "流星赶月",
+        "倚栏望月",
+        "九天揽月",
+        "水中捞月",
+        "花容月貌",
+        "心花怒放",
+        "闭月羞花",
+        "近水楼台先得月",
+        "众星捧月",
+        "月下花前"
+      ]
+    },
+    {
+      "query_id": "benchmark-35",
+      "query": "si mian chu ge",
+      "type": "pinyin",
+      "actual_top_results": [
+        "四面楚歌",
+        "朝秦暮楚",
+        "吴头楚尾",
+        "绵绵瓜瓞",
+        "面授机宜",
+        "垂涎三尺",
+        "绰绰有余",
+        "比翼双飞",
+        "初出茅庐",
+        "面面俱到"
+      ]
+    },
+    {
+      "query_id": "benchmark-36",
+      "query": "hua she tian zu",
+      "type": "pinyin",
+      "actual_top_results": [
+        "画蛇添足",
+        "田忌赛马",
+        "华佗再世",
+        "女大十八变",
+        "媳妇熬成婆",
+        "酸儿辣女",
+        "风华绝代",
+        "女大不中留",
+        "天生丽质",
+        "香消玉殒"
+      ]
+    },
+    {
+      "query_id": "benchmark-37",
+      "query": "yi shi er niao",
+      "type": "pinyin",
+      "actual_top_results": [
+        "一石二鸟",
+        "相视而笑",
+        "东施效颦",
+        "一琴一鹤",
+        "扫除天下",
+        "以虚带实",
+        "九牛一毛",
+        "五鬼闹判",
+        "一蹴可几",
+        "贤淑仁慈"
+      ]
+    },
+    {
+      "query_id": "benchmark-38",
+      "query": "hu jia hu wei",
+      "type": "pinyin",
+      "actual_top_results": [
+        "狐假虎威",
+        "围魏救赵",
+        "汉贼不两立",
+        "泾渭分明",
+        "暗渡陈仓",
+        "胡天胡帝",
+        "养家活口",
+        "鸿毛泰岱",
+        "浑然天成",
+        "含英咀华"
+      ]
+    },
+    {
+      "query_id": "benchmark-39",
+      "query": "ban tu er fei",
+      "type": "pinyin",
+      "actual_top_results": [
+        "半途而废",
+        "张飞打岳飞",
+        "五鬼闹判",
+        "以言代法，以权压法",
+        "班荆相对",
+        "屡禁不绝",
+        "费力不讨好",
+        "男扮女装",
+        "豺狼当道",
+        "以身试法"
+      ]
+    },
+    {
+      "query_id": "benchmark-40",
+      "query": "shou zhu dai tu",
+      "type": "pinyin",
+      "actual_top_results": [
+        "守株待兔",
+        "守株待兔，缘木求鱼",
+        "朱云折槛",
+        "以其人之道，还治其人之身",
+        "名从主人",
+        "河东狮吼",
+        "首屈一指",
+        "九牛一毛",
+        "胡天胡帝",
+        "卓乎不群"
+      ]
+    },
+    {
+      "query_id": "benchmark-41",
+      "query": "dui niu tan qin",
+      "type": "pinyin",
+      "actual_top_results": [
+        "对牛弹琴",
+        "朝秦暮楚",
+        "独断专行",
+        "扫除天下",
+        "独夫民贼",
+        "自作自受",
+        "独当一面",
+        "贪求无厌",
+        "厚德载物",
+        "一琴一鹤"
+      ]
+    },
+    {
+      "query_id": "benchmark-42",
+      "query": "wo xin chang dan",
+      "type": "pinyin",
+      "actual_top_results": [
+        "卧薪尝胆",
+        "瞬息万变",
+        "千变万轸",
+        "万变不离其宗",
+        "乐昌破镜",
+        "焕然一新",
+        "生米做成熟饭",
+        "断袖之癖",
+        "俗随时变",
+        "以不变应万变"
+      ]
+    },
+    {
+      "query_id": "benchmark-43",
+      "query": "jing di zhi wa",
+      "type": "pinyin",
+      "actual_top_results": [
+        "井底之蛙",
+        "芝焚蕙叹",
+        "乔迁之喜",
+        "补天浴日",
+        "泾渭分明",
+        "总角之交",
+        "敬惜字纸",
+        "震古烁今",
+        "首屈一指",
+        "只鸡斗酒"
+      ]
+    },
+    {
+      "query_id": "benchmark-44",
+      "query": "wang yang bu lao",
+      "type": "pinyin",
+      "actual_top_results": [
+        "亡羊补牢",
+        "王婆卖瓜，自卖自夸",
+        "老王卖瓜，自卖自夸",
+        "扬清激浊",
+        "你走你的阳关道，我过我的独木桥",
+        "老骥伏枥",
+        "名师出高徒",
+        "强龙不压地头蛇",
+        "古今中外",
+        "老于世故"
+      ]
+    },
+    {
+      "query_id": "benchmark-45",
+      "query": "adding legs to a snake",
+      "type": "literal",
+      "actual_top_results": [
+        "画蛇添足",
+        "引蛇出洞",
+        "打蛇不死，后患无穷",
+        "人心不足蛇吞象",
+        "四脚朝天",
+        "点睛之笔",
+        "雪上加霜",
+        "龙头蛇尾",
+        "龙蛇混杂",
+        "强龙不压地头蛇"
+      ]
+    },
+    {
+      "query_id": "benchmark-46",
+      "query": "frog in a well",
+      "type": "literal",
+      "actual_top_results": [
+        "井蛙之见",
+        "井底之蛙",
+        "吃水不忘掘井人",
+        "临渴掘井",
+        "河水不犯井水",
+        "坐井观天",
+        "知书达理",
+        "临渴穿井",
+        "饱汉不知饿汉饥",
+        "投井下石"
+      ]
+    },
+    {
+      "query_id": "benchmark-47",
+      "query": "pulling up seedlings to help them grow",
+      "type": "literal",
+      "actual_top_results": [
+        "拔苗助长",
+        "连拖带拉",
+        "引蛇出洞",
+        "风起云涌",
+        "十年树木，百年树人",
+        "借东风",
+        "推波助澜",
+        "推来推去",
+        "发奋图强",
+        "助人为乐"
+      ]
+    },
+    {
+      "query_id": "benchmark-48",
+      "query": "blind man touching an elephant",
+      "type": "literal",
+      "actual_top_results": [
+        "瞎子摸象",
+        "盲人摸象",
+        "众盲摸象",
+        "合眼摸象",
+        "人心不足蛇吞象",
+        "眼瞎耳聋",
+        "瞎猫碰上死耗子",
+        "铮铮铁汉",
+        "女扮男装",
+        "好男不跟女斗"
+      ]
+    },
+    {
+      "query_id": "benchmark-49",
+      "query": "old horse knows the way",
+      "type": "literal",
+      "actual_top_results": [
+        "老马识途",
+        "老马恋栈",
+        "识途老马",
+        "老骥伏枥，志在千里",
+        "温故而知新",
+        "春江水暖鸭先知",
+        "老骥嘶风",
+        "老骥伏枥",
+        "龙马精神",
+        "马齿徒增"
+      ]
+    },
+    {
+      "query_id": "benchmark-50",
+      "query": "iron pestle ground to a needle",
+      "type": "literal",
+      "actual_top_results": [
+        "只要功夫深，铁杵磨成针",
+        "磨杵成针",
+        "飞针走线",
+        "绵里藏针",
+        "席地而坐",
+        "大海捞针",
+        "磨穿铁砚",
+        "席地而睡",
+        "铜墙铁壁",
+        "求同存异"
+      ]
+    },
+    {
+      "query_id": "benchmark-51",
+      "query": "fox borrowing tiger's power",
+      "type": "literal",
+      "actual_top_results": [
+        "狐假虎威",
+        "伴君如伴虎",
+        "龙争虎斗",
+        "争权夺利",
+        "道高益安，势高益危",
+        "如虎添翼",
+        "狗仗人势",
+        "为虎作伥",
+        "拉大旗作虎皮",
+        "两虎相争"
+      ]
+    },
+    {
+      "query_id": "benchmark-52",
+      "query": "painting a tiger like a dog",
+      "type": "literal",
+      "actual_top_results": [
+        "画虎不成反类犬",
+        "画虎类犬",
+        "如虎添翼",
+        "伴君如伴虎",
+        "为虎作伥",
+        "降龙伏虎",
+        "不入虎穴，焉得虎子",
+        "嫁鸡随鸡，嫁狗随狗",
+        "狗拿耗子",
+        "龙争虎斗"
+      ]
+    },
+    {
+      "query_id": "benchmark-53",
+      "query": "waiting by a tree stump for a rabbit",
+      "type": "literal",
+      "actual_top_results": [
+        "守株待兔，缘木求鱼",
+        "守株待兔",
+        "狡兔三窟",
+        "急不可待",
+        "时不我待",
+        "以逸待劳",
+        "不见兔子不撒鹰",
+        "岁不我与",
+        "兔子尾巴长不了",
+        "拭目以待"
+      ]
+    },
+    {
+      "query_id": "benchmark-54",
+      "query": "playing the lute to a cow",
+      "type": "literal",
+      "actual_top_results": [
+        "对牛弹琴"
+      ]
+    },
+    {
+      "query_id": "benchmark-55",
+      "query": "tiger",
+      "type": "partial",
+      "actual_top_results": [
+        "伴君如伴虎",
+        "降龙伏虎",
+        "如虎添翼",
+        "为虎作伥",
+        "龙争虎斗",
+        "不入虎穴，焉得虎子",
+        "三人成虎",
+        "养虎为患",
+        "画虎不成反类犬",
+        "虎毒不食子"
+      ]
+    },
+    {
+      "query_id": "benchmark-56",
+      "query": "dragon",
+      "type": "partial",
+      "actual_top_results": [
+        "降龙伏虎",
+        "蜻蜓点水",
+        "龙争虎斗",
+        "虎踞龙蟠",
+        "龙马精神",
+        "龙头蛇尾",
+        "龙蛇混杂",
+        "虎踞龙盘",
+        "叶公好龙",
+        "藏龙卧虎"
+      ]
+    },
+    {
+      "query_id": "benchmark-57",
+      "query": "heart",
+      "type": "partial",
+      "actual_top_results": [
+        "三心二意",
+        "木人石心",
+        "心如刀绞",
+        "心慈手软",
+        "心怦怦跳",
+        "真心实意",
+        "惊心动魄",
+        "全心全意",
+        "沁人心脾",
+        "万箭穿心"
+      ]
+    },
+    {
+      "query_id": "benchmark-58",
+      "query": "mountain",
+      "type": "partial",
+      "actual_top_results": [
+        "山峦重叠",
+        "巴山越岭",
+        "崇山峻岭",
+        "堆积如山",
+        "山高水险",
+        "层峦叠嶂",
+        "巴山蜀水",
+        "湖光山色",
+        "地动山摇",
+        "文山会海"
+      ]
+    },
+    {
+      "query_id": "benchmark-59",
+      "query": "water",
+      "type": "partial",
+      "actual_top_results": [
+        "点水不漏",
+        "付之东流",
+        "如鱼得水",
+        "浑水摸鱼",
+        "竹篮打水",
+        "引水入墙",
+        "泼水难收",
+        "疏水箪瓢",
+        "竹篮打水，一场空",
+        "水深火热"
+      ]
+    },
+    {
+      "query_id": "benchmark-60",
+      "query": "四面楚歌",
+      "type": "chinese_exact",
+      "actual_top_results": [
+        "四面楚歌"
+      ]
+    },
+    {
+      "query_id": "benchmark-61",
+      "query": "画蛇添足",
+      "type": "chinese_exact",
+      "actual_top_results": [
+        "画蛇添足"
+      ]
+    },
+    {
+      "query_id": "benchmark-62",
+      "query": "一石二鸟",
+      "type": "chinese_exact",
+      "actual_top_results": [
+        "一石二鸟"
+      ]
+    },
+    {
+      "query_id": "benchmark-63",
+      "query": "对牛弹琴",
+      "type": "chinese_exact",
+      "actual_top_results": [
+        "对牛弹琴"
+      ]
+    },
+    {
+      "query_id": "benchmark-64",
+      "query": "守株待兔",
+      "type": "chinese_exact",
+      "actual_top_results": [
+        "守株待兔",
+        "守株待兔，缘木求鱼"
+      ]
+    },
+    {
+      "query_id": "benchmark-66",
+      "query": "see the big picture",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "大处着眼，小处着手",
+        "众盲摸象",
+        "盲人摸象",
+        "瞎子摸象",
+        "小学而大遗",
+        "不识大体",
+        "小巫见大巫",
+        "小题大做",
+        "大事化小，小事化了",
+        "管中窥豹"
+      ]
+    },
+    {
+      "query_id": "benchmark-67",
+      "query": "too many cooks",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "人浮于事",
+        "话多不甜",
+        "数不胜数",
+        "巧妇难为无米之炊",
+        "言多必失",
+        "生米熟饭",
+        "虱多不痒",
+        "生米做成熟饭",
+        "以少胜多",
+        "食玉炊桂"
+      ]
+    },
+    {
+      "query_id": "benchmark-68",
+      "query": "don't judge a book by its cover",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "人不可貌相",
+        "包子有肉不在褶上",
+        "牝牡骊黄",
+        "盖棺论定",
+        "人不可貌相，海水不可斗量",
+        "欲盖弥彰",
+        "东掩西遮",
+        "仰屋著书",
+        "骊黄牝牡",
+        "成败论人"
+      ]
+    },
+    {
+      "query_id": "benchmark-69",
+      "query": "practice makes perfect",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "熟能生巧",
+        "现学现用",
+        "时运亨通",
+        "臻于完善",
+        "过而能改，善莫大焉",
+        "驾轻就熟",
+        "天衣无缝",
+        "暮鼓晨钟",
+        "台上一分钟，台下十年功",
+        "曲终奏雅"
+      ]
+    },
+    {
+      "query_id": "benchmark-70",
+      "query": "reaping what you sow",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "自食其果",
+        "种瓜得瓜，种豆得豆",
+        "自作自受",
+        "什么风把你吹来的",
+        "恶有恶报",
+        "拈花惹草",
+        "己所不欲，勿施于人",
+        "不劳而获",
+        "朽木不可雕",
+        "说你胖你就喘"
+      ]
+    },
+    {
+      "query_id": "benchmark-71",
+      "query": "mixed feelings all at once",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "触景伤情",
+        "五味杂陈",
+        "一了百了",
+        "离情别绪",
+        "情随事迁",
+        "真情实意",
+        "温情脉脉",
+        "柔情脉脉",
+        "家和万事兴",
+        "鱼龙混杂"
+      ]
+    },
+    {
+      "query_id": "benchmark-72",
+      "query": "brave enough to face death",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "敢为人先",
+        "好死不如赖活着",
+        "出生入死",
+        "骁勇善战",
+        "虎口余生",
+        "生死有命",
+        "抹不下脸",
+        "见义勇为",
+        "视死如归",
+        "死到临头"
+      ]
+    },
+    {
+      "query_id": "benchmark-73",
+      "query": "pretending to be clueless to dodge the question",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "装傻充愣",
+        "放着明白装糊涂",
+        "明知故问",
+        "乔装打扮",
+        "一问三不知",
+        "支吾其词",
+        "招摇撞骗",
+        "问道于盲",
+        "听而不闻",
+        "答非所问"
+      ]
+    },
+    {
+      "query_id": "benchmark-74",
+      "query": "ruining it by overdoing it",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "画蛇添足",
+        "华屋丘墟",
+        "山颓木坏",
+        "自寻死路",
+        "倾家荡产",
+        "毁于一旦",
+        "国破家亡",
+        "残垣断壁",
+        "断壁残垣",
+        "断垣残壁"
+      ]
+    },
+    {
+      "query_id": "benchmark-75",
+      "query": "too scared to move forward",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "畏缩不前",
+        "趑趄不前",
+        "重足而立",
+        "犹未为晚",
+        "为时未晚",
+        "争先恐后",
+        "鞭长莫及",
+        "一着不慎，满盘皆输",
+        "为时不晚",
+        "屁滚尿流"
+      ]
+    },
+    {
+      "query_id": "benchmark-76",
+      "query": "fixing a mistake before it's too late",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "悔之无及",
+        "后悔莫及",
+        "为时不晚",
+        "犹未为晚",
+        "为时未晚",
+        "将错就错",
+        "追悔莫及",
+        "船到江心，补漏迟",
+        "铸成大错",
+        "大错特错"
+      ]
+    },
+    {
+      "query_id": "benchmark-77",
+      "query": "explaining something to someone who will not understand",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "可以意会，不可言传",
+        "知人者智，自知者明",
+        "一言难尽",
+        "不明事理",
+        "只知其一，不知其二",
+        "弄懂弄通",
+        "只可意会，不可言传",
+        "言教不如身教",
+        "半通不通",
+        "强扭的瓜不甜"
+      ]
+    },
+    {
+      "query_id": "benchmark-78",
+      "query": "having a very narrow point of view",
+      "type": "english_meaning",
+      "actual_top_results": [
+        "井蛙之见",
+        "卑之，无甚高论",
+        "坐井观天",
+        "映入眼帘",
+        "小学而大遗",
+        "心胸狭窄",
+        "卑之，毋甚高论",
+        "呼之欲出",
+        "各执己见",
+        "屁股决定脑袋"
+      ]
+    },
+    {
+      "query_id": "benchmark-79",
+      "query": "covering your ears while stealing a bell",
+      "type": "literal",
+      "actual_top_results": [
+        "掩耳盗铃",
+        "充耳不闻",
+        "言犹在耳",
+        "隔墙有耳",
+        "抓耳挠腮",
+        "如雷贯耳",
+        "掩人耳目",
+        "震耳欲聋",
+        "耳提面命",
+        "黄钟毁弃瓦釜雷鸣"
+      ]
+    },
+    {
+      "query_id": "benchmark-80",
+      "query": "repairing the pen after losing sheep",
+      "type": "literal",
+      "actual_top_results": [
+        "亡羊补牢",
+        "赔了夫人又折兵",
+        "没齿不忘",
+        "好了伤疤忘了疼",
+        "事后聪明",
+        "人财两空",
+        "投笔从戎",
+        "杀猪宰羊",
+        "血本无归",
+        "好记性不如烂笔头"
+      ]
+    },
+    {
+      "query_id": "benchmark-81",
+      "query": "drawing a cake to satisfy hunger",
+      "type": "literal",
+      "actual_top_results": [
+        "画饼充饥",
+        "垂涎欲滴",
+        "充饥止渴",
+        "馋涎欲滴",
+        "饥肠辘辘",
+        "啼饥号寒",
+        "吃干抹净",
+        "又想当婊子又想立牌坊",
+        "又要马儿跑，又要马儿不吃草",
+        "饥馑荐臻"
+      ]
+    },
+    {
+      "query_id": "benchmark-82",
+      "query": "mistaking a bow reflection for a snake",
+      "type": "literal",
+      "actual_top_results": [
+        "杯弓蛇影",
+        "打蛇不死，后患无穷",
+        "引蛇出洞",
+        "引而不发",
+        "人心不足蛇吞象",
+        "惩前毖后",
+        "画蛇添足",
+        "龙头蛇尾",
+        "龙蛇混杂",
+        "顾影自怜"
+      ]
+    }
+  ]
+}

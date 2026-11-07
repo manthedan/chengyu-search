@@ -56,3 +56,19 @@ cedict_ts.u8
 
 # Dictionary build coverage report (generated artifact)
 data/coverage-report.json
+
+# Coverage audit input snapshots and download provenance (Xinhua headwords only)
+/.cache/coverage-audit/
+/.cache/enrichment-full/
+/.cache/enrichment-full-fix1/
+/.cache/enrichment-round2/
+/build/enrichment/
+
+/.cache/enrichment-round3/
+/.cache/enrichment-round4/
+
+/.cache/corpus-v2/
+/.cache/release-v2/
+/.cache/hosted-usage.json*
+/.cache/ranking-v1/
+/experiments/ranking-v1/__pycache__/

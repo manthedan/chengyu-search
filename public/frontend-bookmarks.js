@@ -17,19 +17,19 @@
         }
 
         function isBookmarked(bookmarks, result) {
-            return Boolean(bookmarks[getResultPublicId(result)] || bookmarks[result.chengyu]);
+            // An unresolved legacy headword belongs to no identified sense yet.
+            // Only a unique API refresh may establish that identity.
+            return Boolean(bookmarks[getResultPublicId(result)]);
         }
 
         function saveBookmark(state, result) {
             state.bookmarks[getResultPublicId(result)] = normalizeBookmarkRecord(result, result.chengyu);
+            if (global.ChengyuBookmarkIdMigrations?.corpusVersion) state.bookmarks[getResultPublicId(result)].corpusVersion = global.ChengyuBookmarkIdMigrations.corpusVersion;
             persistBookmarks(state.bookmarks);
         }
 
         function removeBookmark(state, result) {
             delete state.bookmarks[getResultPublicId(result)];
-            if (result.id && result.chengyu) {
-                delete state.bookmarks[result.chengyu];
-            }
             persistBookmarks(state.bookmarks);
         }
 
@@ -46,7 +46,7 @@
         }
 
         function bookmarkNeedsRefresh(record) {
-            return !record?.id || !record?.simplified || !record?.traditional || !record?.example || !record?.formality || !Array.isArray(record?.tags) || record.tags.length === 0;
+            return record?.needsRefresh === true || !record?.id || !record?.simplified || !record?.traditional || !record?.example || !record?.formality || !Array.isArray(record?.tags) || record.tags.length === 0;
         }
 
         async function refreshBookmarksIfNeeded(state) {
@@ -60,7 +60,7 @@
             await Promise.all(staleEntries.map(async ([key, record]) => {
                 try {
                     const refreshed = await apiClient.fetchBookmarkSearchResult(record);
-                    if (!refreshed) {
+                    if (!refreshed || state.bookmarks[key] !== record) {
                         return;
                     }
 
@@ -73,6 +73,8 @@
                         ...record,
                         ...normalized
                     };
+                    delete state.bookmarks[newKey].needsRefresh;
+                    if (global.ChengyuBookmarkIdMigrations?.corpusVersion) state.bookmarks[newKey].corpusVersion = global.ChengyuBookmarkIdMigrations.corpusVersion;
                     changed = true;
                 } catch (error) {
                     consoleRef.warn('Unable to refresh saved idiom metadata:', record.chengyu, error);
